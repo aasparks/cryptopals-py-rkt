@@ -5,5 +5,6 @@ I like crypto and I like Racket. Why not combine them? This is my experiment in 
 ## Challenges
 
 | py                 | rkt | challenge |
+|:------------------:|:---:|:---------:|
 | :white_check_mark: | :x: | 1 |
 | :x:                | :x: | 2 |
