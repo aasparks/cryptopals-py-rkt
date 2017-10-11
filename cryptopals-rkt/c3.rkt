@@ -56,7 +56,7 @@
 ;; Find the key and return it
 (define (single-byte-xor txt)
   ;; get a list of all possible keys and their
-  ;; associated scores as '((score, key), (score, key))
+  ;; associated scores as '((score, key, ct), (score, key, ct))
   (define all-keys
     (map
      (λ (x) (score txt x))
@@ -73,7 +73,8 @@
 (define (score ct key)
   (list (freq-analysis (xorstrs ct
                            (key-extend key (bytes-length ct))))
-        key))
+        key
+        ct))
 
 ;; extend a key to the given length
 (define (key-extend key len)
