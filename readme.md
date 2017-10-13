@@ -10,8 +10,8 @@ I like crypto and I like Racket. Why not combine them? This is my experiment in 
 | :white_check_mark: | :white_check_mark: | 2 |
 | :white_check_mark: | :white_check_mark: | 3 |
 | :white_check_mark: | :white_check_mark: | 4 |
-| :x:                | :x:                | 5 |
-| :x:                | :x:                | 6 |
+| :white_check_mark: | :white_check_mark: | 5 |
+| :white_check_mark: | :white_check-mark: | 6 |
 | :x:                | :x:                | 7 |
 | :x:                | :x:                | 8 |
 | :x:                | :x:                | 9 |

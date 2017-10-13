@@ -4,7 +4,9 @@
 ;; Single-byte XOR cipher
 (require "c1.rkt"
          "c2.rkt")
-(provide (all-defined-out))
+(provide single-byte-xor
+         score
+         key-extend)
 
 ;;; I need to write a function to score a piece of plaintext as
 ;;; English or not. A simple frequency analysis should work.

@@ -2,9 +2,15 @@
 
 ; Challenge 1
 ; Convert hex to base64
-(require net/base64)
+(require net/base64
+         file/sha1)
 (require file/sha1)
-(provide (all-defined-out))
+(provide ascii->base64
+         base64->ascii
+         ascii->hex
+         hex->ascii
+         hex->base64
+         base64->hex)
 ;; These functions are provided by net/base64
 
 ; ascii -> base64

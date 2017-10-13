@@ -3,7 +3,7 @@
 ; Challenge 2
 ;; Fixed XOR
 (require "c1.rkt")
-(provide (all-defined-out))
+(provide xorstrs)
 
 ; XOR two byte strings
 (define (xorstrs bstr1 bstr2)

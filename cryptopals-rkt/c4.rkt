@@ -1,7 +1,7 @@
 #lang racket
-(require "c1.rkt")
-(require "c2.rkt")
-(require "c3.rkt")
+(require "c1.rkt"
+         "c2.rkt"
+         "c3.rkt")
 ; Challenge 4
 ;; Detect single-character XOR
 
