@@ -4,6 +4,7 @@ I like crypto and I like Racket. Why not combine them? This is my experiment in 
 
 ## Challenges
 
+### Set 1
 | py                 | rkt                | challenge |
 |:------------------:|:------------------:|:---------:|
 | :white_check_mark: | :white_check_mark: | 1 |
@@ -11,9 +12,13 @@ I like crypto and I like Racket. Why not combine them? This is my experiment in 
 | :white_check_mark: | :white_check_mark: | 3 |
 | :white_check_mark: | :white_check_mark: | 4 |
 | :white_check_mark: | :white_check_mark: | 5 |
-| :white_check_mark: | :white_check-mark: | 6 |
-| :x:                | :x:                | 7 |
+| :white_check_mark: | :white_check_mark: | 6 |
+| :white_check_mark: | :white_check_mark: | 7 |
 | :x:                | :x:                | 8 |
+
+
+### Set 2
+| py                 | rkt                | challenge |
 | :x:                | :x:                | 9 |
 | :x:                | :x:                | 10 |
 | :x:                | :x:                | 11 |
