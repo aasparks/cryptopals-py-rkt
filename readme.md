@@ -14,7 +14,7 @@ I like crypto and I like Racket. Why not combine them? This is my experiment in 
 | :white_check_mark: | :white_check_mark: | 5 |
 | :white_check_mark: | :white_check_mark: | 6 |
 | :white_check_mark: | :white_check_mark: | 7 |
-| :x:                | :x:                | 8 |
+| :white_check_mark: | :white_check_mark: | 8 |
 
 
 ### Set 2

@@ -13,7 +13,8 @@
 (require "aes/aes.rkt"
          "c1.rkt")
 
-(display
-  (aes-128-ecb-decrypt
-   (base64->ascii (file->bytes "7.txt" #:mode 'text))
-   #"YELLOW SUBMARINE"))
+(module+ test
+  (display
+   (aes-128-ecb-decrypt
+    (base64->ascii (file->bytes "7.txt" #:mode 'text))
+    #"YELLOW SUBMARINE")))
