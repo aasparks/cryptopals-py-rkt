@@ -1,6 +1,6 @@
 # Cryptopals in Python and Racket
 
-I like crypto and I like Racket. Why not combine them? This is my experiment in doing crypto with a functional language. While I'm at it, I may as well finish doing the challenges in python. The idea here is to make imperative solutions with Python, and then attempt to use more functional paradigms in Racket (i.e. map, apply, lambda, recursion). Let's see how the solutions vary.
+I like crypto and I like Racket. Why not combine them? This is my experiment in doing crypto with a functional language. While I'm at it, I may as well finish doing the challenges in Python, since I've already done some. The idea here is to make imperative solutions with Python, and then attempt to use more functional paradigms in Racket (i.e. map, apply, lambda, recursion). Let's see how the solutions vary.
 
 ## Challenges
 
@@ -21,7 +21,7 @@ I like crypto and I like Racket. Why not combine them? This is my experiment in 
 | py                 | rkt                | challenge |
 |:------------------:|:------------------:|:---------:|
 | :white_check_mark: | :white_check_mark: | 9  |
-| :white_check_mark: | :x:                | 10 |
+| :white_check_mark: | :white_check_mark: | 10 |
 | :x:                | :x:                | 11 |
 | :x:                | :x:                | 12 |
 
