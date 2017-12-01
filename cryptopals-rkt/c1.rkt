@@ -50,9 +50,6 @@
       (display "pass")
       (error "fail")))
 
-;(challenge1)
-
-
 ;; Test all the functions
 (module+ test
   (require rackunit)

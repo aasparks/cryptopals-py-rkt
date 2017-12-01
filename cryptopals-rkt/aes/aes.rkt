@@ -215,8 +215,6 @@
     (flip-rows-columns
      (for/vector ([i (in-range 4)])
       (inv-mixer i state))))
-  #;(printf "End of InvMixColumns:\n")
-  #;(print-matrix mat)
   mat)
 
 (define (inv-mixer i state)
@@ -236,11 +234,6 @@
                                 0))))
 ;; MULTIPLY macro
 (define (MULTIPLY x y)
-  #;(match y
-    [#x09 (state-at galois-mult-table 0 x)]
-    [#x0b (state-at galois-mult-table 1 x)]
-    [#x0d (state-at galois-mult-table 2 x)]
-    [#x0e (state-at galois-mult-table 3 x)])
   (bitwise-xor (* x (bitwise-and y 1))
                (* (XTIME x) (bitwise-and (arithmetic-shift y -1) 1))
                (* (XTIME (XTIME x)) (bitwise-and (arithmetic-shift y -2) 1))
