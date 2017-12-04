@@ -84,7 +84,7 @@ def solve_blocks(blocks):
 ## Challenge 6 solution
 def main():
     # Open the file and decode from base64
-    f = open('6.txt')
+    f = open('../../testdata/6.txt')
     ctxt = f.read()
     ctxt = ctxt.decode('base64')
     # Get the most likely keysize
@@ -94,6 +94,5 @@ def main():
     # Solve the blocks
     key, guess = solve_blocks(blocks)
     assert key == 'Terminator X: Bring the noise'
-    print 'pass'
 
 if __name__ == '__main__' : main()

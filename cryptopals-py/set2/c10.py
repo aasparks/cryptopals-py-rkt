@@ -1,8 +1,13 @@
 # Challenge 10
 ## Implement CBC Mode
+
 from Crypto.Cipher import AES
+import sys
+sys.path.insert(0, '../set1')
 import c1, c2, c6, c9
-### CBC Mode works by XORing the previous block with
+
+
+### CBC Mode encryption  works by XORing the previous block with
 ### the plaintext before encrypting it.
 ### Ci = E(Pi ^ Ci-1)
 def aes_128_cbc_encrypt(txt, key, IV='\x00'*16):
@@ -14,7 +19,6 @@ def aes_128_cbc_encrypt(txt, key, IV='\x00'*16):
     prev_block = IV
     result = ''
     # Loop through each block, XORing with the previous
-    print 'Encrypting ' + str(num_blocks) + ' blocks'
     for i in range(num_blocks):
         cur_block = c6.get_block(txt, i, 16)
         cur_block = c2.xorstrs(prev_block, cur_block)
@@ -34,7 +38,6 @@ def aes_128_cbc_decrypt(txt, key, IV='\x00'*16):
     prev_block = IV
     result = ''
     # Loop through each block, XORing with the previous
-    print 'Decrypting ' + str(num_blocks) + ' blocks'
     for i in range(num_blocks):
         cur_block = c6.get_block(txt, i, 16)
         temp = cur_block
@@ -55,7 +58,7 @@ def test():
 
 def main():
     test()
-    f = open('10.txt')
+    f = open('../../testdata/10.txt')
     ctxt = f.read()
     #ctxt = c9.pkcs7_pad(ctxt)
     key = 'YELLOW SUBMARINE'

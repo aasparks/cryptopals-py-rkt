@@ -95,9 +95,5 @@ def main():
     key, guess = single_byte_xor(txt)
     assert key == '88'
     assert guess == 'Cooking MC\'s like a pound of bacon'
-    print 'pass'
-    #print 'Key: ' + str(key)
-    #print 'Best guess: '
-    #print guess
 
 if __name__ ==  "__main__" : main()

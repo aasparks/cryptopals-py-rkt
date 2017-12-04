@@ -1,5 +1,9 @@
 # Challenge 9
 ## Implement PKCS7 padding
+### Easy peasy
+
+# Pads text according to pkcs7 standard.
+# Also accepts optional block size
 def pkcs7_pad(txt, n=16):
     num = n - (len(txt) % n)
     return txt + chr(num) * num
@@ -18,6 +22,5 @@ def main():
     str1 = "YELLOW SUBMARINE"
     str2 = pkcs7_pad(str1, 20)
     assert str2 == str1 + "\x04\x04\x04\x04"
-    print 'pass'
 
 if __name__ == "__main__" : main()

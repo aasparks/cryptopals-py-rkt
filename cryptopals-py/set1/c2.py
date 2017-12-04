@@ -17,6 +17,5 @@ def main():
     str2 = c1.hextoascii('686974207468652062756c6c277320657965')
     result = xorstrs(str1, str2)
     assert c1.asciitohex(result) == '746865206b696420646f6e277420706c6179'.upper()
-    print 'pass'
 
 if __name__ == "__main__" : main()

@@ -22,6 +22,6 @@ I like crypto and I like Racket. Why not combine them? This is my experiment in 
 |:------------------:|:------------------:|:---------:|
 | :white_check_mark: | :white_check_mark: | 9  |
 | :white_check_mark: | :white_check_mark: | 10 |
-| :x:                | :x:                | 11 |
+| :white_check_mark: | :x:                | 11 |
 | :x:                | :x:                | 12 |
 

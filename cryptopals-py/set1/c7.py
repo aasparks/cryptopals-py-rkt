@@ -5,7 +5,7 @@ from Crypto.Cipher import AES
 
 ## Solves challenge 7 by running aes decrypt
 def challenge7():
-    f = open('7.txt')
+    f = open('../../testdata/7.txt')
     txt = f.read()
     txt = txt.decode('base64')
     key = 'YELLOW SUBMARINE'

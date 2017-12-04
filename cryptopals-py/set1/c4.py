@@ -6,7 +6,7 @@ import c3
 ### It'll be a little slow but I think the best approach
 ### here will be running challenge3 on all 60 lines.
 def main():
-    f = open("4.txt")
+    f = open("../../testdata/4.txt")
     bestScore = 0
     bestGuess = ''
     bestKey   = ''
@@ -19,6 +19,5 @@ def main():
             bestGuess = aGuess
             bestKey = aKey
     assert bestGuess == 'Now that the party is jumping\n'
-    print 'pass'
 
 if __name__ == "__main__" : main()
