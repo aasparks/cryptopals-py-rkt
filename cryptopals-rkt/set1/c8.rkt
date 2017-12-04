@@ -3,14 +3,15 @@
 (require
   "c1.rkt"
   "c7.rkt")
+(provide is-ecb?)
 
 ;; Challenge 8
 ;; Detect AES in ECB mode
 
 ;; Following the python solution, take the line
 ;; with the most repeated blocks
-(define (is-ecb? txt [max-size 2])
-  (> (count-repeated-blocks txt) max-size))
+(define (is-ecb? txt [max-size 1])
+  (>= (count-repeated-blocks txt) max-size))
 
 ;; Returns the number of repeated blocks
 ;; in the given text
@@ -21,8 +22,7 @@
 (define (count-repeated-blocks txt [block-size 16])
   (let* ([lst (bytes->list/blocks txt block-size)]
          [lst-no-dups (remove-duplicates lst)])
-    (- (length lst) (length lst-no-dups))
-    ))
+    (- (length lst) (length lst-no-dups))))
 
 ;; Break a byte string into a list
 ;; of n-length byte strings
@@ -44,7 +44,7 @@
    (map
     (λ (bstr) (list bstr
                     (is-ecb? (hex->ascii bstr) 2)))
-    (file->bytes-lines "8.txt" #:mode 'text))))
+    (file->bytes-lines "../../testdata/8.txt" #:mode 'text))))
 
 (module+ test
   (require rackunit)

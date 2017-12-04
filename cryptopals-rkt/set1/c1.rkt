@@ -45,10 +45,8 @@
 
 ;; Challenge 1 solution
 (define (challenge1)
-  (if (equal? (hex->base64 #"49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d")
-                #"SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t")
-      (display "pass")
-      (error "fail")))
+  (equal? (hex->base64 #"49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d")
+                #"SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"))
 
 ;; Test all the functions
 (module+ test
@@ -68,4 +66,5 @@
   (check-equal? (hex->base64 hex)
                 b64)
   (check-equal? (ascii->base64 asc)
-                b64))
+                b64)
+  (check-true (challenge1)))

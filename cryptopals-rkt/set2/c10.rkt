@@ -3,8 +3,8 @@
 ; Challenge 10
 ;; Implement CBC Mode
 (require "c9.rkt"
-         "aes/aes.rkt"
-         "c1.rkt")
+         "../aes/aes.rkt"
+         "../set1/c1.rkt")
 ;;; Okay so I already did this when I implemented AES
 ;;; for these challenges. So CBC is done but let's just
 ;;; check with a simple test and of course decrypt the
@@ -14,7 +14,7 @@
 
 ;; opens the file and decrypts it
 (define (main)
-  (bytes->string/utf-8 (aes-128-cbc-decrypt (base64->ascii (file->bytes "10.txt"))
+  (bytes->string/utf-8 (aes-128-cbc-decrypt (base64->ascii (file->bytes "../../testdata/10.txt"))
                                             test-key
                                             test-iv)))
 

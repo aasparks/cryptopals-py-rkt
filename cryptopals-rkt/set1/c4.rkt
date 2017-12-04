@@ -14,7 +14,7 @@
    (sort
     (map (λ (line)
            (single-byte-xor (hex->ascii (string->bytes/utf-8 line))))
-         (file->lines "4.txt")) 
+         (file->lines "../../testdata/4.txt")) 
     (λ (x y)
       (> (car x) (car y))))))
 

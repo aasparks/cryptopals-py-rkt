@@ -83,7 +83,7 @@
 
 ;; Challenge 6 solution
 (define (challenge6)
-  (let* ([ctxt (base64->ascii (file->bytes "6.txt"))]
+  (let* ([ctxt (base64->ascii (file->bytes "../../testdata/6.txt"))]
          [ksize (get-keysize ctxt)]
          )
     (solve-blocks (transpose-blocks (split-ct ksize ctxt) ksize))))

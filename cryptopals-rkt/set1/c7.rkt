@@ -10,11 +10,11 @@
 ;; complete the challenges here.
 ;; It is probably much slower and less secure
 ;; but it was a fun challenge.
-(require "aes/aes.rkt"
+(require "../aes/aes.rkt"
          "c1.rkt")
 
 (module+ test
   (display
    (aes-128-ecb-decrypt
-    (base64->ascii (file->bytes "7.txt" #:mode 'text))
+    (base64->ascii (file->bytes "../../testdata/7.txt" #:mode 'text))
     #"YELLOW SUBMARINE")))

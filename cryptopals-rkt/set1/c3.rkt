@@ -144,9 +144,7 @@
       (check-equal? (second sol) 88)
       (check-equal? (xorstrs ct
                            (key-extend (second sol)  (bytes-length ct)))
-                    #"Cooking MC's like a pound of bacon")
-      (display "pass"))
-    )
+                    #"Cooking MC's like a pound of bacon")))
   (challenge3))
 
 
