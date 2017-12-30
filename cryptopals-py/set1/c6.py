@@ -41,7 +41,7 @@ def edit_distance(keysize, txt):
     return (total / rounds) / keysize
 
 # Get the n'th block of size size from txt
-def get_block(txt, n, size):
+def get_block(txt, n, size=16):
     return txt[size*n : size*(n+1)]
 
 ## 4. The KEYSIZE with the smallest normalized edit

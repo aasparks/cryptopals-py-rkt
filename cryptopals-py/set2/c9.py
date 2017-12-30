@@ -8,6 +8,16 @@ def pkcs7_pad(txt, n=16):
     num = n - (len(txt) % n)
     return txt + chr(num) * num
 
+def pkcs7_unpad(txt, n=16):
+    idx = len(txt) - 1
+    num_pads = ord(txt[-1])
+    if num_pads > n:
+        return txt
+    for i in range(num_pads):
+        assert txt[idx] == chr(num_pads), 'padding error'
+        idx -= 1
+    return txt[:idx+1]
+
 # My own tests
 def test():
     str1 = "Spongebob Squarepants"

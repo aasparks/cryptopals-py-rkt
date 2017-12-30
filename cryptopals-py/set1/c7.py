@@ -17,6 +17,6 @@ def aes_128_ecb_decrypt(txt, key, IV='\x00'*16):
 
 ## Uses the AES library function to encrypt
 def aes_128_ecb_encrypt(txt, key, IV='\x00'*16):
-    return AES.new(key, AES.MODE_ECB).decript(txt)
+    return AES.new(key, AES.MODE_ECB).encrypt(txt)
 
 if __name__ == '__main__' : challenge7()
