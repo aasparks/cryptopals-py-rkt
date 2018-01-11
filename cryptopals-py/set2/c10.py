@@ -31,7 +31,7 @@ def aes_128_cbc_encrypt(txt, key, IV='\x00'*16):
 ### Pi = D(Ci) ^ Ci-1
 def aes_128_cbc_decrypt(txt, key, IV='\x00'*16):
     # Assert all size constrains
-    assert len(txt) % 16 == 0
+    assert len(txt) % 16 == 0, 'Your length is: ' + str(len(txt))
     assert len(key) == 16
     assert len(IV) == 16
     num_blocks = len(txt) / 16
