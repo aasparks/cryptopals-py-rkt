@@ -9,7 +9,8 @@
          aes-128-ecb-encrypt
          aes-128-ecb-decrypt
          aes-128-cbc-encrypt
-         aes-128-cbc-decrypt)
+         aes-128-cbc-decrypt
+         aes-128-ctr)
 
 
 ;; number of columns for the state
@@ -474,9 +475,31 @@
            (set-box! last-block cur-block)
            pt)))
 
+(define (aes-128-ctr txt key nonce)
+  (let ([num-blocks (ceiling (/ (bytes-length txt) 16))])
+    (xor-bstrs
+     (subbytes
+      (apply bytes-append
+             (for/list ([i (in-range num-blocks)])
+               (aes-128-ecb-encrypt (bytes-append
+                                     (little-endian nonce)
+                                     (little-endian i))
+                                    key)))
+      0
+      (bytes-length txt))
+     txt)))
+
+;; convert a number to a bytestring in little-endian
+;; in python this is just struct.pack('<Q', num)
+(define (little-endian num)
+  (integer->integer-bytes num
+                          8
+                          #false
+                          #false))
 
 (module+ test
-  (require rackunit)
+  (require rackunit
+           "../set1/c1.rkt")
   (check-equal? (get-byte 65 3)
                 65)
   ;; #x65666768
@@ -569,5 +592,12 @@
                  (aes-128-ecb-encrypt (bytes-append test1input test1input) test1key)
                  test1key)
                 (bytes-append test1input test1input))
+
+  ;; CTR mode test
+  (check-equal? (aes-128-ctr
+                 (base64->ascii #"L77na/nrFsKvynd6HzOoG7GHTLXsTVu9qvY/2syLXzhPweyyMTJULu/6/kXX0KSvoOLSFQ==")
+                 #"YELLOW SUBMARINE"
+                 0)
+                #"Yo, VIP Let's kick it Ice, Ice, baby Ice, Ice, baby ")
   )
 

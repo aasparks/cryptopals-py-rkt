@@ -12,7 +12,7 @@ I like crypto and I like Racket. Why not combine them? This is my experiment in 
 | py                 | rkt                | challenge |
 | :----------------: | :----------------: | :--------:|
 | :white_check_mark: | :white_check_mark: | 17        |
-| :white_check_mark: | :x: | 18        |
+| :white_check_mark: | :white_check_mark: | 18        |
 | :x:                | :x: | 19        |
 | :x:                | :x: | 20        |
 | :x:                | :x: | 21        |
