@@ -30,13 +30,13 @@ I like crypto and I like Racket. Why not combine them? This is my experiment in 
 | :white_check_mark: | :white_check_mark: | 16 |
 
 ### Set 3
-| py  | rkt | challenge |
-| :-: | :-: | :--------:|
-| :x: | :x: | 17        |
-| :x: | :x: | 18        |
-| :x: | :x: | 19        |
-| :x: | :x: | 20        |
-| :x: | :x: | 21        |
-| :x: | :x: | 22        |
-| :x: | :x: | 23        |
-| :x: | :x: | 24        |
+| py                 | rkt | challenge |
+| :----------------: | :-: | :--------:|
+| :white_check_mark: | :x: | 17        |
+| :x:                | :x: | 18        |
+| :x:                | :x: | 19        |
+| :x:                | :x: | 20        |
+| :x:                | :x: | 21        |
+| :x:                | :x: | 22        |
+| :x:                | :x: | 23        |
+| :x:                | :x: | 24        |

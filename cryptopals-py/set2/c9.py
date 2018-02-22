@@ -11,8 +11,8 @@ def pkcs7_pad(txt, n=16):
 def pkcs7_unpad(txt, n=16):
     idx = len(txt) - 1
     num_pads = ord(txt[-1])
-    if num_pads > n:
-        return txt
+    if num_pads > n or num_pads == 0:
+        raise Exception('padding error')
     for i in range(num_pads):
         assert txt[idx] == chr(num_pads), 'padding error'
         idx -= 1
