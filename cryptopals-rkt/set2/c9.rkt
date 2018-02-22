@@ -14,9 +14,11 @@
   (let ([n (bytes-ref txt (sub1 (bytes-length txt)))])
     ;; i could just subbytes here but I want to error
     ;; check, making sure that the padding is VALID
-    (sub-last-byte txt n n)))
+    (if (or (> n l) (zero? n))
+        (error "padding error")
+        (sub-last-byte txt n n))))
 (define (sub-last-byte txt pad n)
-  (if (zero? n)
+  (if (zero? n) 
       txt
       (if (equal? (bytes-ref txt (sub1 (bytes-length txt))) pad)
           (sub-last-byte (subbytes txt 0 (sub1 (bytes-length txt))) pad (sub1 n))
