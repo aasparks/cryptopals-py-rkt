@@ -9,9 +9,9 @@ I like crypto and I like Racket. Why not combine them? This is my experiment in 
 ### Set 2 :white_check_mark:
 
 ### Set 3
-| py                 | rkt | challenge |
-| :----------------: | :-: | :--------:|
-| :white_check_mark: | :x: | 17        |
+| py                 | rkt                | challenge |
+| :----------------: | :----------------: | :--------:|
+| :white_check_mark: | :white_check_mark: | 17        |
 | :white_check_mark: | :x: | 18        |
 | :x:                | :x: | 19        |
 | :x:                | :x: | 20        |
