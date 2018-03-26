@@ -1,4 +1,4 @@
-# Challenge 18
+#a Challenge 18
 ## Implement CTR, the stream cipher mode
 from Crypto.Cipher import AES
 import sys, struct
@@ -9,7 +9,7 @@ import c1, c2
 def little_endian(num):
     return struct.pack('<Q', num)
 
-def aes_128_ctr(txt, key, nonce):
+def aes_128_ctr(txt, key, nonce = 0):
     num_blocks = (len(txt) / 16) + 1
     keystream = ''
     for i in range(num_blocks):
