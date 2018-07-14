@@ -15,10 +15,10 @@ I like crypto and I like Racket. Why not combine them? This is my experiment in 
 | :white_check_mark: | :white_check_mark: | 18        |
 | :x:                | :x: | 19        |
 | :x:                | :x: | 20        |
-| :white_check_mark: | :x: | 21        |
-| :white_check_mark: | :x: | 22        |
-| :white_check_mark: | :x: | 23        |
-| :white_check_mark: | :x: | 24        |
+| :white_check_mark: | :white_check_mark: | 21        |
+| :white_check_mark: | :white_check_mark: | 22        |
+| :white_check_mark: | :white_check_mark: | 23        |
+| :white_check_mark: | :white_check_mark: | 24        |
 
 ### Set 4
 | py     | rkt  | challenge |

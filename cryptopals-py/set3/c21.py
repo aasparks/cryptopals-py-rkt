@@ -46,6 +46,9 @@ class MT19937:
         self.index = (self.index + 1)
         return int32(y)
 
+    def print_state(self):
+        print self.mt
+
     def twist(self):
         first_bit_mask = 0x80000000
         last_bit_mask  = 0x7FFFFFFF
@@ -70,13 +73,16 @@ def int32(num):
 def main():
     mt = MT19937(1131464071)
     f  = open('mt_test.txt')
+    print mt.generate_number()
+    print mt.print_state()
 
-    for line in f:
-        expected = line.strip()
-        actual   = str(mt.generate_number())
-        err = 'Failed. Expected ' + expected
-        err += ' got ' + str(actual)
-        assert actual == expected, err
+    # for line in f:
+    #     expected = line.strip()
+    #     actual   = str(mt.generate_number())
+    #     #mt.print_state()
+    #     err = 'Failed. Expected ' + expected
+    #     err += ' got ' + str(actual)
+    #     assert actual == expected, err
 
 if __name__ == "__main__" : main()
 

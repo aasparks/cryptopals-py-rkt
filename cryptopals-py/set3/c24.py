@@ -44,7 +44,6 @@ def get_seed():
         pt = decrypt(orig_ct, i)
         if pt[-14:] == orig:
             return i
-        
     raise Exception('seed not found')
 
 def test_get_seed():
@@ -63,7 +62,6 @@ def password_reset():
 
 def is_valid_token(token):
     start_seed = int(time.time())
-    
     # Don't go too far back
     for i in range(2000):
         mt = c21.MT19937(start_seed - i)

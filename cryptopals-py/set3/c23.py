@@ -47,10 +47,6 @@ def untwist(num):
     value = unbitshift_right(value, u)
     return value
 
-# Make sure it's only 32 bits
-def int32(num):
-    return int(num & 0xFFFFFFFF)
-
 # Unbitshift functions taken from
 # https://jazzy.id.au/2010/09/22/cracking_random_number_generators_part_3.html
 def unbitshift_right(value, shift):
@@ -77,20 +73,27 @@ def unbitshift_left(value, shift, mask):
         i += 1
     return result
 
+# Python does not have a logical right shift built in
+# so that's what this does.
 def rlshift(value, n):
     return (value % 0x100000000) >> n
 
+# Run the tests
 def main():
     mt = c21.MT19937(234)
     cracked_state = [0] * 624
+    # Untwist 624 numbers to get the state of the twister
     for i in range(624):
         cracked_state[i] = untwist(mt.generate_number())
+    # Create a new twister and insert the state
     new_mt = c21.MT19937(0)
     new_mt.mt = cracked_state
 
+    # Check that the next 50 generated numbers are the same
     for i in range(50):
         a = mt.generate_number()
         b = new_mt.generate_number()
         assert a == b
+    print 'pass'
 
 if __name__ == "__main__" : main()
