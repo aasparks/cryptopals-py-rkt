@@ -8,7 +8,7 @@ import c2, c7, c18
 
 ### Back to CTR. Encrypt the recovered plaintext from this file under CTR
 ### with a random key (unknown to you).
-plaintext = open('25.txt').read().decode('base64')
+plaintext = open('../../testdata/25.txt').read().decode('base64')
 plaintext = c7.aes_128_ecb_decrypt(plaintext, 'YELLOW SUBMARINE')
 key = os.urandom(16)
 ciphertext = c18.aes_128_ctr(plaintext, key)

@@ -23,10 +23,10 @@ I like crypto and I like Racket. Why not combine them? This is my experiment in 
 ### Set 4
 | py     | rkt  | challenge |
 | :----------------: | :--: | :-------: |
-| :white_check_mark: | :x:  | 25        |
-| :white_check_mark: | :x:  | 26        |
-| :white_check_mark: | :x:  | 27        |
-| :white_check_mark:    | :x:  | 28        |
+| :white_check_mark: | :white_check_mark: | 25        |
+| :white_check_mark: | :x:                | 26        |
+| :white_check_mark: | :x:                | 27        |
+| :white_check_mark: | :x:                | 28        |
 | :x:    | :x:  | 29        |
 | :x:    | :x:  | 30        |
 | :x:    | :x:  | 31        |
