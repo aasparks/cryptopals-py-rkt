@@ -37,6 +37,7 @@ class MYSHA1:
         message_bit_len = message_len * 8
         self.message += chr(0x80)
         self.message += b'\x00' * ((56 - (message_len + 1) % 64) % 64)
+        print 'Math result: ' + str((56 - (message_len + 1) % 64) % 64)
         self.message += struct.pack(b'>Q', message_bit_len)
         self.l = len(self.message) * 8
         ## After the message has been padded, it must be parsed into N
@@ -47,6 +48,7 @@ class MYSHA1:
 
         for i in range(self.n):
             self.m[i] = self.message[i * 512 : (i+1) * 512]
+        print str(self.m)
     ## SHA-1 may be used to hash a message, M, having a length of l bits.
     ## The algorithm uses 
     ##  1) a message schedule of 80 32-bit words
@@ -126,6 +128,8 @@ def smoke_test():
 def test_vectors():
     # Test vector 
     result = MYSHA1(b'abc').digest()
+    print result.encode('hex')
+    result = MYSHA1(b'abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq').digest()
     print result.encode('hex')
     return
 

@@ -32,7 +32,7 @@ def verify_url(data):
     valid = True
 
     for c in pt:
-        valid &= ord(c) > 31
+        valid &= ord(c) < 128
 
     return valid, pt
 
