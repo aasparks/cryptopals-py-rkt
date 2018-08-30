@@ -70,7 +70,7 @@ hash value.
   (bytes-copy! new-msg 0 (bytes-append
                           (State-msg state)
                           (make-bytes 1 #x80)))
-  ; append the length to the end
+   ; append the length to the end
   (define msg-tail (integer->integer-bytes msg-bit-len 8 #f #t))
   (bytes-copy! new-msg
                (- new-len (bytes-length msg-tail))
