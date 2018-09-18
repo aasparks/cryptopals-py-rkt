@@ -1,6 +1,7 @@
 #lang racket
 
-(require "../set1/c1.rkt")
+(require "../set1/c1.rkt"
+         "sha1-math.rkt")
 (provide sha-1)
 
 (define DEBUG #false)
@@ -31,7 +32,7 @@
 (define-struct State (hash length msg) #:transparent)
 
 ; top-level sha-1 function
-; sha1 : bytes? (vector bytes?)-> bytes?
+; sha1 : bytes? (vector integer?) integer? -> bytes?
 ; initializes and runs the SHA-1 algorithm on the given message
 (define (sha-1 msg (init-point init-hash) (init-length 0))
   (digest
@@ -41,7 +42,7 @@
 ;; We know the default state
 (define init-hash (vector #x67452301 #xEFCDAB89 #x98BADCFE #x10325476 #xC3D2E1F0))
 
-; init-state : bytes? (vector bytes?) -> State?
+; init-state : bytes? (vector integer?) integer? -> State?
 ; creates the initial state of the SHA1 with a message
 (define (init-state msg start-state start-len)
   (State start-state
@@ -90,16 +91,6 @@ hash value.
          new-len
          new-msg))
 
-; split-msg : bytes? -> (listof bytes?)
-; splits the message into a list of 4-byte
-; blocks
-(define (split-msg msg)
-  (cond
-    [(= 0 (bytes-length msg)) empty]
-    [else (cons (subbytes msg 0 4)
-                (split-msg (subbytes msg 4)))]))
-
-
 #|
    SHA-1 may be used to hash a message, M, having a length of L bits.
    The algorithm uses
@@ -136,15 +127,6 @@ hash value.
            (vector->list hash)))
   (define temp 0)
   ; 3. For t=0 to 79, run F,
-  #|
-   SHA-1 uses a sequence of logical functions. Each function operates
-   on three 32-bit words (x, y, and z), and produces a 32-bit word
-   as output. The functions are defined as follows
-     Ch(x, y, z) = (x & y) ^ (!x & z)            0  <= t <= 19
-     Parity(x, y, z) = x ^ y ^ z                 20 <= t <= 39
-     Maj(x, y, z) = (x & y) ^ (x & z) ^ (y & z)  40 <= t <= 59
-     Parity                                      60 <= t <= 79
-  |#
   (for ([i (in-range 80)])
     (define-values (f k)
       (cond
@@ -171,8 +153,7 @@ hash value.
     (set! a temp)
     (when DEBUG
       (printf "END OF ROUND ~v: ~X ~X ~X ~X ~X ~X\n"
-              i a b c d e k))
-    )
+              i a b c d e k)))
   (vector-map (λ (a b)
                 (bitwise-and
                  (+ a b)
@@ -180,95 +161,10 @@ hash value.
               hash
               (vector a b c d e)))
 
-; prepare-message-sched : bytes? real? -> (vector? bytes?)
-; prepares the message schedule (creates the w array) by
-; splitting the message block into 32-bit words and applying
-; the operations described in FIPS 180-4.
-(define (prepare-message-sched msg block-num)
-  (define msg-block
-    (list->vector
-     (split-msg
-      (subbytes msg
-                (* block-num 64)
-                (* (add1 block-num) 64)))))
-  (define w (make-vector 80 0))
-  (for ([i (in-range 16)])
-    (vector-set!
-     w
-     i
-     (integer-bytes->integer
-      (vector-ref msg-block i)
-      #f #t)))
-  (for ([i (in-range 16 80)])
-    (vector-set!
-     w
-     i
-     (rotl
-      (bitwise-xor
-       (vector-ref w (- i 3))
-       (vector-ref w (- i 8))
-       (vector-ref w (- i 14))
-       (vector-ref w (- i 16)))
-      1)))
-  w)
-
-; rotl : integer? integer? -> integer?
-; The circular left shift operation, where x
-; is a 32-bit word and n is an integer.
-; Defined in FIPS 180-4 as
-; ROTL(x, n) = (x >> n) || (x << 32-n)
-(define (rotl x n)
-  (bitwise-and
-   (bitwise-ior
-    (arithmetic-shift x n)
-    (arithmetic-shift x (- n 32)))
-   #xFFFFFFFF))
-
-;; The functions that define f during digest
-(define (ch x y z)
-  (bitwise-xor
-   (bitwise-and x y)
-   (bitwise-and (bitwise-not x) z)))
-(define (parity x y z)
-  (bitwise-xor x y z))
-(define (maj x y z)
-  (bitwise-xor
-   (bitwise-and x y)
-   (bitwise-and x z)
-   (bitwise-and y z)))
-
-;; Tests
 (module+ test
   (require rackunit)
-  ;;; Okay so I found some awesome test vectors that include
-  ;;; using really large inputs. I'd like to use this opportunity to
-  ;;; time these tests in both languages and see what kind of result I
-  ;;; get. Obviously, I'm not a master of optimizing Racket so there
-  ;;; are probably plenty of places in my code where I'm doing things
-  ;;; the slow way. Let's just see what happens.
 
-  ; time-test : string? (any/c -> any/c) => void
-  ; counts the time it takes to perform the check for each
-  ; given test. This includes the time required to build the
-  ; byte-strings before running (hopefully negligible), and the
-  ; time for check-equal? to do what it does internally (also hopefully
-  ; negligible).
-  (define (time-test name f)
-    (define t (current-inexact-milliseconds))
-    (f)
-    (printf "Test ~v completed in ~v ms\n"
-            name
-            (- (current-inexact-milliseconds) t)))
-
-  ; simple split-msg test
-  (check-equal? (list 4 4)
-                (map bytes-length
-                     (split-msg
-                      (make-bytes 8 65))))
-
-  ;;;;;
   ;;;;; PREPROCESS TESTS
-  ;;;;;
 
   ; 1 block message
   (define actual-state (preprocess
@@ -346,75 +242,4 @@ hash value.
                        #"00000000"
                        #"00000000"
                        #"00000000"
-                       #"000001C0"))))
-
-  ;;;;
-  ;;;; SHA-1 TEST VECTORS
-  ;;;;  NOTE: These are timed tests
-  ; "abc"
-  (time-test
-   "abc"
-   (λ ()
-     (check-equal?
-      (ascii->hex (sha-1 #"abc"))
-      (bytes-append
-       #"a9993e36"
-       #"4706816a"
-       #"ba3e2571"
-       #"7850c26c"
-       #"9cd0d89d"))))
-
-  ; ""
-  (time-test
-   "empty string"
-   (λ ()
-     (check-equal?
-      (ascii->hex (sha-1 #""))
-      (bytes-append
-       #"da39a3ee"
-       #"5e6b4b0d"
-       #"3255bfef"
-       #"95601890"
-       #"afd80709"))))
-
-  ; 2 blocks
-  (time-test
-   "2 blocks"
-   (λ ()
-     (check-equal?
-      (ascii->hex
-       (sha-1 #"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"))
-      (bytes-append
-       #"84983e44"
-       #"1c3bd26e"
-       #"baae4aa1"
-       #"f95129e5"
-       #"e54670f1"))))
-
-  ; 4 blocks
-  (time-test
-   "4 blocks"
-   (λ ()
-     (check-equal?
-      (ascii->hex
-       (sha-1 #"abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu"))
-      (bytes-append
-       #"a49b2446"
-       #"a02c645b"
-       #"f419f995"
-       #"b6709125"
-       #"3a04a259"))))
-
-  ; 1 million a's
-  (time-test
-   "1 million a's"
-   (λ ()
-     (check-equal?
-      (ascii->hex
-       (sha-1 (make-bytes 1000000 #x61)))
-      (bytes-append
-       #"34aa973c"
-       #"d4c4daa4"
-       #"f61eeb2b"
-       #"dbad2731"
-       #"6534016f")))))
+                       #"000001C0")))))
