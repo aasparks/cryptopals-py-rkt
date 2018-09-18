@@ -1,6 +1,7 @@
 # Challenge 28
 ## Implement a SHA-1 keyed MAC
 import os
+import MYSHA1
 
 key = os.urandom(16)
 ### Find a SHA-1 implementation in the language you code in.
@@ -11,4 +12,4 @@ key = os.urandom(16)
 ### you've produced, and that you can't produce a new MAC without knowing
 ### the secret key.
 def hmac_sha1(message):
-    return SHA1.digest(key + message)
+    return MYSHA1.MYSHA1(key+message).digest()

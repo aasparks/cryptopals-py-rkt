@@ -31,20 +31,24 @@
 (define-struct State (hash length msg) #:transparent)
 
 ; top-level sha-1 function
-; sha1 : bytes? -> bytes?
+; sha1 : bytes? (vector bytes?)-> bytes?
 ; initializes and runs the SHA-1 algorithm on the given message
-(define (sha-1 msg)
+(define (sha-1 msg (init-point init-hash) (init-length 0))
   (digest
    (preprocess
-    (init-state msg))))
+    (init-state msg init-point init-length))))
 
 ;; We know the default state
 (define init-hash (vector #x67452301 #xEFCDAB89 #x98BADCFE #x10325476 #xC3D2E1F0))
 
-; init-state : bytes? -> State?
+; init-state : bytes? (vector bytes?) -> State?
 ; creates the initial state of the SHA1 with a message
-(define (init-state msg)
-  (State init-hash (bytes-length msg) msg))
+(define (init-state msg start-state start-len)
+  (State start-state
+         (if (= start-len 0)
+             (bytes-length msg)
+             start-len)
+         msg))
 
 #| Preprocessing
 
@@ -58,7 +62,7 @@ hash value.
 ; preprocess : State -> State
 ;; does as stated above
 (define (preprocess state)
-  (define msg-len (State-length state))
+  (define msg-len (bytes-length (State-msg state))) ; don't use passed in len b/c of c29
   (define msg-bit-len (* 8 (State-length state)))
   ; pad the message
   (define new-len
@@ -267,7 +271,11 @@ hash value.
   ;;;;;
 
   ; 1 block message
-  (define actual-state (preprocess (init-state #"abc")))
+  (define actual-state (preprocess
+                        (init-state
+                         #"abc"
+                         init-hash
+                         0)))
   (check-equal? (State-hash actual-state)
                 init-hash)
   (check-equal? (State-length actual-state)
@@ -296,7 +304,10 @@ hash value.
   ; 2 block message
   (set! actual-state
         (preprocess
-         (init-state #"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq")))
+         (init-state
+          #"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"
+          init-hash
+          0)))
   (check-equal? (State-length actual-state)
                 128)
   (check-equal? (State-msg actual-state)

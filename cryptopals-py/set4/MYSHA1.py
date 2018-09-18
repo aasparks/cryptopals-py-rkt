@@ -29,14 +29,14 @@ def sum32(x):
 
 class MYSHA1:
     # Initialize variables
-    def __init__(self, message):
+    def __init__(self, message, n_l=0, n_h=[0x67452301, 0xEFCDAB89, 0x98BADCFE,
+                  0x10325476, 0xC3D2E1F0]):
         ## Before computation begins for each of the secure hash
         ## algorithms, the initial hash value, must be set. For
         ## SHA-1, the inital hash value consists of the following
         ## five 32-bit words.
-        self.h = [0x67452301, 0xEFCDAB89, 0x98BADCFE,
-                  0x10325476, 0xC3D2E1F0]
-        self.l = len(message)
+        self.h = n_h
+        self.l = n_l if n_l != 0 else len(message)
         self.message = message
         self.pre_process()
 
@@ -54,8 +54,11 @@ class MYSHA1:
         ## zero bits, where k is the smallest, non-negative solution
         ## to the equation 
         ##   l + 1 + k === 448 mod 512
-        message_len = self.l 
         message_bit_len = self.l * 8
+        # NOTE: it took me FOREVER to realize that the l passed in
+        # for c29 is used only as a the postfix, and the rest uses
+        # len(message)
+        message_len = len(self.message)
         # Instead of calculating the number of zeros, we'll create
         # a buffer of zeros and fill it at the start and end
         num_blocks = math.ceil((message_len + 9.0) / 64.0)
@@ -85,7 +88,9 @@ class MYSHA1:
         global DEBUG
         for i in range(self.n):
             chunk = self.message[i*64 : (i+1)*64]
-    
+            
+            if DEBUG:
+                print 'Chunk ' + str(i) + ': ' + chunk.encode('hex')
             ## 1. Prepare the message schedule
             w = [0] * 80
             for j in range(16):
