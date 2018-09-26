@@ -17,14 +17,14 @@
 ; just going to implement MD4 myself. It's a
 ; lot like SHA-1.
 
-; Let's define the hmac function and pretend
+; Let's define the mac function and pretend
 ; we don't have access to the key
 
 (define KEY (crypto-random-bytes 16))
 
-; hmac : bytes? -> bytes?
-;; creates the hmac tag from the message using a random key
-(define (hmac msg)
+; mac : bytes? -> bytes?
+;; creates the mac from the message using a random key
+(define (mac msg)
   (md4 (bytes-append KEY msg)))
 
 ; Now for the attack stuff
@@ -70,8 +70,7 @@
         (map list->bytes
              (split-list
               (bytes->list
-               (hmac
-                message)))))))
+               (mac message)))))))
 
 ; split-list
 ;; takes a list and splits into a list of lists of size n
@@ -82,7 +81,7 @@
                 (split-list (drop lst n) n))]))
 
 ; forges hmac just like with sha-1
-(define (forge-hmac message inject)
+(define (forge-mac message inject)
   (define forged-message (forge-message message inject))
   (md4 inject 
          (forge-registers message)
@@ -108,5 +107,5 @@
    (list (bytes->list #"DEAD")
          (bytes->list #"BEEF")))
 
-  (check-equal? (ascii->hex (forge-hmac MESG SUFF))
-                (ascii->hex (hmac (forge-message MESG SUFF)))))
+  (check-equal? (ascii->hex (forge-mac MESG SUFF))
+                (ascii->hex (mac (forge-message MESG SUFF)))))

@@ -9,7 +9,7 @@
          "../set1/c1.rkt"
          racket/random)
 
-(provide hmac)
+(provide mac)
 
 ;;; Write a function to authenticate a message
 ;;; under a secret key by using a secret-prefix
@@ -17,11 +17,11 @@
 ;;;    SHA1(key || message)
 (define KEY (crypto-random-bytes 16))
 
-(define (hmac msg)
+(define (mac msg)
   (sha-1 (bytes-append KEY msg)))
 
 ;;; Verify you cannot tamper with the message without breaking
 ;;; the MAC you've produced, and that you can't produce a new
 ;;; MAC without knowing the key.
 (module+ test
-  (ascii->hex (hmac #"Attack at dawn!")))
+  (ascii->hex (mac #"Attack at dawn!")))

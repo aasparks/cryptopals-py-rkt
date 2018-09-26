@@ -80,8 +80,7 @@
         (map list->bytes
              (split-list
               (bytes->list
-               (hmac
-                message)))))))
+               (mac message)))))))
 
 ; split-list
 ;; takes a list and splits into a list of lists of size n
@@ -100,7 +99,7 @@
 ;;; Using this attack, generate a secret-prefix MAC under a secret
 ;;; key (choose a random word) of the string
 ;;;  "comment1=cooking%20MCs;userdata=foo;comment2=%20like%20a%20pound%20of%20bacon"
-(define (forge-hmac message inject)
+(define (forge-mac message inject)
   (define forged-message (forge-message message inject))
   (sha-1 inject 
          (forge-registers message)
@@ -127,5 +126,5 @@
    (list (bytes->list #"DEAD")
          (bytes->list #"BEEF")))
 
-  (check-equal? (ascii->hex (forge-hmac MESG SUFF))
-                (ascii->hex (hmac (forge-message MESG SUFF)))))
+  (check-equal? (ascii->hex (forge-mac MESG SUFF))
+                (ascii->hex (mac (forge-message MESG SUFF)))))
