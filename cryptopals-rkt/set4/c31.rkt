@@ -9,6 +9,10 @@
 
 (define DEBUG #true)
 
+(provide hmac
+         timeit
+         server-request)
+
 ;;; This file contains the true result for the challenge.
 ;;; As explained in the -client and -server files, there
 ;;; is a strange lag, so this file simulates the web server
@@ -203,9 +207,9 @@
   
   ;;; TIMEIT Tests
   (check-equal? (timeit insecure-compare (list #"abcd" #"abcd"))
-                200)
+                (* DELAY 4))
   (check-equal? (timeit insecure-compare (list #"abce" #"abcd"))
-                150)
+                (* DELAY 3))
   
   ;;; Actual Attack  
   (define expected (ascii->hex (hmac KEY #"secret.txt")))
