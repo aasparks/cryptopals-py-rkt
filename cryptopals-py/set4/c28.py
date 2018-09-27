@@ -11,5 +11,5 @@ key = os.urandom(16)
 ### Verify that you cannot tamper with the message without breaking the MAC
 ### you've produced, and that you can't produce a new MAC without knowing
 ### the secret key.
-def hmac_sha1(message):
+def mac_sha1(message):
     return MYSHA1.MYSHA1(key+message).digest()

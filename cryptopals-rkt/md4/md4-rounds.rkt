@@ -2,7 +2,7 @@
 
 (require "md4-math.rkt")
 
-(define DEBUG #f)
+(define DEBUG #false)
 
 (provide (all-defined-out))
 
@@ -18,6 +18,8 @@
     a = (a + F(b,c,d) + X[k]) <<< s
 |#
 (define (round1 regs X)
+  (when DEBUG
+    (printf "~v\n" X))
   (define (round1-f a b c d k s)
     (rotl
      (sum32 a

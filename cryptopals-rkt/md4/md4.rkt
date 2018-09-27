@@ -9,7 +9,7 @@
 ;; http://practicalcryptography.com/hashes/md4-hash/
 (provide md4)
 
-(define DEBUG #f)
+(define DEBUG #false)
 ;; It turns out to be almost identical to SHA-1
 ;; until digestion.
 
@@ -52,7 +52,7 @@
   (bytes-copy! new-msg 0 (bytes-append
                           (State-msg state)
                           (make-bytes 1 #x80)))
-   ; append the length to the end
+  ; append the length to the end
   (define msg-tail (integer->integer-bytes msg-bit-len 8 #f #f))
   (bytes-copy! new-msg
                (- new-len (bytes-length msg-tail))
@@ -75,18 +75,18 @@
      of the digestion to the previous four registers |#
   (apply bytes-append
          (map
-   (λ (num)
-     (integer->integer-bytes num 4 #f #f))
-   (vector->list
-    (foldl digest-block
-         (State-hash state)
-         (split-msg (State-msg state) 64))))))
+          (λ (num)
+            (integer->integer-bytes num 4 #f #f))
+          (vector->list
+           (foldl digest-block
+                  (State-hash state)
+                  (split-msg (State-msg state) 64))))))
 
 ; digest-block : (vector bytes?) bytes? -> (vector bytes?)
 ; digests a single block and returns the result
 (define (digest-block block old-regs)
   (when DEBUG
-    (printf "Block ~v\n" block)
+    (printf "Block ~v\n" (ascii->hex block))
     (printf "oldregs ~v\n" old-regs))
   (define-values (A B C D)
     (apply values (vector->list old-regs)))
@@ -105,9 +105,9 @@
 (define (block->x block)
   (list->vector
    (map
-   (λ (num)
-     (integer-bytes->integer num #f #f))
-   (split-msg block 4))))
+    (λ (num)
+      (integer-bytes->integer num #f #f))
+    (split-msg block 4))))
 
 ; split-msg :  bytes? -> (list bytes?)
 ; splits the message into 16-word blocks

@@ -53,7 +53,7 @@ def glue_padding(message):
 ### to forge -- this is just the SHA-1 hash -- and break it into
 ### 32-bit SHA-1 registers.
 def get_state(message):
-    h = c28.hmac_sha1(message).encode('hex')
+    h = c28.mac_sha1(message).encode('hex')
     new_h = [int(h[i:i+8], 16) for i in range(0, len(h), 8)]
     return new_h
     
@@ -84,7 +84,7 @@ def test_glue_padding():
 def test_forge():
     o_msg = b'comment1=cooking%20MCs;userdata=foo;comment2=%20like%20a%20pound%20of%20bacon'
     f_msg, f_tag = forge_message(o_msg, b';admin=true')
-    real_tag = c28.hmac_sha1(f_msg)
+    real_tag = c28.mac_sha1(f_msg)
     assert real_tag == f_tag
 
 if __name__ == "__main__":
