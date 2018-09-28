@@ -6,7 +6,7 @@ import c1, MYSHA1, c2
 import web, time
 
 DEBUG = True
-DELAY = 0.01
+DELAY = 0.001
 
 ### The pseudocode on Wikipedia should be enough. HMAC is very easy.
 
