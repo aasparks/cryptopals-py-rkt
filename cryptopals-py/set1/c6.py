@@ -6,15 +6,19 @@ import c3
 import c4
 import c5
 
-## The challenge tells you in good detail 
+## The challenge tells you in good detail
 ## how to do it. It's just a matter of implementing it.
 
-## 1. Let KEYSIZE be the guessed length of the key; 
-## try values from 2 to (say) 40.
+### There's a file here. It's been base64'd after being encrypted
+### with repeating-key XOR.
+### Decrypt it. Here's how:
+
+### 1. Let KEYSIZE be the guessed length of the key;
+### try values from 2 to (say) 40.
 maxKeysize = 40
 
-## 2. Write a function to compute the edit distance/Hamming
-## distance between two strings.
+### 2. Write a function to compute the edit distance/Hamming
+### distance between two strings.
 def hamming_dist(str1, str2):
     count = 0
     # Strings must be equal length
@@ -25,18 +29,18 @@ def hamming_dist(str1, str2):
         count += bin(ord(chr1) ^ ord(chr2)).count('1')
     return count
 
-## 3. For each KEYSIZE, take the first KEYSIZE worth
-## of bytes, and the second KEYSIZE worth of bytes, and
-## find the edit distance between them. Normalize this result
-## by dividing by KEYSIZE.
+### 3. For each KEYSIZE, take the first KEYSIZE worth
+### of bytes, and the second KEYSIZE worth of bytes, and
+### find the edit distance between them. Normalize this result
+### by dividing by KEYSIZE.
 def edit_distance(keysize, txt):
     ## Let's get the average hamming distance for as
     ## many blocks as we can get.
     rounds = (len(txt) / keysize) - 1
-    total = 0.0
+    total  = 0.0
     for i in range(rounds):
-        str1 = get_block(txt, i, keysize)
-        str2 = get_block(txt, i+1, keysize)
+        str1  = get_block(txt, i, keysize)
+        str2  = get_block(txt, i+1, keysize)
         total += hamming_dist(str1, str2)
     return (total / rounds) / keysize
 
@@ -44,8 +48,8 @@ def edit_distance(keysize, txt):
 def get_block(txt, n, size=16):
     return txt[size*n : size*(n+1)]
 
-## 4. The KEYSIZE with the smallest normalized edit
-## distance is probably the key.
+### 4. The KEYSIZE with the smallest normalized edit
+### distance is probably the key.
 def guess_keysize(txt):
     # Using maxKeysize, create a dictionary of
     # entries [keysize, avg_hamming_dist]
@@ -57,40 +61,39 @@ def guess_keysize(txt):
     #return sorted(key_dists, key=key_dists.get)
     return min(key_dists, key=key_dists.get)
 
-## 5. Now that you probably know the KEYSIZE; break the ciphertext
-## into blocks of KEYSIZE length.
-## 6. Now transpose the blocks: make a block that is the first byte
-## of every block, and a block that is the second byte of every block,
-## and so on.
+### 5. Now that you probably know the KEYSIZE; break the ciphertext
+### into blocks of KEYSIZE length.
+### 6. Now transpose the blocks: make a block that is the first byte
+### of every block, and a block that is the second byte of every block,
+### and so on.
 def split_ct(txt, keysize):
     blocks = [''] * keysize
     for i in range(0, len(txt)):
         blocks[i%keysize] += txt[i]
     return blocks
 
-
-## 7. Solve each block as if it was single-character XOR.
+### 7. Solve each block as if it was single-character XOR.
 def solve_blocks(blocks):
-    key = ''
+    key   = ''
     guess = ''
     for chunk in blocks:
         nkey, nguess = c3.single_byte_xor(chunk)
         if nkey is None:
             return 0, ''
-        key += chr(int(nkey))
+        key   += chr(int(nkey))
         guess += nguess
     return key, guess
 
 ## Challenge 6 solution
 def main():
     # Open the file and decode from base64
-    f = open('../../testdata/6.txt')
-    ctxt = f.read()
-    ctxt = ctxt.decode('base64')
+    f          = open('../../testdata/6.txt')
+    ctxt       = f.read()
+    ctxt       = ctxt.decode('base64')
     # Get the most likely keysize
-    keysize = guess_keysize(ctxt)
+    keysize    = guess_keysize(ctxt)
     # Split ct into keysize chunks
-    blocks = split_ct(ctxt, keysize)
+    blocks     = split_ct(ctxt, keysize)
     # Solve the blocks
     key, guess = solve_blocks(blocks)
     assert key == 'Terminator X: Bring the noise'

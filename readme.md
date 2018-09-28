@@ -2,25 +2,64 @@
 
 I like crypto and I like Racket. Why not combine them? This is my experiment in doing crypto with a functional language. While I'm at it, I may as well finish doing the challenges in Python, since I've already done some. The idea here is to make imperative solutions with Python, and then attempt to use more functional tactics in Racket (i.e. map, apply, lambda, recursion). Let's see how the solutions vary.
 
+## TODO:
+* Compile most-used functions into 'util' files and use that way.
+* <span style="color:green">Convert Python solutions to Python3.</span>
+* Rewrite ugly functions to be more elegant.
+* <span style="color:red">Optimize challenge 4 (maybe also challenge 3) in Racket to match Python time </span>
+* <span style="color:red">See if the AES implementation can be improved</span>
+
 ## Challenges
 
 ### Set 1 - Basics :heavy_check_mark:
 
 #### 1. Convert hex to base64 - :ballot_box_with_check:
 
+Nothing special here. These functions are used in pretty much every exercise
+after this. Both languages had these functions built in, though I did
+originally write them manually in Racket. They were large and ugly functions
+so I decided to stick to the library functions.
+
 #### 2. Fixed XOR - :ballot_box_with_check:
+
+Very easy in both languages.
+
+<span style="color:green">Python has a great function
+called ```zip``` which I love dearly and made the solution more elegant.</span>
+
+<span style="color:red">Racket's ```map``` function actually works just like ```zip```, and
+handled error checking to make for an even more elegant solution.</span>
 
 #### 3. Single-byte XOR Cipher - :ballot_box_with_check:
 
+Using frequency analysis, this problem is not too difficult. The hard part
+is getting a good scoring function.
+
 #### 4. Detect Single-character XOR - :ballot_box_with_check:
+
+Running challenge 3 on every line of the file gets you to the solution
+and the plaintext very quickly. However, the Racket solution is much, much
+slower.
 
 #### 5. Implement Repeating-key XOR - :ballot_box_with_check:
 
+The solution in both languages is simple and quick. They are almost identical.
+
 #### 6. Break Repeating-key XOR - :ballot_box_with_check:
+
+Simple solution. Not much difference in the two languages.
 
 #### 7. AES in ECB Mode - :ballot_box_with_check:
 
+<span style="color:green">Python (obviously) had a library function for AES-128.
+</span>
+
+<span style="color:red">Racket did not have a library function so I implemented it
+    myself. I may go back and implement it in Python just for fun.
+
 #### 8. Detect AES in ECB Mode - :ballot_box_with_check:
+
+Again, both solutions are straighforward and elegant. No notable differences.
 
 ### Set 2 - Block Crypto :heavy_check_mark:
 

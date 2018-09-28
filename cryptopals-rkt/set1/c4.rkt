@@ -5,11 +5,15 @@
 ; Challenge 4
 ;; Detect single-character XOR
 
+#|
+   One of the 60-character strings in this file has been
+   encrypted by single-character XOR. Find it.
+|#
+
 ;;; As with the python approach, I will just run challenge3
 ;;; on every line in the file
 (define (challenge4)
-  ;; functional enough? it runs much slower than python
-  ;; but this is through the IDE so whatever.
+  ;; functional enough? it runs much slower than python. Why?
   (first
    (sort
     (map (λ (line)
@@ -22,6 +26,6 @@
   (require rackunit)
   (define sol (challenge4))
   (check-equal? (xorstrs (third sol)
-                         (key-extend (second sol)
-                                     (bytes-length (third sol))))
+                         (make-bytes (bytes-length (third sol))
+                                     (second sol)))
                 #"Now that the party is jumping\n"))

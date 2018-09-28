@@ -1,7 +1,7 @@
 #lang racket
 
 ; Challenge 1
-; Convert hex to base64
+;; Convert hex to base64
 (require net/base64
          file/sha1)
 (require file/sha1)
@@ -11,42 +11,49 @@
          hex->ascii
          hex->base64
          base64->hex)
+
+#|
+   The string:
+      49276d206b696c6c696e6720796f757220627261696e206c
+      696b65206120706f69736f6e6f7573206d757368726f6f6d
+
+   Should produce:
+      SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t
+
+   So go ahead and make that happen. You'll need to use this code for
+   the rest of the exercises.
+|#
+
+
 ;; These functions are provided by net/base64
 
-; ascii -> base64
+; ascii->base64 : bytes -> bytes
 (define (ascii->base64 bstr)
   (base64-encode bstr ""))
 
-; base64 -> ascii
+; base64->ascii : bytes -> bytes
 (define (base64->ascii bstr)
   (base64-decode bstr))
 
-
-
 ;; The rest are provided by file/sha1
 
-; ascii -> hex
+; ascii->hex : bytes -> bytes
 (define (ascii->hex bstr)
   (string->bytes/utf-8 (bytes->hex-string bstr)))
 
-;; hex -> ascii
+;; hex->ascii : bytes -> bytes
 (define (hex->ascii bstr)
   (hex-string->bytes (bytes->string/utf-8 bstr)))
 
-; hex -> base64
+; hex->base64 : bytes -> bytes
 (define (hex->base64 bstr)
   (ascii->base64
    (hex->ascii bstr)))
 
-; base64 -> hex
+; base64->hex : bytes -> bytes
 (define (base64->hex bstr)
   (ascii->hex
    (base64->ascii bstr)))
-
-;; Challenge 1 solution
-(define (challenge1)
-  (equal? (hex->base64 #"49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d")
-                #"SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"))
 
 ;; Test all the functions
 (module+ test
@@ -67,4 +74,6 @@
                 b64)
   (check-equal? (ascii->base64 asc)
                 b64)
-  (check-true (challenge1)))
+  ; Challenge 1
+  (check-equal? (hex->base64 #"49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d")
+                #"SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"))

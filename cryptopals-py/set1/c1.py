@@ -1,7 +1,15 @@
 # Challenge 1
 # Convert hex to base64
-## This one is easy. It's a library function.
 import base64
+
+### The string:
+###  49276d206b696c6c696e6720796f757220627261696e206c
+###  696b65206120706f69736f6e6f7573206d757368726f6f6d
+### Should produce:
+###  SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t
+
+### So go ahead and make that happen. You'll need to use this code
+### for the rest of the exercises.
 
 ## Let's just go ahead and provide all the conversion functions.
 
@@ -31,8 +39,8 @@ def base64toascii(string):
 
 # Test all the functions
 def test():
-    asc = 'Who lives in a pineapple under the sea?'
-    hx  = '57686f206c6976657320696e20612070696e656170706c6520756e64657220746865207365613f'
+    asc = b'Who lives in a pineapple under the sea?'
+    hx  = b'57686f206c6976657320696e20612070696e656170706c6520756e64657220746865207365613f'
     b64 = b'V2hvIGxpdmVzIGluIGEgcGluZWFwcGxlIHVuZGVyIHRoZSBzZWE/'
     assert hextoascii(hx)     == asc
     assert asciitohex(asc)    == hx.upper()
@@ -45,7 +53,7 @@ def test():
 ## Now for the solution to the challenge
 def main():
     test()
-    hxstr = '49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d' 
+    hxstr = b'49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d'
     b64str = b'SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t'
     assert hextobase64(hxstr) == b64str
 

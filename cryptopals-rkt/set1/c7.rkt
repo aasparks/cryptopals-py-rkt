@@ -2,6 +2,7 @@
 
 ; Challenge 7
 ;; AES in ECB Mode
+
 ;; okay so racket has (planet vyzo/crypto)
 ;; but I thought I would just go ahead and
 ;; try to implement it myself to see if I could.
@@ -13,8 +14,20 @@
 (require "../aes/aes.rkt"
          "c1.rkt")
 
+(define DEBUG #false)
+
+#|
+    The base64-encoded content in this file has been encrypted via
+    AES-128 in ECB mode under the key
+      "YELLOW SUBMARINE"
+    (case-sensitive, without the quotes; exactly 16 characters).
+    Decrypt it. You know the key, after all.
+|#
+
 (module+ test
-  (display
+  (define result
    (aes-128-ecb-decrypt
     (base64->ascii (file->bytes "../../testdata/7.txt" #:mode 'text))
-    #"YELLOW SUBMARINE")))
+    #"YELLOW SUBMARINE"))
+  (when DEBUG
+    (printf "~v\n" result)))

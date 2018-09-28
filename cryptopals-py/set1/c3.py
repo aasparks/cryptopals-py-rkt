@@ -4,8 +4,19 @@ import c1
 import c2
 import string
 import re
-### I need to write a function to score a piece of plaintext as
-### English or not. A simple frequency analysis should work.
+
+### The hex encoded string:
+###    1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736
+### ...has been XOR'd against a single character. Find the key,
+### decrypt the message.
+### You can do this by hand. But don't: write code to do it for you.
+### How? Devise some method for 'scoring' a piece of English plaintext.
+### Character frequency is a good metric. Evaluate each output and choose
+### the one with the best score.
+
+
+## I need to write a function to score a piece of plaintext as
+## English or not. A simple frequency analysis should work.
 
 ## First let's get a dictionary of the relative character frequency for English.
 knownfreq = {'a' : 0.082, 'b' : 0.015, 'c' : 0.028, 'd' : 0.043, 'e' : 0.0127,
@@ -52,7 +63,7 @@ def score_freqs(freq):
     # Go through the alphabet in order of most frequent
     for key in 'etaionshrdlcumvfgypbvkjxqz':
         # This part here is totally arbitrary. I played around with numbers
-        # and found this to be most effective. 
+        # and found this to be most effective.
         if abs(knownfreq[key] - freq[key]) < (knownfreq[key] / 2.0):
             if idx < 8:
                 scr += 1
@@ -79,7 +90,7 @@ def single_byte_xor(txt):
     bestGuess = ''
     bestKey = 0
     for x in range(1, 255):
-        # Score every attepmt and take the highest score
+        # Score every attempt and take the highest score
         attempt = c2.xorstrs(txt, chr(x) * len(txt))
         scr = score(attempt)
         if scr > maxScore:
