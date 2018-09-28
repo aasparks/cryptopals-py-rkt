@@ -43,11 +43,7 @@ slower.
 
 #### 5. Implement Repeating-key XOR - :ballot_box_with_check:
 
-The solution in both languages is simple and quick. They are almost identical.
-
 #### 6. Break Repeating-key XOR - :ballot_box_with_check:
-
-Simple solution. Not much difference in the two languages.
 
 #### 7. AES in ECB Mode - :ballot_box_with_check:
 
@@ -58,8 +54,6 @@ Simple solution. Not much difference in the two languages.
     myself. I may go back and implement it in Python just for fun.
 
 #### 8. Detect AES in ECB Mode - :ballot_box_with_check:
-
-Again, both solutions are straighforward and elegant. No notable differences.
 
 ### Set 2 - Block Crypto :heavy_check_mark:
 

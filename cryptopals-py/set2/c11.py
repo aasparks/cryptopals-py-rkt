@@ -5,18 +5,46 @@ import os, random
 import c9, c10
 import c1, c8
 
+### Now that you have ECB and CBC working:
+###
+### Write a function to generate a random AES key; that's just
+### 16 random bytes.
+###
+### Write a function that encrypts data under an unknown key ---
+### that is, a function that generates a random key and encrypts
+### under it.
+###
+### The function should look like
+### encryption_oracle(your-input) => [MEANINGLESS JIBBER JABBER]
+###
+### Under the hood, have the function append 5-10 bytes before the
+### plaintext and 5-10 bytes after the plaintext.
+###
+### Now have the function choose to encrypt under ECB 1/2 the time,
+### and under CBC the other half (just use random IV's each time
+### for CBC). Use rand(2) to decide which to use.
+###
+### Detect the block cipher mode the function is using each time. You
+### should end up with a piece of code that, pointed at a black box
+### that might be encrypting ECB or CBC, tells which one is happening.
+
+# keep track of which one was used for testing
+expected = []
+
 # ENCRYPT using an unknown mode with random data inserted
 def encryption_oracle(txt):
+    global expected
     # GENERATE random key
-    key = os.urandom(16)
+    key    = os.urandom(16)
     # GENERATE random number for ECB or CBC
-    ecb = random.randint(0, 1)
+    ecb    = random.randint(0, 1)
+    expected.append(ecb)
     # APPEND random bytes before and after
     before = os.urandom(random.randint(5, 10))
     after  = os.urandom(random.randint(5, 10))
-    txt = before + txt + after
-    txt = c9.pkcs7_pad(txt)
-    ct = ''
+    txt    = before + txt + after
+    txt    = c9.pkcs7_pad(txt)
+    ct     = ''
     # IF CBC
     if (ecb == 0):
         # GENERATE random IV
@@ -43,27 +71,17 @@ def ecb_or_cbc(txt):
 
 def main():
     # RUN some tests
-    # There is no way to determine exactly which one is used
-    # so let's just run it on the same plaintext a bunch of times
-    # and see what the result is.
-
     # Use the plaintext from challenge 10 since it's long and repeats
-    f = open('../../testdata/10.txt')
-    ct = f.read()
+    f   = open('../../testdata/10.txt')
+    ct  = f.read()
     key = 'YELLOW SUBMARINE'
-    pt = c10.aes_128_cbc_decrypt(c1.base64toascii(ct), key)
+    pt  = c10.aes_128_cbc_decrypt(c1.base64toascii(ct), key)
 
     # Count true and false
-    tcount = 0
-    fcount = 0
+    result = []
     for i in range(50):
-        result = ecb_or_cbc(pt)
-        if result:
-            tcount += 1;
-        else:
-            fcount += 1;
-    print "ECB: " + str(tcount)
-    print "CBC: " + str(fcount)
-    return
+        result.append(ecb_or_cbc(pt))
+
+    assert result == expected, str(result) + "\n" + str(expected)
 
 if __name__ == "__main__": main()
