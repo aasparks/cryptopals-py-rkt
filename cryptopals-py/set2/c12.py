@@ -6,11 +6,11 @@ sys.path.insert(0, '../set1')
 import c1, c6, c9
 
 
-key = os.urandom(16)
-unknown = 'Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkg'
-unknown += 'aGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBq'
-unknown += 'dXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK'
-unknown = c1.base64toascii(unknown)
+key       = os.urandom(16)
+unknown   = 'Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkg'
+unknown   += 'aGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBq'
+unknown   += 'dXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK'
+unknown   = c1.base64toascii(unknown)
 blocksize = 0
 
 # Encryption oracle
@@ -21,7 +21,7 @@ def encryption_oracle(txt):
 #    Discover the block size of the cipher.
 def get_blocksize():
     # Send strings of length 0-40
-    prev_len = len(encryption_oracle(''))
+    prev_len   = len(encryption_oracle(''))
     prev_block = -1
     for i in range(1, 40):
         ct = encryption_oracle(('A' * i))
@@ -44,10 +44,10 @@ def is_ecb():
     ct = encryption_oracle(('A' * blocksize * 3))
     return c6.get_block(ct, 0, blocksize) == c6.get_block(ct, 1, blocksize)
 
-# 3. Knowing the block size, craft an input block that is 
+# 3. Knowing the block size, craft an input block that is
 #    exactly 1 byte short.
 def craft_block(offset, num_bytes):
-    return 'A' * (num_bytes - 1 - offset) 
+    return 'A' * (num_bytes - 1 - offset)
 
 # 4. Make a dictonary of every possible last byte by feeding different
 #    strings to the oracle, remember the first block of each invocation.
@@ -63,19 +63,19 @@ def decode_byte(known, num_bytes):
         ct = encryption_oracle(prefix + known + chr(i))
         if (ct[:length] == original[:length]):
             return chr(i)
-    return -1 
+    return -1
 
 def decode_secret():
-    e_secret = encryption_oracle('')
+    e_secret  = encryption_oracle('')
     num_bytes = len(e_secret)
-    secret = ''
-    c = ''
+    secret    = ''
+    c         = ''
     # It may not be exactly num_bytes because of padding.
     # Run until we get back -1.
     c = decode_byte(secret, num_bytes)
     while c > -1:
         secret += c
-        c = decode_byte(secret, num_bytes)
+        c      = decode_byte(secret, num_bytes)
 
     return secret
 

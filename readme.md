@@ -4,10 +4,12 @@ I like crypto and I like Racket. Why not combine them? This is my experiment in 
 
 ## TODO:
 * Compile most-used functions into 'util' files and use that way.
-* <span style="color:green">Convert Python solutions to Python3.</span>
+* Convert Python solutions to Python3.
 * Rewrite ugly functions to be more elegant.
-* <span style="color:red">Optimize challenge 4 (maybe also challenge 3) in Racket to match Python time </span>
-* <span style="color:red">See if the AES implementation can be improved</span>
+* Try to optimize the challenges are slow in Racket
+  * Challenge 4 (possibly 3 as well)
+  * Challenge 12 (possibly the AES implementation as well)
+* See if the AES implementation can be improved
 
 ## Challenges
 
@@ -64,6 +66,11 @@ slower.
 #### 11. An ECB/CBC Detection Oracle - :ballot_box_with_check:
 
 #### 12. Byte-at-a-time ECB Decryption (Simple) - :ballot_box_with_check:
+
+The first really interesting challenge in the set.
+
+<span style="color:red">The Racket solution is incredibly slow while the
+ Python solution is almost immediate. Not sure why.</span>
 
 #### 13. ECB Cut-and-paste - :ballot_box_with_check:
 
