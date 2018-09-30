@@ -19,9 +19,6 @@ strs = ["MDAwMDAwTm93IHRoYXQgdGhlIHBhcnR5IGlzIGp1bXBpbmc="
        "MDAwMDA4b2xsaW4nIGluIG15IGZpdmUgcG9pbnQgb2g=",
        "MDAwMDA5aXRoIG15IHJhZy10b3AgZG93biBzbyBteSBoYWlyIGNhbiBibG93"]
 
-# For this problem, I'm writing my comments
-# retroactively. I have to admit I thrashed 
-# my way through this a little bit.
 # This problem is a bit tough to grasp.
 # My best resource for this was BY FAR:
 #    http://www.exploresecurity.com/padding-oracle-decryption-attack/
@@ -68,11 +65,10 @@ def attack_block(txt, block_num):
         plaintext = p + plaintext
     return plaintext
 
-# This is where the magic happens. Check out the commented-out main
-# function at the bottom to help understand this function.
+# This is where the magic happens.
 def attack_byte(block, prev_block, byte_num, plaintext):
     # Knownxor is super tricky. Read the link from the top comment.
-    # We want all the last values to be good padding. 
+    # We want all the last values to be good padding.
     # To do this we xor the prev_block with the known plaintext with
     #  the value we want to get for padding.
     knownxor = ''
@@ -90,30 +86,8 @@ def attack_byte(block, prev_block, byte_num, plaintext):
             return chr(i)
     raise Exception
 
-# Really pay attention to this right here. It finds the last byte.
-# From this, it isn't too hard to expand it to find an arbitrary byte.
-# The explanation for this just can't be summed up in comments. Do the
-# reading.
-'''
-def main():
-    txt = encryption_oracle()
-    last_block = txt[-16:]
-    prev_block = txt[-32:-16]
-    
-    for i in range(256):
-        bad_prev_b = chr(0) * 15
-        bad_prev_b += chr(i ^ 1 ^ ord(prev_block[-1]))
-        print_out = bad_prev_b.encode('hex')
-        print_out += ": "
-        if (decryption_oracle(bad_prev_b + last_block)):
-            print_out += "true ===> "
-            print_out += str(i)
-            print print_out
-            return
-        else:
-            print_out += "false"
-            print print_out
-
-    assert decryption_oracle(txt)
-'''
-if __name__ == "__main__" : print cbc_padding_attack()
+if __name__ == "__main__" :
+    random.seed(1)
+    expected = b'000002Quick to the point, to the point, no faking'
+    actual   = cbc_padding_attack()
+    assert expected == actual, actual

@@ -11,6 +11,8 @@ I like crypto and I like Racket. Why not combine them? This is my experiment in 
   * Challenge 12 (possibly the AES implementation as well)
   * Challenge 14
 * See if the AES implementation can be improved
+* Rewrite Racket solutions to be less imperative
+  * Challenge 21
 
 ## Challenges
 

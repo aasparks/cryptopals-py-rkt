@@ -24,8 +24,8 @@
 (define L 18)
 (define F 1812433253)
 
+; int32 : real -> integer
 ;; ensures 32-bit integer
-;; NOTE: not sure if this is neccessary in Racket...
 (define (int32 n)
   (bitwise-and n D))
 
@@ -55,11 +55,17 @@
     (vector-set! state 0 seed)
 
     (for ([i (in-range 1 N)])
-      (let* ([prev (vector-ref state (sub1 i))]
-             [prev-shifted (arithmetic-shift prev (- (- W 2)))]) ; TODO: check this
-        (vector-set! state i (int32 (+ i (* F (bitwise-xor prev prev-shifted))))))) 
+      (define prev (vector-ref state (sub1 i)))
+      (define prev-shifted (arithmetic-shift prev (- (- W 2))))
+      (vector-set! state
+                   i
+                   (int32
+                    (+ i
+                       (* F
+                          (bitwise-xor prev
+                                       prev-shifted)))))) 
 
-    ;; generate-number
+    ;; generate-number : void -> integer
     ;; generates the next number in the PRNG, calling twist when
     ;; needed.
     (define/public (generate-number)
@@ -100,19 +106,25 @@
       (define last-bitmask #x7FFFFFFF)
 
       (for ([i (in-range 624)])
-        (let* ([idx (modulo (add1 i) 624)]
-               [first-i (bitwise-and first-bitmask
-                                     (vector-ref state i))]
-               [last-i (bitwise-and last-bitmask
-                                    (vector-ref state idx))]
-               [temp (box (int32 (bitwise-ior first-i last-i)))])
-          (if (zero? (modulo (unbox temp) 2))
-              (set-box! temp (arithmetic-shift (unbox temp) -1))
-              (set-box! temp (bitwise-xor A (arithmetic-shift (unbox temp) -1))))
-          (vector-set! state i
-                       (bitwise-xor (unbox temp)
-                                    (vector-ref state
-                                                (modulo (+ i M) 624))))))
+        (define idx (modulo (add1 i) 624))
+        (define first-i (bitwise-and first-bitmask
+                                     (vector-ref state i)))
+        (define last-i (bitwise-and last-bitmask
+                                    (vector-ref state idx)))
+        (define temp (box (int32 (bitwise-ior first-i last-i))))
+        (if (zero? (modulo (unbox temp) 2))
+            (set-box! temp
+                      (arithmetic-shift (unbox temp) -1))
+            (set-box! temp
+                      (bitwise-xor
+                       A
+                       (arithmetic-shift (unbox temp) -1))))
+        (vector-set! state i
+                     (bitwise-xor
+                      (unbox temp)
+                      (vector-ref state
+                                  (modulo (+ i M)
+                                          624)))))
       (set-box! index 0))))
 
 (module+ test
@@ -123,7 +135,4 @@
       (when (not (equal? gen-num (string->number line)))
         (begin
           (printf "Failed. Expected ~v, got ~v\n" (string->number line) gen-num)
-          (exit)))))
-
-  (printf "Pass\n")  
-  )
+          (exit))))))

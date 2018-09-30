@@ -31,9 +31,9 @@ class MT19937:
         self.mt    = [0] * self.n
         self.mt[0] = seed
         for i in range(1, self.n):
-            prev = self.mt[i-1]
+            prev        = self.mt[i-1]
             prevShifted = prev >> self.w - 2
-            self.mt[i] = int32(self.f * (prev ^ prevShifted) + i)
+            self.mt[i]  = int32(self.f * (prev ^ prevShifted) + i)
 
     def generate_number(self):
         if self.index >= self.n:
@@ -53,10 +53,10 @@ class MT19937:
         first_bit_mask = 0x80000000
         last_bit_mask  = 0x7FFFFFFF
         for i in range(624):
-            idx = (i + 1) % 624
+            idx     = (i + 1) % 624
             first_i = self.mt[i] & first_bit_mask
             last_i1 = self.mt[idx] & last_bit_mask
-            temp = int32(first_i | last_i1)
+            temp    = int32(first_i | last_i1)
             if temp % 2 != 0:
                 temp = temp >> 1
                 temp = temp ^ self.a
@@ -73,16 +73,13 @@ def int32(num):
 def main():
     mt = MT19937(1131464071)
     f  = open('mt_test.txt')
-    print mt.generate_number()
-    print mt.print_state()
 
-    # for line in f:
-    #     expected = line.strip()
-    #     actual   = str(mt.generate_number())
-    #     #mt.print_state()
-    #     err = 'Failed. Expected ' + expected
-    #     err += ' got ' + str(actual)
-    #     assert actual == expected, err
+    for line in f:
+        expected = line.strip()
+        actual   = str(mt.generate_number())
+        err      = 'Failed. Expected ' + expected
+        err      += ' got ' + str(actual)
+        assert actual == expected, err
 
 if __name__ == "__main__" : main()
 
