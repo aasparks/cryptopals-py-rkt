@@ -1,6 +1,7 @@
 # Challenge 23
 ## Clone an MT19937 RNG from its output
 import c21
+
 ### The internal state of MT19937 consists of
 ### 624 32-bit integers.
 ###
@@ -50,27 +51,27 @@ def untwist(num):
 # Unbitshift functions taken from
 # https://jazzy.id.au/2010/09/22/cracking_random_number_generators_part_3.html
 def unbitshift_right(value, shift):
-    i = 0
+    i      = 0
     result = 0
 
     while i * shift < 32:
         part_mask = rlshift((-1 << (32 - shift)), (shift * i))
-        part = value & part_mask
-        value ^= rlshift(part, shift)
-        result |= part
-        i += 1
+        part      = value & part_mask
+        value     ^= rlshift(part, shift)
+        result    |= part
+        i         += 1
     return result
 
 def unbitshift_left(value, shift, mask):
-    i = 0
+    i      = 0
     result = 0
 
     while i * shift < 32:
         part_mask = rlshift(-1, (32 - shift)) << (shift * i)
-        part = value & part_mask
-        value ^= (part << shift) & mask
-        result |= part
-        i += 1
+        part      = value & part_mask
+        value     ^= (part << shift) & mask
+        result    |= part
+        i         += 1
     return result
 
 # Python does not have a logical right shift built in
@@ -80,13 +81,13 @@ def rlshift(value, n):
 
 # Run the tests
 def main():
-    mt = c21.MT19937(234)
+    mt            = c21.MT19937(234)
     cracked_state = [0] * 624
     # Untwist 624 numbers to get the state of the twister
     for i in range(624):
         cracked_state[i] = untwist(mt.generate_number())
     # Create a new twister and insert the state
-    new_mt = c21.MT19937(0)
+    new_mt    = c21.MT19937(0)
     new_mt.mt = cracked_state
 
     # Check that the next 50 generated numbers are the same
@@ -94,6 +95,5 @@ def main():
         a = mt.generate_number()
         b = new_mt.generate_number()
         assert a == b
-    print 'pass'
 
 if __name__ == "__main__" : main()

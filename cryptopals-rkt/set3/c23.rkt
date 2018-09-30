@@ -3,17 +3,18 @@
 ; Challenge 23
 ;; Clone an MT19937 RNG from its output
 
-;;; The internal state of MT19937 consists of 624 32 bit integers.
-;;; For each batch of 624 outputs, MT permutes that internal state.
-;;; By permuting state regularly, MT19937 achievs a period of
-;;; 2^19937, which is Big.
-;;; Each time MT19937 is tapped, an element of its internal state
-;;; is subjected to a tempering function that diffuses bits through
-;;; the result.
-;;; The tempering function is invertible; you can write an untemper
-;;; function that takes an MT19937 output and transforms it back into
-;;; the corresponding element of the MT19937 state array.
-
+#|
+   The internal state of MT19937 consists of 624 32 bit integers.
+   For each batch of 624 outputs, MT permutes that internal state.
+   By permuting state regularly, MT19937 achievs a period of
+   2^19937, which is Big.
+   Each time MT19937 is tapped, an element of its internal state
+   is subjected to a tempering function that diffuses bits through
+   the result.
+   The tempering function is invertible; you can write an untemper
+   function that takes an MT19937 output and transforms it back into
+   the corresponding element of the MT19937 state array.
+|#
 
 ; useful constants
 (define B #x9D2C5680)
@@ -23,7 +24,8 @@
 (define T 15)
 (define U 11)
 
-; untemper : reverses the state of a single number for MT19937
+; untemper : integer -> integer
+;; reverses the state of a single number for MT19937
 (define (untemper num)
   (un-rightshift
    (un-leftshift
@@ -33,17 +35,20 @@
     S B)
    U))
 
-;;; To invert the temper transform, apply the inverse of each of the
-;;; operations in the temper transform in reverse order. There are two kinds
-;;; of operations in the temper transform each applied twice; one is an XOR
-;;; against a right-shifted value, and the other is an XOR against a left-shifted
-;;; value AND'd with a magic number. So you'll need code to invert the "right"
-;;; and the "left" operation.
+#|
+   To invert the temper transform, apply the inverse of each of the
+   operations in the temper transform in reverse order. There are two kinds
+   of operations in the temper transform each applied twice; one is an XOR
+   against a right-shifted value, and the other is an XOR against a left-shifted
+   value AND'd with a magic number. So you'll need code to invert the "right"
+   and the "left" operation.
+|#
 ; Unbitshift functions taken from
 ; https://jazzy.id.au/2010/09/22/cracking_random_number_generators_part_3.html
 ; and ported to Racket
 
-; un-leftshift : reverses the MT19937 left shift operation
+; un-leftshift : integer integer integer -> integer
+;; reverses the MT19937 left shift operation
 (define (un-leftshift value shift mask)
   (define val (box value))
   (define result (box 0))
@@ -61,7 +66,8 @@
               (bitwise-ior (unbox result) part)))
   (unbox result))
 
-; un-rightshift : reverses the MT19937 right shift operation
+; un-rightshift : integer integer -> integer
+;; reverses the MT19937 right shift operation
 (define (un-rightshift value shift)
   (define val (box value))
   (define result (box 0))
@@ -77,14 +83,18 @@
     (set-box! result (bitwise-ior (unbox result) part)))
   (unbox result))
 
-; rlshift : Racket only has arithmetic shift. This performs a logical right shift.
+; rlshift : integer integer -> integer
+;; Racket only has arithmetic shift. This performs a logical right shift.
 (define (rlshift value n)
   (arithmetic-shift (modulo value #x100000000) (- n)))
 
-;;; Once you have untemper working, create a new MT19937 generator, tap it for
-;;; 624 outputs, untemper each of them to recreate the state of the generator,
-;;; and splice that state into a new instance of the MT19937 generator.
-;;; The new spliced generator should predict the values of the original.
+#|
+   Once you have untemper working, create a new MT19937 generator, tap it for
+   624 outputs, untemper each of them to recreate the state of the generator,
+   and splice that state into a new instance of the MT19937 generator.
+   The new spliced generator should predict the values of the original.
+|#
+
 (module+ test
   (require rackunit)
   (require "c21.rkt")

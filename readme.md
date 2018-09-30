@@ -100,6 +100,9 @@ the two functions.
 
 #### 21. Implement the MT19937 Mersenne Twister RNG - :ballot_box_with_check:
 
+The first time I've used a class in Racket. I wanted to avoid using the class
+but I didn't really see a way around it.
+
 #### 22. Crack an MT19937 Seed - :ballot_box_with_check:
 
 #### 23. Clone an MT19937 RNG from Its Output - :ballot_box_with_check:

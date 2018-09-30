@@ -12,7 +12,7 @@ import c2, c21
 ### Verify that you can encrypt and decrypt properly. This code should
 ### look similar to your CTR code.
 def encrypt(txt, seed):
-    mt = c21.MT19937(seed)
+    mt        = c21.MT19937(seed)
     num_bytes = len(txt)
     keystream = ''
     for i in range(num_bytes):
@@ -28,8 +28,8 @@ def decrypt(txt, seed):
 def test_cipher():
     orig = os.urandom(14)
     orig += 'A' * 14
-    ct = encrypt(orig, 455)
-    pt = decrypt(ct, 455)
+    ct   = encrypt(orig, 455)
+    pt   = decrypt(ct, 455)
     assert pt == orig, pt
 
 ###  From the ciphertext, recover the 'key' (the seed).
@@ -38,7 +38,7 @@ def encryption_oracle(txt):
     return encrypt(prefix + txt, 123) # gonna use a constant seed for testing
 
 def get_seed():
-    orig = 'A' * 14
+    orig    = 'A' * 14
     orig_ct = encryption_oracle(orig)
     for i in range(2**16):
         pt = decrypt(orig_ct, i)
@@ -53,8 +53,8 @@ def test_get_seed():
 ### Use the same idea to generate a random "password reset
 ### token" using MT19937 seeded from the current time.
 def password_reset():
-    seed = int(time.time())
-    mt = c21.MT19937(seed)
+    seed  = int(time.time())
+    mt    = c21.MT19937(seed)
     token = ''
     for i in range(6):
         token += chr(mt.generate_number() & 0xFF)
@@ -64,7 +64,7 @@ def is_valid_token(token):
     start_seed = int(time.time())
     # Don't go too far back
     for i in range(2000):
-        mt = c21.MT19937(start_seed - i)
+        mt      = c21.MT19937(start_seed - i)
         n_token = ''
         for i in range(6):
             n_token += chr(mt.generate_number() & 0xFF)
