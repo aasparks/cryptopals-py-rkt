@@ -9,6 +9,7 @@ I like crypto and I like Racket. Why not combine them? This is my experiment in 
 * Try to optimize the challenges are slow in Racket
   * Challenge 4 (possibly 3 as well)
   * Challenge 12 (possibly the AES implementation as well)
+  * Challenge 14
 * See if the AES implementation can be improved
 
 ## Challenges
@@ -76,7 +77,12 @@ The first really interesting challenge in the set.
 
 #### 14. Byte-at-a-time ECB Decryption (Harder) - :ballot_box_with_check:
 
+The python solution to this one is much cleaner and way, way faster.
+
 #### 15. PKCS#7 Padding Validation - :ballot_box_with_check:
+
+I did this one with challenge 9. I don't understand why the separated
+the two functions.
 
 #### 16. CBC Bitflipping Attacks - :ballot_box_with_check:
 

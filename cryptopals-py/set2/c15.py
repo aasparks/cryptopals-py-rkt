@@ -3,7 +3,6 @@
 
 # Easy peasy lemon sequeezy
 # I already did this for challenge 9
-# even though I did not use it for c12 or c14. *shrug*
 import c9
 import unittest
 

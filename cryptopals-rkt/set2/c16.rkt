@@ -1,33 +1,53 @@
 #lang racket
 
+; Challenge 16
+;; CBC Bitflipping Attacks
+
 (require racket/random
          "../aes/aes.rkt"
          "../set1/c2.rkt"
          "c9.rkt")
 
-; Challenge 16
-;; CBC Bitflipping Attacks
+#|
+   Generate a random AES key.
+   Combine your padding code and CBC code to write two function.
+
+   The first function should take an arbitrary input string,
+   prepend the string
+     "comment1=cooking%20MCs;userdata="
+   ...and append the string
+     ";comment2=%20like%20a%20pound%20of%20bacon"
+   The function should quote out the ';' and '=' characters.
+   The function should then pad out the input to the 16-byte
+   AES block length and encrypt it under the random AES key.
+|#
 
 (define KEY (crypto-random-bytes 16))
 (define PRE #"comment1=cooking%20MCs;userdata=")
 (define POST #";comment2=%20like%20a%20pound%20of%20bacon")
 
-;; Encryption function
+; encryption-oracle : bytes -> bytes
+;; sanitizes, appends, and prepends the set byte strings,
+;; and encrypts the input under a secret key
 (define (encryption-oracle txt)
-  (aes-128-cbc-encrypt
-   (pkcs7-pad
-    (bytes-append
-     PRE
-     (string->bytes/utf-8
-      (string-replace
-       (bytes->string/utf-8 txt)
-       #rx"[;=]+"
-       ""))
-     POST))
-   KEY
-   (make-bytes 16 0)))
+  (define sanitized
+    (list->bytes
+     (remove #\;
+             (remove #\= (bytes->list txt)))))
+  (define input (bytes-append PRE sanitized POST))
+  (aes-128-cbc-encrypt (pkcs7-pad input)
+                       KEY
+                       (make-bytes 16 0)))
 
+#|
+   The second function should decrypt the string and look
+   for the characters ";admin=true;".
+   Return true or false based on whether the string exists.
+|#
+
+; is-admin? : bytes -> boolean
 ;; Decryption function
+;; Determines if the decrypted cookie contains an admin profile
 (define (is-admin? ct)
   (string-contains?
    (bytes->string/latin-1 ; because the block gets scrambled, it isn't a well-formed utf-8
@@ -56,16 +76,21 @@
 ;; 0123456789ABCDEF 0123456789ABCDEF 0123456789ABCDEF
 ;; comment1=cooking %20MCs;userdata= XadminXtrueX;com ...
 ;; They block-aligned it for us <3
+; cbc-bitflip : void -> bytes
+;; does the CBC bitflipping attack
 (define (cbc-bitflip)
-  (let* ([good-output (encryption-oracle #"XadminXtrueX")])
-    (is-admin?
-     (bytes-append
-      (get-block good-output 0)
-      (attack-block (get-block good-output 1))
-      (subbytes good-output 32 (bytes-length good-output))))))
+  (define good-output (encryption-oracle #"XadminXtrueX"))
+  (is-admin?
+   (bytes-append
+    (get-block good-output 0)
+    (attack-block (get-block good-output 1))
+    (subbytes good-output 32 (bytes-length good-output)))))
 
 ;; Attacking this block is easy. Just xor what we have with
 ;; what we want
+; attack-block : bytes -> bytes
+;; modifies the current block so the subsequent block will
+;; contain the values we want when decrypted
 (define (attack-block block)
   (bytes-append
    (xorstrs (xorstrs (subbytes block 0 12) #";admin=true;") #"XadminXtrueX")

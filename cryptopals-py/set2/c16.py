@@ -7,11 +7,11 @@ import os
 # Generate a random AES key
 key = os.urandom(16)
 
-# Combine your padding code and CBC code to write two functions.
-# The first function should take an arbitrary input string, prepend
-#  the string:
+### Combine your padding code and CBC code to write two functions.
+### The first function should take an arbitrary input string, prepend
+###  the string:
 prefix = 'comment1=cooking%20MCs;userdata='
-# ... and append the string:
+### ... and append the string:
 suffix = ';comment2=%20like%20a%20pound%20of%20bacon'
 
 def encrypt_userdata(data):
@@ -22,7 +22,7 @@ def encrypt_userdata(data):
     new_c = c9.pkcs7_pad(new_c)
     return c10.aes_128_cbc_encrypt(new_c, key)
 
-# The second function should decrypt the string and look for 
+# The second function should decrypt the string and look for
 # the characters ';admin=true;'. Return true if found.
 def is_admin(cookie):
     data = c10.aes_128_cbc_decrypt(cookie, key)
@@ -42,15 +42,15 @@ def is_admin(cookie):
 ## and then send it in with the right bit flips to
 ## make the X's the characters I want.
 def cbc_attack():
-    data = 'XadminXtrueX'
+    data     = 'XadminXtrueX'
     original = encrypt_userdata(data)
-    cracked = original[:16]
-    cracked += convert_char(original[16], 'X', ';')
-    cracked += original[17:22]
-    cracked += convert_char(original[22], 'X', '=')
-    cracked += original[23:27]
-    cracked += convert_char(original[27], 'X', ';')
-    cracked += original[28:]
+    cracked  = original[:16]
+    cracked  += convert_char(original[16], 'X', ';')
+    cracked  += original[17:22]
+    cracked  += convert_char(original[22], 'X', '=')
+    cracked  += original[23:27]
+    cracked  += convert_char(original[27], 'X', ';')
+    cracked  += original[28:]
     assert is_admin(cracked)
 
 def convert_char(orig, now, later):
