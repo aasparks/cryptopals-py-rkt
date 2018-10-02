@@ -33,11 +33,11 @@ class MD4:
     # Initialize variables
     def __init__(self, message, n_l=0, new_reg=None):
         ## Before computation begins for each of the secure hash
-        ## algorithms, the initial hash value, must be set. 
+        ## algorithms, the initial hash value, must be set.
         if new_reg is None:
             new_reg = [0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476]
-        self.h = new_reg
-        self.l = n_l if n_l != 0 else len(message)
+        self.h       = new_reg
+        self.l       = n_l if n_l != 0 else len(message)
         self.message = message
         self.pre_process()
 
@@ -49,30 +49,30 @@ class MD4:
     def pre_process(self):
         global DEBUG
         ## The message, M, shall be padded before hash computation
-        ## begins. The purpose of this padding is to ensure that 
+        ## begins. The purpose of this padding is to ensure that
         ## the padded message is a multiple of 512 bits.
         ## Append a 1 bit to the end of the message, followed by k
         ## zero bits, where k is the smallest, non-negative solution
-        ## to the equation 
+        ## to the equation
         ##   l + 1 + k === 448 mod 512
-        message_bit_len = self.l * 8
+        message_bit_len          = self.l * 8
         # NOTE: it took me FOREVER to realize that the l passed in
         # for c29 is used only as a the postfix, and the rest uses
         # len(message)
-        message_len = len(self.message)
+        message_len              = len(self.message)
         # Instead of calculating the number of zeros, we'll create
         # a buffer of zeros and fill it at the start and end
-        num_blocks = math.ceil((message_len + 9.0) / 64.0)
-        new_len = int(num_blocks * 64)
-        new_msg = bytearray(new_len)
+        num_blocks               = math.ceil((message_len + 9.0) / 64.0)
+        new_len                  = int(num_blocks * 64)
+        new_msg                  = bytearray(new_len)
         new_msg[0:message_len+1] = self.message + chr(0x80)
-        postfix = struct.pack(b'<Q', message_bit_len)
-        new_msg[-len(postfix):] = postfix
-        self.l = new_len
-        self.message = bytes(new_msg)
+        postfix                  = struct.pack(b'<Q', message_bit_len)
+        new_msg[-len(postfix):]  = postfix
+        self.l                   = new_len
+        self.message             = bytes(new_msg)
         ## After the message has been padded, it must be parsed into N
         ## m-bit blocks before the hash computation can begin.
-        self.n = self.l / 64
+        self.n                   = self.l / 64
         if DEBUG:
             print 'State after preprocessing:'
             print 'MSG: ' + c1.asciitohex(self.message)
@@ -92,7 +92,7 @@ class MD4:
             # Copy block into X
             X = [0] * 16
             for j in range(16):
-                val = chunk[j*4:(j+1)*4]
+                val  = chunk[j*4:(j+1)*4]
                 X[j] = struct.unpack("<I", val)[0]
 
             # Save register values
@@ -109,9 +109,9 @@ class MD4:
             if DEBUG:
                 print "After round 3: " + str(map(hex, self.h))
 
-            vals = [AA, BB, CC, DD]
+            vals   = [AA, BB, CC, DD]
             self.h = map(sum32, zip(self.h, vals))
-            
+
             if DEBUG:
                 print 'After first block: ' + str(map(hex, self.h))
 
@@ -120,11 +120,11 @@ class MD4:
         return result
 
     def round1_f(self,a,b,c,d,k,s,X):
-        num = sum32([self.h[a], F(self.h[b], self.h[c], self.h[d]), X[k]])
+        num       = sum32([self.h[a], F(self.h[b], self.h[c], self.h[d]), X[k]])
         self.h[a] = rotl(num, s)
 
     def round2_f(self, a, b, c, d, k, s, X):
-        num = sum32([self.h[a], G(self.h[b], self.h[c], self.h[d]), X[k], 0x5A827999])
+        num       = sum32([self.h[a], G(self.h[b], self.h[c], self.h[d]), X[k], 0x5A827999])
         self.h[a] = rotl(num, s)
 
     # Round 1
@@ -178,8 +178,8 @@ class MD4:
         return
 
     def round3_f(self, a,b,c,d,k,s, X):
-        num = sum32([self.h[a], H(self.h[b],self.h[c],self.h[d]), X[k], 0x6ED9EBA1])
-        self.h[a] = rotl(num, s) 
+        num       = sum32([self.h[a], H(self.h[b],self.h[c],self.h[d]), X[k], 0x6ED9EBA1])
+        self.h[a] = rotl(num, s)
         return
 
     # Round 3
@@ -221,36 +221,35 @@ def time_test(name, f):
 
 # Test ""
 def test_empty_string():
-	# blank string
-	actual = c1.asciitohex(MD4(b'').digest())
-	expected = b'31d6cfe0d16ae931b73c59d7e0c089c0'.upper()
-	assert actual == expected, str(actual)
+    # blank string
+    actual   = c1.asciitohex(MD4(b'').digest())
+    expected = b'31d6cfe0d16ae931b73c59d7e0c089c0'.upper()
+    assert actual == expected, str(actual)
 
 # Test "abc"
 def test_abc():
-	# blank string
-	actual = c1.asciitohex(MD4(b'abc').digest())
-	expected = b'a448017aaf21d8525fc10ae87aa6729d'.upper()
-	assert actual == expected, str(actual)
+    # blank string
+    actual   = c1.asciitohex(MD4(b'abc').digest())
+    expected = b'a448017aaf21d8525fc10ae87aa6729d'.upper()
+    assert actual == expected, str(actual)
 
 # Test 2 blocks
 def test_2_blocks():
-	# blank string
-	inp = b'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-	md = MD4(inp)
-	actual = c1.asciitohex(md.digest())
-	expected = b'043f8582f241db351ce627e153e7f0e4'.upper()
-	assert actual == expected, str(actual)
-	del md
+    # blank string
+    inp      = b'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    md       = MD4(inp)
+    actual   = c1.asciitohex(md.digest())
+    expected = b'043f8582f241db351ce627e153e7f0e4'.upper()
+    assert actual == expected, str(actual)
 
 # Test 1 million A's
 def test_million():
-	# blank string
-	inp = b'A' * 1000000
-	md = MD4(inp)
-	actual = c1.asciitohex(md.digest())
-	expected = b'a13f9ee75c400d8e6837bd724fb92d66'.upper()
-	assert actual == expected, str(actual)
+    # blank string
+    inp      = b'A' * 1000000
+    md       = MD4(inp)
+    actual   = c1.asciitohex(md.digest())
+    expected = b'a13f9ee75c400d8e6837bd724fb92d66'.upper()
+    assert actual == expected, str(actual)
 
 
 if __name__ == "__main__" :

@@ -10,10 +10,10 @@ import c18
 ### resists bit flipping attacks of the kind to which
 ### CBC mode is susceptible.
 ### Re-implement the CBC bitflipping exercise from earlier
-### to use CTR mode instead of CBC mode. Inject an 
+### to use CTR mode instead of CBC mode. Inject an
 ### 'admin=true' token.
 
-key = os.urandom(16)
+key    = os.urandom(16)
 prefix = 'comment1=cooking%20MCs;userdata='
 suffix = ';comment2=%20like%20a%20pound%20of%20bacon'
 
@@ -39,13 +39,13 @@ def is_admin(cookie):
 # you don't attack the previous block. You just attack
 # the block you want to change.
 def ctr_attack():
-    data  = 'XadminXtrue'
+    data     = 'XadminXtrue'
     original = encrypt_userdata(data)
-    cracked = original[:32]
-    cracked += convert_char('X', ';', original[32])
-    cracked += original[33:38]
-    cracked += convert_char('X', '=', original[38])
-    cracked += original[39:]
+    cracked  = original[:32]
+    cracked  += convert_char('X', ';', original[32])
+    cracked  += original[33:38]
+    cracked  += convert_char('X', '=', original[38])
+    cracked  += original[39:]
     return is_admin(cracked)
 
 # Same as original. XOR all the chars

@@ -46,7 +46,7 @@ def insecure_compare(str1, str2):
 ### has a URL that takes a "file" argument and a "signature" argument, like so:
 ###  http://localhost:9000/test?file=foo&signature=bar
 urls = ('/', 'index')
-key = os.urandom(16)
+key  = os.urandom(16)
 
 class index:
     def GET(self):
@@ -65,7 +65,7 @@ class index:
 
 def test_hmac():
     expected = b"b617318655057264e28bc0b6fb378c8ef146be00".upper()
-    actual = c1.asciitohex(hmac_sha1(b'\x0b'*20, b'Hi There'))
+    actual   = c1.asciitohex(hmac_sha1(b'\x0b'*20, b'Hi There'))
     assert expected == actual, str(actual)
 
 

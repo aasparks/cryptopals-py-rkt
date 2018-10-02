@@ -43,7 +43,7 @@ def crack_next_byte(known, file):
 
     for i in range(256):
         mac = known + chr(i) + chr(0) * (19 - len(known))
-        t = time_request(str(file), str(c1.asciitohex(mac)))
+        t   = time_request(str(file), str(c1.asciitohex(mac)))
 
         if DEBUG:
             print_time_val(i, t)

@@ -31,7 +31,7 @@
 (define MESG #"comment1=cooking%20MCs;userdata=foo;comment2=%20like%20a%20pound%20of%20bacon")
 (define SUFF #";admin=true")
 
-; glue-padding
+; glue-padding : bytes -> bytes
 ;; This works exactly like pre-process.
 ;; Since I wrote it, I don't feel bad about copying it and modifying
 ;; it to work here.
@@ -60,8 +60,10 @@
   ; return the new message
   new-msg)
 
-; forges registers the same. only
-; difference is that md4 is little-endian
+; forge-registers : bytes -> vector
+;; convert the given message to MD-4 registers vector
+;; NOTE: the only difference between this and SHA-1 is that
+;; MD-4 is little endian
 (define (forge-registers message)
   (list->vector
    (map
@@ -80,14 +82,15 @@
     [else (cons (take lst n)
                 (split-list (drop lst n) n))]))
 
-; forges hmac just like with sha-1
+; forge-mac : bytes bytes -> bytes
+;; creates a valid mac for message || inject
 (define (forge-mac message inject)
   (define forged-message (forge-message message inject))
   (md4 inject 
          (forge-registers message)
          (+ 16 (bytes-length forged-message))))
 
-; forge-message
+; forge-message : bytes bytes -> bytes
 ;; creates the forged message to send in
 (define (forge-message message inject)
   (bytes-append

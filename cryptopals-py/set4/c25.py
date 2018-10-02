@@ -8,13 +8,13 @@ import c2, c7, c18
 
 ### Back to CTR. Encrypt the recovered plaintext from this file under CTR
 ### with a random key (unknown to you).
-plaintext = open('../../testdata/25.txt').read().decode('base64')
-plaintext = c7.aes_128_ecb_decrypt(plaintext, 'YELLOW SUBMARINE')
-key = os.urandom(16)
+plaintext  = open('../../testdata/25.txt').read().decode('base64')
+plaintext  = c7.aes_128_ecb_decrypt(plaintext, 'YELLOW SUBMARINE')
+key        = os.urandom(16)
 ciphertext = c18.aes_128_ctr(plaintext, key)
 
 ### Now write the code that allows you to 'seek' into the ct,
-### decrypt, and re-encrypt with different pt. Expose 
+### decrypt, and re-encrypt with different pt. Expose
 ### this function as edit(ct, key, offset, newtext)
 def edit(ct, key, offset, newtext):
     new_ct = ct[:offset]
@@ -33,7 +33,7 @@ def api_edit(ct, offset, newtext):
 def main():
     # Check for off by one error
     assert len(ciphertext) == len(api_edit(ciphertext, 5, 'abcde'))
-    pt = api_edit(ciphertext, 0, ciphertext) 
-    print pt
+    pt = api_edit(ciphertext, 0, ciphertext)
+    assert pt == plaintext
 
 if __name__ == '__main__' : main()

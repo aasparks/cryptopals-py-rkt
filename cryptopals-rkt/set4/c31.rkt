@@ -133,9 +133,7 @@
                       (bytes i)
                       (make-bytes (- 19 (bytes-length known-bytes)))))
       (define t
-        (timeit (λ (m)
-                  (server-request #"secret.txt" m))
-                (list mac)))
+        (timeit server-request (list #"secret.txt" mac)))
       #;(when DEBUG
         (printf "MAC: ~v---~v//~v\n"
                 (ascii->hex (bytes i)) t expected-lag))

@@ -7,30 +7,32 @@
          "../set1/c2.rkt"
          "../set2/c9.rkt")
 
-;;; There are people in the world that believe that CTR rcesists bit flipping attacks
-;;; of the kind to which CBC mode is susceptible.
-;;; Re-implement the CBC bitflipping exercise from earlier.
+#|
+   There are people in the world that believe that CTR resists bit
+   flipping attacks of the kind to which CBC mode is susceptible.
+   Re-implement the CBC bitflipping exercise from earlier to use CTR
+   mode instead of CBC mode. Inject an "admin=true" token.
+|#
 
 ; So let's just copy & paste the code from challenge 16
 (define KEY (crypto-random-bytes 16))
 (define PRE #"comment1=cooking%20MCs;userdata=")
 (define POST #";comment2=%20like%20a%20pound%20of%20bacon")
 
-;; Encryption function
+; encryption-oracle : bytes -> bytes
+;; sanitizes, appends, and prepends the set byte strings,
+;; and encrypts the input under a secret key
 (define (encryption-oracle txt)
-  (aes-128-ctr ; this is now CTR
-   (bytes-append
-    PRE
-    (string->bytes/utf-8
-     (string-replace
-      (bytes->string/utf-8 txt)
-      #rx"[;=]+"
-      ""))
-    POST)
-   KEY
-   0))
+  (define sanitized
+    (list->bytes
+     (remove #\;
+             (remove #\= (bytes->list txt)))))
+  (define input (bytes-append PRE sanitized POST))
+  (aes-128-ctr input KEY 0)) ;this is CTR now
 
+; is-admin? : bytes -> boolean
 ;; Decryption function
+;; Determines if the decrypted cookie contains an admin profile
 (define (is-admin? ct)
   (string-contains?
    (bytes->string/latin-1 ; because the block gets scrambled, it isn't a well-formed utf-8
@@ -39,16 +41,20 @@
    ";admin=true;"))
 
 
-; This is where it gets different.
-; The CTR crack is actually easier.
-; Notice:
-;;  PT ^ KEY = CT
-;;  CT ^ KEY = PT
-;;  PT ^ ATTACK = MY_PT
-;;  CT ^ KEY ^ ATTACK = MY_PT
-; The question becomes: what should ATTACK look like?
-; It actually looks the same as the CBC attack, but instead
-; of attacking the previous block, you attack the one you want.
+;; This is where it gets different.
+;; The CTR crack is actually easier.
+;; Notice:
+;;;  PT ^ KEY = CT
+;;;  CT ^ KEY = PT
+;;;  PT ^ ATTACK = MY_PT
+;;;  CT ^ KEY ^ ATTACK = MY_PT
+;; The question becomes: what should ATTACK look like?
+;; It actually looks the same as the CBC attack, but instead
+;; of attacking the previous block, you attack the one you want.
+
+; ctr-bitflip : void -> boolean
+;; performs the bit flip attack on AES-128-CTR and returns
+;; true if it worked
 (define (ctr-bitflip)
   (define ATTACK #"XadminXtrue")
   (define ORIGINAL (encryption-oracle ATTACK))
@@ -60,13 +66,13 @@
     (convert-char #\X #\= (bytes-ref ORIGINAL 38)) ; change X to =
     (subbytes ORIGINAL 39)))) ; leave the rest alone
 
-;; Convert char
+; convert-char : char char integer -> bytes
+;; change a to b from c by XORing all three
 (define (convert-char a b c)
   (bytes
    (bitwise-xor
-    (bitwise-xor
-     (char->integer a)
-     (char->integer b))
+    (char->integer a)
+    (char->integer b)
     c)))
 
 

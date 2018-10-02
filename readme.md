@@ -10,6 +10,7 @@ I like crypto and I like Racket. Why not combine them? This is my experiment in 
   * Challenge 4 (possibly 3 as well)
   * Challenge 12 (possibly the AES implementation as well)
   * Challenge 14
+  * Challenge 31 & 32
 * See if the AES implementation can be improved
 * Rewrite Racket solutions to be less imperative
   * Challenge 21
@@ -119,13 +120,31 @@ but I didn't really see a way around it.
 
 #### 28. Implement a SHA-1 Keyed MAC - :ballot_box_with_check:
 
+I implemented SHA-1 myself because I'm an overachiever :smirk:
+
+I was able to implement SHA-1 in Racket as a function, rather than
+a class (unlike the Mersenne Twister), but the Python solution was still
+a class.
+
 #### 29. Break a SHA-1 Keyed MAC Using Length Extension - :ballot_box_with_check:
 
 #### 30. Break an MD4 Keyed MAC Using Length Extension - :ballot_box_with_check:
 
+This one took a while because I implemented MD4 myself as well (at this point, why not?). The solution itself was almost identical to the previous one.
+
 #### 31. Implement and Break HMAC-SHA1 with an Artificial Timing Leak - :ballot_box_with_check:
 
+The Python solution works very well. In Racket, I couldn't get it to work using
+the web api because the messages would have random lag about every 5-10 requests.
+I can't figure out why this happens or how to fix it, so for now, it uses simple
+function calls to simulate web requests, which is admittedly a bad solution.
+
 #### 32. Break HMAC-SHA1 with a Slightly Less Artificial Timing Leak - :ballot_box_with_check:
+
+The Python solution worked for a delay as low as 15ms. The Racket solution only
+worked for a delay down to 30ms, which seems weird considering that solution isn't using the web framework. The improved solutions are also very different.
+Python made it all the way to 1ms (to my amazement), but the Racket solution
+works for 20ms. I need to spend a lot more time on this one. Shelving for now...
 
 ### Set 5 - Diffie-Hellman and Friends :x:
 

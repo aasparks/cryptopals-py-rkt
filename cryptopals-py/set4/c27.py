@@ -5,9 +5,10 @@ sys.path.insert(0, '../set1')
 sys.path.insert(0, '../set2')
 sys.path.insert(0, '../set3')
 import c2, c6, c9, c10
+
 ### Take your code from exercise 16 and modify it so that it uses
 ### the key for CBC encryption as the IV.
-key = os.urandom(16)
+key    = os.urandom(16)
 prefix = 'comment1=cooking%20MCs;userdata='
 suffix = ';comment2=%20like%20a%20pound%20of%20bacon'
 
@@ -28,7 +29,7 @@ def encrypt_userdata(data):
 ### of the plaintext for ASCII compliance. Noncompliant messages should raise
 ### an exception or return an error that includes the decrypted plaintext.
 def verify_url(data):
-    pt = c10.aes_128_cbc_decrypt(data, key, key)
+    pt    = c10.aes_128_cbc_decrypt(data, key, key)
     valid = True
 
     for c in pt:
@@ -45,10 +46,10 @@ def verify_url(data):
 ### As the attacker, recovering the plaintext from the error, extract the key:
 ### P'_1 ^ P'_3
 def attack_cbc():
-    ct = encrypt_userdata('blahblahblah')
-    bad_ct = ct[:16] + ('\x00' * 16) + ct[:16]
+    ct        = encrypt_userdata('blahblahblah')
+    bad_ct    = ct[:16] + ('\x00' * 16) + ct[:16]
     valid, pt = verify_url(bad_ct)
-    k = c2.xorstrs(c6.get_block(pt, 0), c6.get_block(pt, 2))
+    k         = c2.xorstrs(c6.get_block(pt, 0), c6.get_block(pt, 2))
     assert k == key
 
 if __name__ == "__main__" : attack_cbc()

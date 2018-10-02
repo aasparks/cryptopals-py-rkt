@@ -35,8 +35,8 @@ class MYSHA1:
         ## algorithms, the initial hash value, must be set. For
         ## SHA-1, the inital hash value consists of the following
         ## five 32-bit words.
-        self.h = n_h
-        self.l = n_l if n_l != 0 else len(message)
+        self.h       = n_h
+        self.l       = n_l if n_l != 0 else len(message)
         self.message = message
         self.pre_process()
 
@@ -48,38 +48,38 @@ class MYSHA1:
     def pre_process(self):
         global DEBUG
         ## The message, M, shall be padded before hash computation
-        ## begins. The purpose of this padding is to ensure that 
+        ## begins. The purpose of this padding is to ensure that
         ## the padded message is a multiple of 512 bits.
         ## Append a 1 bit to the end of the message, followed by k
         ## zero bits, where k is the smallest, non-negative solution
-        ## to the equation 
+        ## to the equation
         ##   l + 1 + k === 448 mod 512
-        message_bit_len = self.l * 8
+        message_bit_len          = self.l * 8
         # NOTE: it took me FOREVER to realize that the l passed in
         # for c29 is used only as a the postfix, and the rest uses
         # len(message)
-        message_len = len(self.message)
+        message_len              = len(self.message)
         # Instead of calculating the number of zeros, we'll create
         # a buffer of zeros and fill it at the start and end
-        num_blocks = math.ceil((message_len + 9.0) / 64.0)
-        new_len = int(num_blocks * 64)
-        new_msg = bytearray(new_len)
+        num_blocks               = math.ceil((message_len + 9.0) / 64.0)
+        new_len                  = int(num_blocks * 64)
+        new_msg                  = bytearray(new_len)
         new_msg[0:message_len+1] = self.message + chr(0x80)
-        postfix = struct.pack(b'>Q', message_bit_len)
-        new_msg[-len(postfix):] = postfix
-        self.l = new_len
-        self.message = bytes(new_msg)
+        postfix                  = struct.pack(b'>Q', message_bit_len)
+        new_msg[-len(postfix):]  = postfix
+        self.l                   = new_len
+        self.message             = bytes(new_msg)
         ## After the message has been padded, it must be parsed into N
         ## m-bit blocks before the hash computation can begin.
         ## For SHA-1, the padded message is parsed into N 512-bit blocks.
-        self.n = self.l / 64
+        self.n                   = self.l / 64
         if DEBUG:
             print 'State after preprocessing:'
             print 'MSG: ' + c1.asciitohex(self.message)
             print 'LEN: ' + str(self.l)
 
     ## SHA-1 may be used to hash a message, M, having a length of l bits.
-    ## The algorithm uses 
+    ## The algorithm uses
     ##  1) a message schedule of 80 32-bit words
     ##  2) five working variable of 32 bits each
     ##  3) a hash value of 5 32-bit words
@@ -88,7 +88,7 @@ class MYSHA1:
         global DEBUG
         for i in range(self.n):
             chunk = self.message[i*64 : (i+1)*64]
-            
+
             if DEBUG:
                 print 'Chunk ' + str(i) + ': ' + chunk.encode('hex')
             ## 1. Prepare the message schedule
@@ -97,7 +97,7 @@ class MYSHA1:
                 w[j] = struct.unpack(b'>I', chunk[j*4 : (j+1)*4])[0]
             for j in range(16, 80):
                 w[j] = rotl(w[j-3] ^ w[j-8] ^ w[j-14] ^ w[j-16], 1)
-            
+
             if DEBUG:
                 for j in range(80):
                     print 'w[' + str(j) + ']= ' + format(w[j], '02x')
@@ -125,12 +125,12 @@ class MYSHA1:
                     k = 0xca62c1d6
 
                 temp = rotl(a, 5) + f(b, c, d) + e + k + w[t]
-                e = d
-                d = c
-                c = rotl(b, 30)
-                b = a
+                e    = d
+                d    = c
+                c    = rotl(b, 30)
+                b    = a
                 a = temp & 0xffffffff
-                
+
                 if DEBUG:
                     print_line(t,a,b,c,d,e)
 
@@ -144,9 +144,9 @@ class MYSHA1:
 
 def print_line(i,a,b,c,d,e):
     output_string = 't=' + str(i) + '   '
-    output_string += '\t' + format(a, '08x') + '  ' 
+    output_string += '\t' + format(a, '08x') + '  '
     output_string += '\t' + format(b, '08x') + '  '
-    output_string += '\t' + format(c, '08x') + '  ' 
+    output_string += '\t' + format(c, '08x') + '  '
     output_string += '\t' + format(d, '08x') + '  '
     output_string += '\t' + format(e, '08x')
     print output_string
@@ -173,31 +173,31 @@ def main():
 # Test 1
 #   abc
 def test1():
-    result = c1.asciitohex(MYSHA1(b'abc').digest())
+    result   = c1.asciitohex(MYSHA1(b'abc').digest())
     expected = b'a9993e364706816aba3e25717850c26c9cd0d89d'.upper()
     assert result == expected, 'Expected ' + str(expected) + ' got ' + str(result)
 
 # Test 2
 #   abc
 def test2():
-    result = MYSHA1(b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq").digest()
-    result = c1.asciitohex(result)
+    result   = MYSHA1(b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq").digest()
+    result   = c1.asciitohex(result)
     expected = b'84983E441C3BD26EBAAE4AA1F95129E5E54670F1'
     assert result == expected, 'Expected ' + str(expected) + ' got ' + str(result)
 
 # Test 3
 #   abc
 def test3():
-    result = MYSHA1(b"abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu").digest()
-    result = c1.asciitohex(result)
+    result   = MYSHA1(b"abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu").digest()
+    result   = c1.asciitohex(result)
     expected = b'A49B2446A02C645BF419F995B67091253A04A259'
     assert result == expected, 'Expected ' + str(expected) + ' got ' + str(result)
 
 # Test 4
 #   abc
 def test4():
-    result = MYSHA1(b'a' * 1000000).digest()
-    result = c1.asciitohex(result)
+    result   = MYSHA1(b'a' * 1000000).digest()
+    result   = c1.asciitohex(result)
     expected = b'34AA973CD4C4DAA4F61EEB2BDBAD27316534016F'
     assert result == expected, 'Expected ' + str(expected) + ' got ' + str(result)
 
