@@ -148,9 +148,19 @@ works for 20ms. I need to spend a lot more time on this one. Shelving for now...
 
 ### Set 5 - Diffie-Hellman and Friends :x:
 
-#### 33. Implement Diffie-Hellman :black_square_button:
+#### 33. Implement Diffie-Hellman :ballot_box_with_check:
 
-#### 34. Implement a MITM Key-Fixing Attack on Diffie-Hellman with Parameter Injection :black_square_button:
+This was very simple and easy. Racket and Python both handle large numbers with
+grace, but Racket really shines here. The solution is so elegant and fast. Python is no
+less impressive. Both languages had modular exponentiation built in, so this challenge
+took all of two minutes.
+
+#### 34. Implement a MITM Key-Fixing Attack on Diffie-Hellman with Parameter Injection :ballot_box_with_check:
+
+This seemed like it would be challenging at first and I was very tempted to Google the answer
+to the Diffie-Hellman math, but (when you write it down) the answer is staring you face. The
+exploit here is so incredibly simple.
+
 
 #### 35. Implement DH with Negotiated Groups, and Break with Malicious 'g' Parameters :black_square_button:
 
