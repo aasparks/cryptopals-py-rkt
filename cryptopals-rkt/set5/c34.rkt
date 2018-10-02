@@ -31,7 +31,7 @@
 ; alice -> channel channel (listof bytes) -> void
 ;; simulates alice by sending the list of messages
 ;; to the receiver and getting the values echo'd back
-;; by the sender. Without MITM, sender == receiver.
+;; by the sender.
 (define (alice sender receiver messages)
   (thread
    (λ ()

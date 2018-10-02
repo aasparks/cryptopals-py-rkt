@@ -158,11 +158,13 @@ took all of two minutes.
 #### 34. Implement a MITM Key-Fixing Attack on Diffie-Hellman with Parameter Injection :ballot_box_with_check:
 
 This seemed like it would be challenging at first and I was very tempted to Google the answer
-to the Diffie-Hellman math, but (when you write it down) the answer is staring you face. The
+to the Diffie-Hellman math, but (when you write it down) the answer is staring you in the face. The
 exploit here is so incredibly simple.
 
 
-#### 35. Implement DH with Negotiated Groups, and Break with Malicious 'g' Parameters :black_square_button:
+#### 35. Implement DH with Negotiated Groups, and Break with Malicious 'g' Parameters :ballot_box_with_check:
+
+This one was a little harder just because of g=p-1 but still pretty easy.
 
 #### 36. Implement Secure Remote Password (SRP) :black_square_button:
 
