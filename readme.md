@@ -161,10 +161,15 @@ This seemed like it would be challenging at first and I was very tempted to Goog
 to the Diffie-Hellman math, but (when you write it down) the answer is staring you in the face. The
 exploit here is so incredibly simple.
 
+This is my first time using Python threads. It's a lot more like C threads
+than I would have expected. I was also surprised to find that ```Queue```
+was the best replacement for Racket's ```channel```.
+
 
 #### 35. Implement DH with Negotiated Groups, and Break with Malicious 'g' Parameters :ballot_box_with_check:
 
-This one was a little harder just because of g=p-1 but still pretty easy.
+This one was a little harder just because of g=p-1 has two possible
+key values, but still pretty easy.
 
 #### 36. Implement Secure Remote Password (SRP) :black_square_button:
 

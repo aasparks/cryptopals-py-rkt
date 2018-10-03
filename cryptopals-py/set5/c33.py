@@ -1,7 +1,6 @@
 # Challenge 33
 ## Implement Diffie-Hellman
 import random, os, sys
-sys.path.insert(0, '../set1')
 sys.path.insert(0, '../set4')
 import MYSHA1
 
