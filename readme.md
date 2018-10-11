@@ -72,11 +72,10 @@ slower.
 
 #### 7. AES in ECB Mode - :ballot_box_with_check:
 
-<span style="color:green">Python (obviously) had a library function for AES-128.
-</span>
+Python (obviously) had a library function for AES-128.
 
-<span style="color:red">Racket did not have a library function so I implemented it
-    myself. I may go back and implement it in Python just for fun.
+Racket did not have a library function so I implemented it
+myself. I may go back and implement it in Python just for fun.
 
 #### 8. Detect AES in ECB Mode - :ballot_box_with_check:
 
@@ -92,19 +91,21 @@ slower.
 
 The first really interesting challenge in the set.
 
-<span style="color:red">The Racket solution is incredibly slow while the
- Python solution is almost immediate. Not sure why.</span>
+The Racket solution is incredibly slow while the  Python solution is almost
+immediate. Not sure why.
 
 #### 13. ECB Cut-and-paste - :ballot_box_with_check:
 
 #### 14. Byte-at-a-time ECB Decryption (Harder) - :ballot_box_with_check:
 
-The python solution to this one is much cleaner and way, way faster.
+The python solution to this one is much cleaner and way, way faster. Not much
+different from the first one other than needing to discover the size of the
+secret prefix.
 
 #### 15. PKCS#7 Padding Validation - :ballot_box_with_check:
 
-I did this one with challenge 9. I don't understand why the separated
-the two functions.
+I did this one with challenge 9. I don't understand why they separated
+the two functions when ```unpad``` is needed in previous exercises.
 
 #### 16. CBC Bitflipping Attacks - :ballot_box_with_check:
 

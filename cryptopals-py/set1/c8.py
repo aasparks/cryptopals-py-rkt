@@ -11,7 +11,7 @@ Remember that the problem with ECB is that it is stateless and
 deterministic; the same 16-byte plaintext block will always produce
 the same 16-byte ciphertext.
 """
-import c6
+import c1, c6
 import unittest
 
 ## Well the easiest solution here is to
@@ -36,10 +36,10 @@ def is_ecb(txt, maxBlocks=1):
     Returns:
         True if the txt was encrypted with ECB
     """
-    num_blocks = len(txt) // 4
+    num_blocks = len(txt) // 16
     maxCount   = 1
     for i in range(num_blocks):
-        block = c6.get_block(txt, i, 4)
+        block = c6.get_block(txt, i, 16)
         count = txt.count(block)
         if count > maxCount:
             maxCount = count
@@ -52,7 +52,7 @@ class TestIsECB(unittest.TestCase):
         self.f.close()
     def test_challenge_8(self):
         linenum = 0
-        result  = b''
+        result  = ''
         expected = 'd880619740a8a19b7840a8a31c810a3d08649af70dc06f4fd5d2d69c74'
         expected += '4cd283e2dd052f6b641dbf9d11b0348542bb5708649af70dc06f4fd5d'
         expected += '2d69c744cd2839475c9dfdbc1d46597949d9c7e82bf5a08649af70dc0'
@@ -61,7 +61,7 @@ class TestIsECB(unittest.TestCase):
         expected += 'b0ab51b29933f2c123c58386b06fba186a'
 
         for line in self.f.readlines():
-            if is_ecb(line, 3):
+            if is_ecb(c1.hextoascii(line.strip()), 3):
                 result = line.strip()
                 break
             linenum += 1

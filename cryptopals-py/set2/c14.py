@@ -1,15 +1,20 @@
-# Challenge 14
-## Byte-at-a-time ECB Decryption (Harder)
-import os, sys, random
+"""
+Challenge 14
+Byte-at-a-time ECB Decryption (Harder)
+
+
+Take your oracle function from #12. Now generate a random count
+of random bytes and prepend this string to every plaintext.
+
+You are now doing:
+    AES-128-ECB(random-prefix || attacker-controlled || target-bytes, random-key)
+
+Same goal: decrypt the target bytes
+"""
+import os, sys, random, unittest
 from Crypto.Cipher import AES
 sys.path.insert(0, '../set1')
 import c1, c6, c9
-
-### Take your oracle function from #12. Now generate a random count
-### of random bytes and prepend this string to every plaintext.
-### You are now doing:
-###  AES-128-ECB(random-prefix || attacker-controlled || target-bytes, random-key)
-### Same goal: decrypt the target bytes
 
 key     = os.urandom(16)
 rando   = os.urandom(random.randint(5, 100))
@@ -20,6 +25,16 @@ unknown = c1.base64toascii(unknown)
 
 # Encryption oracle
 def encryption_oracle(txt):
+    """
+    Encrypts the given text under a secret key with a secret, random prefix, and
+    and unknown suffix.
+
+    Args:
+        txt: The (attacker-controlled) text to be encrypted
+
+    Returns:
+        AES-128-ECB(random-prefix || txt || unknown-string, random-key)
+    """
     return AES.new(key, AES.MODE_ECB).encrypt(c9.pkcs7_pad(rando + txt + unknown))
 
 # Since the prefix is constant, this is pretty much
@@ -40,18 +55,27 @@ def encryption_oracle(txt):
 ## --- size = start_len + (blocksize - (len(controlled_bytes)-1))
 ## --- size = 4 + 4 - 3 + 1 = 6
 # Determines the size of the prefix the oracle is using
-def get_prefix_size():
-    controlled_bytes = ''
-    oracle           = encryption_oracle(controlled_bytes)
-    controlled_bytes += 'A'
-    test             = encryption_oracle(controlled_bytes)
+def get_prefix_size(oracle):
+    """
+    Determines the size of the prefix for the encryption oracle.
+
+    Args:
+        oracle: The encryption oracle
+
+    Returns:
+        The size of the prefix and the length of the secret
+    """
+    controlled_bytes = b''
+    original         = oracle(controlled_bytes)
+    controlled_bytes += b'A'
+    test             = oracle(controlled_bytes)
     # Find the block where the prefix ends
-    prefix_block = find_prefix_block(oracle, test)
+    prefix_block = find_prefix_block(original, test)
     start_len    = (prefix_block * 16);
     # Loop through the block, looking for the end
     for i in range(15):
-        controlled_bytes += 'A'
-        new_test         = encryption_oracle(controlled_bytes)
+        controlled_bytes += b'A'
+        new_test         = oracle(controlled_bytes)
         if c6.get_block(new_test, prefix_block) == c6.get_block(test, prefix_block):
             break;
         test = new_test
@@ -60,10 +84,23 @@ def get_prefix_size():
 
 # Finds the block where the prefix ends
 def find_prefix_block(oracle, test):
-    for i in range(len(oracle) / 16):
+    """
+    Finds the block that contains the prefix
+
+    Args:
+        original: The result of encryption_oracle(b'')
+        test: The result of encryption_oracle(b'A')
+
+    Returns:
+        The block number where the prefix ends
+
+    Raises:
+        RuntimeError if the block is not found
+    """
+    for i in range(len(oracle) // 16):
         if c6.get_block(oracle, i) != c6.get_block(test, i):
             return i
-    return -1;
+    raise RuntimeError('could not find prefix block')
 
 
 # Now that I know the prefix size, I can do what
@@ -71,22 +108,28 @@ def find_prefix_block(oracle, test):
 # Knowing the prefix size, we need to have our own,
 # permanent prefix size to keep it block aligned.
 def decode_secret():
-    prefix_size, needed_size = get_prefix_size()
+    """
+    Decodes the secret bytes from the encryption oracle
+
+    Returns:
+        The secret bytes that it found
+    """
+    prefix_size, needed_size = get_prefix_size(encryption_oracle)
     assert (prefix_size + needed_size) % 16 == 0
     # We can't send the encryption oracle with nothing this time.
     # get_prefix_size() does this for you so now it returns that value.
     ## We send encryption_oracle 'A' * needed_size so that the blocks
     ## match up to the end of the block that the prefix is in.
     ## XXXX XXAA THES ECRE T
-    oracle = encryption_oracle('A' * needed_size)
+    oracle = encryption_oracle(b'A' * needed_size)
     # The number of bytes we have to decode is going to be
     #   len(oracle) - prefix_size - needed_size
     # This should be self-explanatory. If it isn't,
     # you don't understand what's happening.
     num_bytes = len(oracle) - prefix_size - needed_size
-    secret    = ''
+    secret    = b''
     c         = decode_byte(secret, num_bytes, prefix_size, needed_size)
-    while c > -1:
+    while c is not None:
         secret += c
         c = decode_byte(secret, num_bytes, prefix_size, needed_size)
     return secret
@@ -98,20 +141,42 @@ def decode_secret():
 #   XXXX XXAA THES ECRE T
 #   XXXX XXAA AAAA AAAA AAAT HESE CRET
 def decode_byte(known, num_bytes, prefix_size, needed_extra):
+    """
+    Decodes the next byte of the unknown string.
+
+    Args:
+        known: Bytestring containing the bytes from unknown-string that we
+        know so far.
+        num_bytes: The length of the ciphertext
+        prefix_size: The length of the secret prefix
+        needed_extra: The length of bytes we still need
+    """
     prefix   = craft_block(len(known), num_bytes + needed_extra)
     original = encryption_oracle(prefix)
     length   = prefix_size + len(prefix) + len(known) + 1
     for i in range(256):
-        ct = encryption_oracle(prefix + known + chr(i))
+        ct = encryption_oracle(prefix + known + bytes([i]))
         if (ct[:length] == original[:length]):
-            return chr(i)
-    return -1
+            return bytes([i])
+    return None
 
 def craft_block(offset, num_bytes):
-    return 'A' * (num_bytes - 1 - offset)
+    """
+    Crafts a block that is one byte short of the num_bytes - offset
 
-def main():
-    actual = c9.pkcs7_unpad(decode_secret())
-    assert actual == unknown, actual + "\n" + unknown
+    Args:
+        offset: The number of bytes already known, that don't need to be crafted
+        num_bytes: The number of bytes that need to be found in total
 
-if __name__ == "__main__" : main()
+    Returns:
+        A bytestring of all A's that is of length num_bytes - offset - 1
+    """
+    return b'A' * (num_bytes - 1 - offset)
+
+class TestECBByteAtATimeHarder(unittest.TestCase):
+    def test_challenge_14(self):
+        actual = c9.pkcs7_unpad(decode_secret())
+        self.assertEqual(actual, unknown)
+
+if __name__ == "__main__" :
+    unittest.main()
