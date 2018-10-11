@@ -1,10 +1,30 @@
 # Cryptopals in Python and Racket
 
-I like crypto and I like Racket. Why not combine them? This is my experiment in doing crypto with a functional language. While I'm at it, I may as well finish doing the challenges in Python, since I've already done some. The idea here is to make imperative solutions with Python, and then attempt to use more functional tactics in Racket (i.e. map, apply, lambda, recursion). Let's see how the solutions vary.
+I like crypto and I like Racket. Why not combine them? This is my experiment in
+doing crypto with a functional language. While I'm at it, I may as well finish
+doing the challenges in Python, since I've already done some. The idea here is
+to make imperative solutions with Python, and then attempt to use more
+functional tactics in Racket (i.e. map, apply, lambda, recursion).
+I also want to use this opportunity to master both languages. This includes
+writing the documentation, following the Google coding standard, and writing
+good unit tests for each challenge.
+Let's see how the solutions vary.
+
+## Midterm Retrospective
+
+At the half-way point, I have decided to go back through the challenges and
+rewrite A LOT. When I started, I barely knew any Python at all. Through these
+challenges I have learned a lot. I've learned better, more efficient ways
+to solve certain problems, especially in the beginning. The code (and comments)
+I have written can be greatly improved. I'd also like to take this time to go
+back and work on official documentation for both languages. I've compiled a
+to-do list below of issues I found by skimming the code for all the challenges
+so far.
 
 ## TODO:
 * Compile most-used functions into 'util' files and use that way.
 * Convert Python solutions to Python3.
+* Write proper documentation for all files
 * Rewrite ugly functions to be more elegant.
 * Try to optimize the challenges are slow in Racket
   * Challenge 4 (possibly 3 as well)
@@ -21,10 +41,9 @@ I like crypto and I like Racket. Why not combine them? This is my experiment in 
 
 #### 1. Convert hex to base64 - :ballot_box_with_check:
 
-Nothing special here. These functions are used in pretty much every exercise
-after this. Both languages had these functions built in, though I did
-originally write them manually in Racket. They were large and ugly functions
-so I decided to stick to the library functions.
+I decided to go ahead and define all the encoding functions I'll need
+throughout these exercises. The functions are used in pretty much every exercise
+after this. Both languages had them in their libraries.
 
 #### 2. Fixed XOR - :ballot_box_with_check:
 

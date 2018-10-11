@@ -25,6 +25,7 @@
 (module+ test
   (require rackunit)
   (define sol (challenge4))
+  (display (ascii->hex (third sol)))
   (check-equal? (xorstrs (third sol)
                          (make-bytes (bytes-length (third sol))
                                      (second sol)))

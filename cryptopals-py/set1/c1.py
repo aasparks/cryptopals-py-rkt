@@ -1,60 +1,111 @@
-# Challenge 1
-# Convert hex to base64
-import base64
+"""
+Challenge 1
+Convert hex to base64
 
-### The string:
-###  49276d206b696c6c696e6720796f757220627261696e206c
-###  696b65206120706f69736f6e6f7573206d757368726f6f6d
-### Should produce:
-###  SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t
+The string:
+ 49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d
+Should produce:
+ SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t
 
-### So go ahead and make that happen. You'll need to use this code
-### for the rest of the exercises.
+So go ahead and make that happen. You'll need to use this code
+for the rest of the exercises.
+"""
+import base64, unittest
 
-## Let's just go ahead and provide all the conversion functions.
+def hextoascii(hexbstr):
+    """
+    Converts a bytestring in hex representation to ASCII.
 
-# Convert hex to ascii
-def hextoascii(string):
-    return base64.b16decode(string.upper())
+    Args:
+        hexbstr: a bytestring encoded in hex.
 
-# Encode ascii string in hex
-def asciitohex(string):
-    return base64.b16encode(string)
+    Returns:
+        The bytestring decoded into ASCII.
+    """
+    return base64.b16decode(hexbstr.upper())
 
-# Encode from hex to base64
-def hextobase64(string):
-    return base64.b64encode(hextoascii(string))
+def asciitohex(abstr):
+    """
+    Encodes an ASCII bytestring into hex representation.
 
-# Encode from base64 to hex
-def base64tohex(string):
-    return asciitohex(base64.b64decode(string))
+    Args:
+        abstr: ASCII bytestring to encode.
 
-# Encode ascii to base64
-def asciitobase64(string):
-    return base64.b64encode(string)
+    Returns:
+        The bytestring encoded in hex.
+    """
+    return base64.b16encode(abstr)
 
-# Decode base64 to ascii
-def base64toascii(string):
-    return base64.b64decode(string)
+def hextobase64(hexbstr):
+    """
+    Encodes a hex-encoded string into base64.
 
-# Test all the functions
-def test():
-    asc = b'Who lives in a pineapple under the sea?'
-    hx  = b'57686f206c6976657320696e20612070696e656170706c6520756e64657220746865207365613f'
-    b64 = b'V2hvIGxpdmVzIGluIGEgcGluZWFwcGxlIHVuZGVyIHRoZSBzZWE/'
-    assert hextoascii(hx)     == asc
-    assert asciitohex(asc)    == hx.upper()
-    assert hextobase64(hx)    == b64
-    assert base64tohex(b64)   == hx.upper()
-    assert asciitobase64(asc) == b64
-    assert base64toascii(b64) == asc
+    Args:
+        hexbstr: A bytestring in hex representation.
 
+    Returns:
+        The bytestring encoded in base64 representation.
+    """
+    return base64.b64encode(hextoascii(hexbstr))
 
-## Now for the solution to the challenge
-def main():
-    test()
-    hxstr = b'49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d'
-    b64str = b'SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t'
-    assert hextobase64(hxstr) == b64str
+def base64tohex(b64bstr):
+    """
+    Encodes a base64 bytestring into a hex-encoded bytestring.
 
-if __name__ == "__main__" : main()
+    Args:
+        b64bstr: A bytestring encoded in base64.
+
+    Returns:
+        The bytestring encoded in hex.
+    """
+    return asciitohex(base64.b64decode(b64bstr))
+
+def asciitobase64(abstr):
+    """
+    Encodes an ASCII bytestring into base64.
+
+    Args:
+        abstr: An ASCII bytestring.
+
+    Returns:
+        The bytestring encoded in base64.
+    """
+    return base64.b64encode(abstr)
+
+def base64toascii(b64bstr):
+    """
+    Decodes a base64 bytestring into ASCII.
+
+    Args:
+        b64bstr: A bytestring in base64
+
+    Returns:
+        The bytestring decoded into ASCII
+    """
+    return base64.b64decode(b64bstr)
+
+class TestConversions(unittest.TestCase):
+    def setUp(self):
+        self.asc = b'Who lives in a pineapple under the sea?'
+        self.hx  = b'57686f206c6976657320696e20612070696e656170706c6520756e64657220746865207365613f'
+        self.b64 = b'V2hvIGxpdmVzIGluIGEgcGluZWFwcGxlIHVuZGVyIHRoZSBzZWE/'
+
+    def test_hex_ascii(self):
+        self.assertEqual(hextoascii(self.hx), self.asc)
+        self.assertEqual(asciitohex(self.asc), self.hx.upper())
+
+    def test_hex_base64(self):
+        self.assertEqual(hextobase64(self.hx), self.b64)
+        self.assertEqual(base64tohex(self.b64), self.hx.upper())
+
+    def test_base64_ascii(self):
+        self.assertEqual(asciitobase64(self.asc), self.b64)
+        self.assertEqual(base64toascii(self.b64), self.asc)
+
+    def test_challenge_1(self):
+        hxstr  = b'49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d'
+        b64str = b'SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t'
+        self.assertEqual(hextobase64(hxstr), b64str)
+
+if __name__ == "__main__" :
+    unittest.main()
