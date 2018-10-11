@@ -113,15 +113,24 @@ the two functions when ```unpad``` is needed in previous exercises.
 
 #### 17. The CBC Padding Oracle - :ballot_box_with_check:
 
+This problem was a little difficult to grasp at first. My best resource for it
+was [http://www.exploresecurity.com/padding-oracle-decryption-attack/].
+
 #### 18. Implement CTR, The Stream Cipher Mode - :ballot_box_with_check:
 
 #### 19. Break Fixed-Nonce CTR Mode Using Substitutions - :black_square_button:
 
+Skipping this one until I feel like it because it will be hard to automate.
+
 #### 20. Break Fixed-Nonce CTR Statistically - :black_square_button:
+
+Skipping this one as well, even though it can be automated just because I should do 19 first.
 
 #### 21. Implement the MT19937 Mersenne Twister RNG - :ballot_box_with_check:
 
-The first time I've used a class in Racket. I wanted to avoid using the class
+This was fun to implement. I was shocked to see the execution time on this because the test generates 700 numbers, and finished in 9ms on my crappy laptop.
+
+This is the first time I've used a class in Racket. I wanted to avoid using the class
 but I didn't really see a way around it.
 
 #### 22. Crack an MT19937 Seed - :ballot_box_with_check:

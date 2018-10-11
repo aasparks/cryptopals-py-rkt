@@ -1,9 +1,24 @@
-# Challenge 21
-## Implement the MT19937 Mersenne Twister RNG
+"""
+Challenge 21
+Implement the MT19937 Mersenne Twister RNG
 
+You can get the pseudocode for this from Wikipedia.
+
+If you're writing in Python, Ruby, or (gah) PHP, your language is probably
+already giving you MT19937 as rand(); don't use rand(). Write the RNG yourself.
+"""
+import unittest
 # Mersenne Twister class
 # Pseudocode from Wikipedia
 class MT19937:
+    """
+    This class represents the Mersenne Twister RNG.
+
+    Attributes:
+        index: The number of times a number has been generated. Once index reaches
+        n (624), the twist operation must be redone.
+        mt: The state of the generator.
+    """
     # word size (number of bits)
     w = 32
     # degree of recurrence
@@ -36,8 +51,14 @@ class MT19937:
             self.mt[i]  = int32(self.f * (prev ^ prevShifted) + i)
 
     def generate_number(self):
+        """
+        Generates the next number from the current state
+
+        Returns:
+            32-bit random integer.
+        """
         if self.index >= self.n:
-            self.twist()
+            self.__twist()
         y = self.mt[self.index]
         y = y ^ (y >> self.u)
         y = y ^ ((y << self.s) & self.b)
@@ -46,10 +67,13 @@ class MT19937:
         self.index = (self.index + 1)
         return int32(y)
 
-    def print_state(self):
-        print self.mt
+    def __print_state(self):
+        print(self.mt)
 
-    def twist(self):
+    def __twist(self):
+        """
+        Does the Mersenne Twist operation.
+        """
         first_bit_mask = 0x80000000
         last_bit_mask  = 0x7FFFFFFF
         for i in range(624):
@@ -69,18 +93,19 @@ class MT19937:
 def int32(num):
     return int(num & 0xFFFFFFFF)
 
-# Test vector
-def main():
-    mt = MT19937(1131464071)
-    f  = open('mt_test.txt')
+class TestMT19937(unittest.TestCase):
+    def setUp(self):
+        self.mt = MT19937(1131464071)
+        self.f = open('../../testdata/mt_test.txt')
+    def tearDown(self):
+        self.f.close()
+    def test_challenge_21(self):
+        for line in self.f.readlines():
+            expected = line.strip()
+            actual = str(self.mt.generate_number())
+            self.assertEqual(actual, expected)
 
-    for line in f:
-        expected = line.strip()
-        actual   = str(mt.generate_number())
-        err      = 'Failed. Expected ' + expected
-        err      += ' got ' + str(actual)
-        assert actual == expected, err
-
-if __name__ == "__main__" : main()
+if __name__ == "__main__" :
+    unittest.main()
 
 
