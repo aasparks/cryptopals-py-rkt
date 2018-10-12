@@ -1,5 +1,5 @@
 """
-MD4
+**MD4**
 
 My MD4 implementation for Python. Once again, I decided to do it myself.
 This is very similar to SHA-1, so it wasn't too bad.

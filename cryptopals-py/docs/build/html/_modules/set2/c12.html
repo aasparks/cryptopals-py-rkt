@@ -1,0 +1,262 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>set2.c12 &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for set2.c12</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**Challenge 12**</span>
+
+<span class="sd">*Byte-at-a-time ECB Decryption (Simple)*</span>
+
+<span class="sd">Copy your oracle function to a new function that encrypts under ECB mode</span>
+<span class="sd">using a consistent but unknown key (for instance, assign a single random key,</span>
+<span class="sd">once, to a global variable).</span>
+
+<span class="sd">Now take that same function and have it append to the plaintext, BEFORE</span>
+<span class="sd">ENCRYPTING, the following string:</span>
+
+<span class="sd">``Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkg</span>
+<span class="sd">aGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBq</span>
+<span class="sd">dXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUg</span>
+<span class="sd">YnkK``</span>
+
+<span class="sd">Base64 decode the string before appending it. Do not base64 decode the</span>
+<span class="sd">string by hand; make your code do it. The point is that you don&#39;t know</span>
+<span class="sd">its contents.</span>
+
+<span class="sd">What you have now is a function that produces::</span>
+
+<span class="sd">    AES-128-ECB(your-string || unknown-string, random-key)</span>
+
+<span class="sd">It turns out: you can decrypt &quot;unknown-string&quot; with repeated calls to the</span>
+<span class="sd">oracle function!</span>
+
+<span class="sd">Here&#39;s roughly how:</span>
+
+<span class="sd">1. Feed identical bytes of your-string to the function 1 at a time -- start</span>
+<span class="sd">   with 1 byte (&quot;A&quot;), then &quot;AA&quot;, then &quot;AAA&quot;, and so on. Discover the block</span>
+<span class="sd">   size of the cipher. You know it, but do this step anyway.</span>
+
+<span class="sd">2. Detect that the function is using ECB. You already know, but do this step</span>
+<span class="sd">   anyways.</span>
+
+<span class="sd">3. Knowing the block size, craft an input block that is exactly 1 byte short</span>
+<span class="sd">   (for instance, if the block size is 8 bytes, make &quot;AAAAAAA&quot;). Think about</span>
+<span class="sd">   what the oracle function is going to put in that last byte position.</span>
+
+<span class="sd">4. Make a dictionary of every possible last byte by feeding different</span>
+<span class="sd">   strings to the oracle; for instance, &quot;AAAAAAAA&quot;, &quot;AAAAAAAB&quot;, &quot;AAAAAAAC&quot;,</span>
+<span class="sd">   remembering the first block of each invocation.</span>
+
+<span class="sd">5. Match the output of the one-byte-short input to one of the entries in</span>
+<span class="sd">   your dictionary. You&#39;ve now discovered the first byte of unknown-string.</span>
+
+<span class="sd">6. Repeat for the next byte.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">unittest</span>
+<span class="kn">from</span> <span class="nn">Crypto.Cipher</span> <span class="k">import</span> <span class="n">AES</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;../set1&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">c1</span><span class="o">,</span> <span class="nn">c6</span><span class="o">,</span> <span class="nn">c9</span>
+
+<span class="n">key</span>       <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">unknown</span>   <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkg&#39;</span>
+<span class="n">unknown</span>   <span class="o">+=</span> <span class="sa">b</span><span class="s1">&#39;aGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBq&#39;</span>
+<span class="n">unknown</span>   <span class="o">+=</span> <span class="sa">b</span><span class="s1">&#39;dXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK&#39;</span>
+<span class="n">unknown</span>   <span class="o">=</span> <span class="n">c1</span><span class="o">.</span><span class="n">base64toascii</span><span class="p">(</span><span class="n">unknown</span><span class="p">)</span>
+
+<span class="c1"># Encryption oracle</span>
+<div class="viewcode-block" id="encryption_oracle"><a class="viewcode-back" href="../../set2.html#set2.c12.encryption_oracle">[docs]</a><span class="k">def</span> <span class="nf">encryption_oracle</span><span class="p">(</span><span class="n">txt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Black box encryption oracle that appends an unknown string to the given</span>
+<span class="sd">    text, pads it out, and encrypts under AES-128-ECB with an unknown key.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        txt: The plaintext to be encrypted.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        AES-128-ECB(txt || unknown-string, random-key) as a bytestring</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">AES</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">AES</span><span class="o">.</span><span class="n">MODE_ECB</span><span class="p">)</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">c9</span><span class="o">.</span><span class="n">pkcs7_pad</span><span class="p">(</span><span class="n">txt</span> <span class="o">+</span> <span class="n">unknown</span><span class="p">))</span></div>
+
+<span class="c1"># 1 Discover block size</span>
+<div class="viewcode-block" id="get_blocksize"><a class="viewcode-back" href="../../set2.html#set2.c12.get_blocksize">[docs]</a><span class="k">def</span> <span class="nf">get_blocksize</span><span class="p">(</span><span class="n">oracle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gets the block size of encryption_oracle.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        oracle: The encryption oracle function to be run.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The block size that the encryption oracle is using (16)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Send strings of length 0-40</span>
+    <span class="n">prev_len</span>   <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">oracle</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">40</span><span class="p">):</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="n">oracle</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;A&#39;</span> <span class="o">*</span> <span class="n">i</span><span class="p">)</span>
+        <span class="c1"># If the length increases by more than 1</span>
+        <span class="c1"># we have jumped up a block</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ct</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">prev_len</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">ct</span><span class="p">)</span> <span class="o">-</span> <span class="n">prev_len</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Could not find block size&#39;</span><span class="p">)</span></div>
+
+<span class="c1"># 2. Detect that the function is using ECB.</span>
+<div class="viewcode-block" id="is_ecb"><a class="viewcode-back" href="../../set2.html#set2.c12.is_ecb">[docs]</a><span class="k">def</span> <span class="nf">is_ecb</span><span class="p">(</span><span class="n">oracle</span><span class="p">,</span> <span class="n">blocksize</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Detects whether or not the given encryption oracle is using ECB mode</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        oracle: The encryption oracle</span>
+<span class="sd">        blocksize: The block size of the oracle</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if oracle is using ECB mode</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ct</span> <span class="o">=</span> <span class="n">oracle</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;A&#39;</span> <span class="o">*</span> <span class="n">blocksize</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">c6</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">ct</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">blocksize</span><span class="p">)</span> <span class="o">==</span> <span class="n">c6</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">ct</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">blocksize</span><span class="p">)</span></div>
+
+<span class="c1"># 3. Craft an input block that is exactly 1 byte short of the block size</span>
+<div class="viewcode-block" id="craft_block"><a class="viewcode-back" href="../../set2.html#set2.c12.craft_block">[docs]</a><span class="k">def</span> <span class="nf">craft_block</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">num_bytes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Crafts a block that is one byte short of the num_bytes - offset</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        offset: The number of bytes already known, that don&#39;t need to be crafted</span>
+<span class="sd">        num_bytes: The number of bytes that need to be found in total</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A bytestring of all A&#39;s that is of length num_bytes - offset - 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">b</span><span class="s1">&#39;A&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">num_bytes</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">offset</span><span class="p">)</span></div>
+
+<span class="c1"># 4, 5</span>
+<div class="viewcode-block" id="decode_byte"><a class="viewcode-back" href="../../set2.html#set2.c12.decode_byte">[docs]</a><span class="k">def</span> <span class="nf">decode_byte</span><span class="p">(</span><span class="n">known</span><span class="p">,</span> <span class="n">num_bytes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decodes a single byte of the unknown string by trying every possible value</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        known: The parts of unknown-string that we already know</span>
+<span class="sd">        num_bytes: The length of unknown-string</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The next decoded byte of unknown-string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Just stop when we find the match. No need to save</span>
+    <span class="c1"># a dictionary</span>
+    <span class="n">prefix</span>   <span class="o">=</span> <span class="n">craft_block</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">known</span><span class="p">),</span> <span class="n">num_bytes</span><span class="p">)</span>
+    <span class="n">original</span> <span class="o">=</span> <span class="n">encryption_oracle</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+    <span class="n">length</span>   <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">known</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">256</span><span class="p">):</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="n">encryption_oracle</span><span class="p">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">known</span> <span class="o">+</span> <span class="nb">bytes</span><span class="p">([</span><span class="n">i</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ct</span><span class="p">[:</span><span class="n">length</span><span class="p">]</span> <span class="o">==</span> <span class="n">original</span><span class="p">[:</span><span class="n">length</span><span class="p">]):</span>
+            <span class="k">return</span> <span class="nb">bytes</span><span class="p">([</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+<span class="c1"># 6</span>
+<div class="viewcode-block" id="decode_secret"><a class="viewcode-back" href="../../set2.html#set2.c12.decode_secret">[docs]</a><span class="k">def</span> <span class="nf">decode_secret</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decodes unknown-string from the encryption oracle</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The decoded bytestring</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">e_secret</span>  <span class="o">=</span> <span class="n">encryption_oracle</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">num_bytes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">e_secret</span><span class="p">)</span>
+    <span class="n">secret</span>    <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">c</span>         <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="c1"># It may not be exactly num_bytes because of padding.</span>
+    <span class="c1"># Run until we get back None</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">decode_byte</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">num_bytes</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">secret</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="n">c</span>      <span class="o">=</span> <span class="n">decode_byte</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">secret</span><span class="p">),</span> <span class="n">num_bytes</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">secret</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestECBByteAtATime"><a class="viewcode-back" href="../../set2.html#set2.c12.TestECBByteAtATime">[docs]</a><span class="k">class</span> <span class="nc">TestECBByteAtATime</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestECBByteAtATime.test_challenge_12"><a class="viewcode-back" href="../../set2.html#set2.c12.TestECBByteAtATime.test_challenge_12">[docs]</a>    <span class="k">def</span> <span class="nf">test_challenge_12</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">get_blocksize</span><span class="p">(</span><span class="n">encryption_oracle</span><span class="p">),</span> <span class="mi">16</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">is_ecb</span><span class="p">(</span><span class="n">encryption_oracle</span><span class="p">,</span> <span class="mi">16</span><span class="p">))</span>
+        <span class="n">secret</span> <span class="o">=</span> <span class="n">c9</span><span class="o">.</span><span class="n">pkcs7_unpad</span><span class="p">(</span><span class="n">decode_secret</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">secret</span><span class="p">,</span> <span class="n">unknown</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span> <span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

@@ -1,14 +1,16 @@
 """
-Challenge 22
-Crack an MT199337 seed
+**Challenge 22**
+
+*Crack an MT199337 seed*
 
 Make sure your MT19937 accepts an integer seed value. Test it.
 
 Write a routine that performs the following operations:
-    - Wait a random number of seconds between 40 and 1000
-    - Seed the RNG with the current Unix timestamp
-    - Wait a random number of seconds again
-    - Return the first number from the RNG
+
+* Wait a random number of seconds between 40 and 1000
+* Seed the RNG with the current Unix timestamp
+* Wait a random number of seconds again
+* Return the first number from the RNG
 
 You get the idea. Go get coffee while it runs. Or just simulate the passage
 of time, although you're missing some of the fun of this exercise if you do

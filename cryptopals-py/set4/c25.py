@@ -1,13 +1,14 @@
 """
-Challenge 25
-Break 'random access read/write' AES CTR
+**Challenge 25**
+
+*Break 'random access read/write' AES CTR*
 
 Back to CTR. Encrypt the recovered plaintext from this file under CTR with a
 random key (unknown to you).
 
 Now write the code that allows you to 'seek' into the ct, decrypt, and
 re-encrypt with different pt. Expose this function as
-    edit(ct, key, offset, newtext)
+edit(ct, key, offset, newtext)
 
 Imagine the edit function was exposed to attackers by means of an API call
 that didn't reveal the key or the original plaintext; the attacker has the ct

@@ -1,6 +1,7 @@
 """
-Challenge 23
-Clone an MT19937 RNG from its output
+**Challenge 23**
+
+*Clone an MT19937 RNG from its Output*
 
 The internal state of MT19937 consists of 624 32-bit integers.
 

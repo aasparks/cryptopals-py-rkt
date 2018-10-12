@@ -1,6 +1,7 @@
 """
-Challenge 24
-Create the MT19937 stream cipher and break it
+**Challenge 24**
+
+*Create the MT19937 Stream Cipher and Break It*
 
 You can create a trivial stream cipher out of any PRNG; use it to generate a
 sequence of 8-bit outputs and call those outputs a keystream. XOR each byte of

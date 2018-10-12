@@ -1,12 +1,13 @@
 """
-Challenge 26
-CTR Bitflipping
+**Challenge 26**
+
+*CTR Bitflipping*
 
 There are people in the world that believe that CTR resists bit flipping
 attacks of the kind to which CBC mode is susceptible.
 
 Re-implement the CBC bitflipping exercise from earlier to use CTR mode instead
-of CBC mode. Inject an 'admin=true' token.
+of CBC mode. Inject an ``'admin=true'`` token.
 """
 import sys, os, unittest
 sys.path.insert(0, '../set3')

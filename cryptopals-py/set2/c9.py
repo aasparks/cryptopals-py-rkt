@@ -1,6 +1,7 @@
 """
-Challenge 9
-Implement PKCS7 padding
+**Challenge 9**
+
+*Implement PKCS7 padding*
 
 A block cipher transforms a fixed-sized block of plaintext into
 ciphertext. But we almost never want to transform a single block; we
@@ -12,9 +13,12 @@ popular padding scheme is called PKCS#7.
 
 So; pad any block to a specific block length, by appending the number
 of bytes of padding to the end of the block. For instance,
-"YELLOW SUBMARINE"
+
+``"YELLOW SUBMARINE"``
+
 ... padded to 20 bytes would be
-"YELLEOW SUBMARINE\x04\x04\x04\x04"
+
+``"YELLOW SUBMARINE\\x04\\x04\\x04\\x04"``
 """
 import unittest
 

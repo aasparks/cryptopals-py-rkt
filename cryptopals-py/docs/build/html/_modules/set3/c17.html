@@ -1,0 +1,287 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>set3.c17 &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for set3.c17</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**Challenge 17**</span>
+
+<span class="sd">*The CBC Padding Oracle*</span>
+
+<span class="sd">This is the best-known attack on modern block-cipher cryptography.</span>
+
+<span class="sd">Combine your padding code and your CBC code to write two functions.</span>
+
+<span class="sd">The first function should select at random one of the following 10 strings::</span>
+
+<span class="sd">    MDAwMDAwTm93IHRoYXQgdGhlIHBhcnR5IGlzIGp1bXBpbmc=</span>
+<span class="sd">    MDAwMDAxV2l0aCB0aGUgYmFzcyBraWNrZWQgaW4gYW5kIHRoZSBWZWdhJ3MgYXJlIHB1bXBpbic=</span>
+<span class="sd">    MDAwMDAyUXVpY2sgdG8gdGhlIHBvaW50LCB0byB0aGUgcG9pbnQsIG5vIGZha2luZw==</span>
+<span class="sd">    MDAwMDAzQ29va2luZyBNQydzIGxpa2UgYSBwb3VuZCBvZiBiYWNvbg==</span>
+<span class="sd">    MDAwMDA0QnVybmluZyAnZW0sIGlmIHlvdSBhaW4ndCBxdWljayBhbmQgbmltYmxl</span>
+<span class="sd">    MDAwMDA1SSBnbyBjcmF6eSB3aGVuIEkgaGVhciBhIGN5bWJhbA==</span>
+<span class="sd">    MDAwMDA2QW5kIGEgaGlnaCBoYXQgd2l0aCBhIHNvdXBlZCB1cCB0ZW1wbw==</span>
+<span class="sd">    MDAwMDA3SSdtIG9uIGEgcm9sbCwgaXQncyB0aW1lIHRvIGdvIHNvbG8=</span>
+<span class="sd">    MDAwMDA4b2xsaW4nIGluIG15IGZpdmUgcG9pbnQgb2g=</span>
+<span class="sd">    MDAwMDA5aXRoIG15IHJhZy10b3AgZG93biBzbyBteSBoYWlyIGNhbiBibG93</span>
+
+<span class="sd">...generate a random AES key (which it should save for all future encryptions),</span>
+<span class="sd">pad the string out to the 16-byte AES block size and CBC-encrypt it under that</span>
+<span class="sd">key, providing the caller the ciphertext and IV.</span>
+
+<span class="sd">The second function should consume the ciphertext produced by the first function,</span>
+<span class="sd">decrypt it, check its padding, and return true or false depending on whether the</span>
+<span class="sd">padding is valid.</span>
+
+<span class="sd">It turns out that it&#39;s possible to decrypt the ciphertexts provided by the first</span>
+<span class="sd">function.</span>
+
+<span class="sd">The decryption here depends on a side-channel leak by the decryption function.</span>
+<span class="sd">The leak is the error message that the padding is valid or not.</span>
+
+<span class="sd">You can find 100 web pages on how this attack works, so I won&#39;t re-explain it.</span>
+<span class="sd">What I&#39;ll say is this:</span>
+
+<span class="sd">The fundamental insight behind this attack is that the byte ``\\x01`` is valid</span>
+<span class="sd">padding, and occurs in 1/256 trials of &quot;randomized&quot; plaintexts produced by</span>
+<span class="sd">decrypting a tampered ciphertext.</span>
+
+<span class="sd">``\\x02`` in isolation is not valid padding.</span>
+
+<span class="sd">``\\x02\\x02`` is valid padding, but is much less likely to occur randomly than ``\\x01``.</span>
+
+<span class="sd">``\\x03\\x03\\x03`` is even less likely.</span>
+
+<span class="sd">So you can assume that if you corrupt a decryption AND it had valid padding, you</span>
+<span class="sd">know what that padding byte is.</span>
+
+<span class="sd">It is easy to get tripped up on the fact that CBC plaintexts are &quot;padded&quot;.</span>
+<span class="sd">Padding oracles have nothing to do with the actual padding on a CBC plaintext.</span>
+<span class="sd">It&#39;s an attack that targets a specific bit of code that handles decryption. You</span>
+<span class="sd">can mount a padding oracle on any CBC block, whether it&#39;s padded or not.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">random</span><span class="o">,</span> <span class="nn">unittest</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;../set1&#39;</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;../set2&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">c10</span><span class="o">,</span> <span class="nn">c9</span><span class="o">,</span> <span class="nn">c6</span><span class="o">,</span> <span class="nn">c2</span><span class="o">,</span> <span class="nn">c1</span>
+
+<span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">False</span><span class="p">;</span>
+<span class="n">key</span>   <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">iv</span>    <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">strs</span>  <span class="o">=</span> <span class="p">[</span><span class="sa">b</span><span class="s1">&#39;MDAwMDAwTm93IHRoYXQgdGhlIHBhcnR5IGlzIGp1bXBpbmc=&#39;</span><span class="p">,</span>
+         <span class="sa">b</span><span class="s1">&#39;MDAwMDAxV2l0aCB0aGUgYmFzcyBraWNrZWQgaW4gYW5kIHRoZSBWZWdhJ3MgYXJlIHB1bXBpbic=&#39;</span><span class="p">,</span>
+         <span class="sa">b</span><span class="s1">&#39;MDAwMDAyUXVpY2sgdG8gdGhlIHBvaW50LCB0byB0aGUgcG9pbnQsIG5vIGZha2luZw==&#39;</span><span class="p">,</span>
+         <span class="sa">b</span><span class="s1">&#39;MDAwMDAzQ29va2luZyBNQydzIGxpa2UgYSBwb3VuZCBvZiBiYWNvbg==&#39;</span><span class="p">,</span>
+         <span class="sa">b</span><span class="s1">&#39;MDAwMDA0QnVybmluZyAnZW0sIGlmIHlvdSBhaW4ndCBxdWljayBhbmQgbmltYmxl&#39;</span><span class="p">,</span>
+         <span class="sa">b</span><span class="s1">&#39;MDAwMDA1SSBnbyBjcmF6eSB3aGVuIEkgaGVhciBhIGN5bWJhbA==&#39;</span><span class="p">,</span>
+         <span class="sa">b</span><span class="s1">&#39;MDAwMDA2QW5kIGEgaGlnaCBoYXQgd2l0aCBhIHNvdXBlZCB1cCB0ZW1wbw==&#39;</span><span class="p">,</span>
+         <span class="sa">b</span><span class="s1">&#39;MDAwMDA3SSdtIG9uIGEgcm9sbCwgaXQncyB0aW1lIHRvIGdvIHNvbG8=&#39;</span><span class="p">,</span>
+         <span class="sa">b</span><span class="s1">&#39;MDAwMDA4b2xsaW4nIGluIG15IGZpdmUgcG9pbnQgb2g=&#39;</span><span class="p">,</span>
+         <span class="sa">b</span><span class="s1">&#39;MDAwMDA5aXRoIG15IHJhZy10b3AgZG93biBzbyBteSBoYWlyIGNhbiBibG93&#39;</span><span class="p">]</span>
+
+<span class="c1"># The encryption oracle. Picks a random string</span>
+<span class="c1"># and encrypts it.</span>
+<div class="viewcode-block" id="encryption_oracle"><a class="viewcode-back" href="../../set3.html#set3.c17.encryption_oracle">[docs]</a><span class="k">def</span> <span class="nf">encryption_oracle</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Encrypts a random string under AES-128-CBC</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A random, encrypted bytestring</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pt</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">strs</span><span class="p">)</span>
+    <span class="n">pt</span> <span class="o">=</span> <span class="n">c1</span><span class="o">.</span><span class="n">base64toascii</span><span class="p">(</span><span class="n">pt</span><span class="p">)</span>
+    <span class="n">pt</span> <span class="o">=</span> <span class="n">c9</span><span class="o">.</span><span class="n">pkcs7_pad</span><span class="p">(</span><span class="n">pt</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">c10</span><span class="o">.</span><span class="n">aes_128_cbc_encrypt</span><span class="p">(</span><span class="n">pt</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">iv</span><span class="p">)</span></div>
+
+<span class="c1"># The decryption oracle. Really the padding oracle.</span>
+<span class="c1"># Decrypts and determines if the padding is valid.</span>
+<div class="viewcode-block" id="decryption_oracle"><a class="viewcode-back" href="../../set3.html#set3.c17.decryption_oracle">[docs]</a><span class="k">def</span> <span class="nf">decryption_oracle</span><span class="p">(</span><span class="n">txt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decrypts the given ciphertext and determines if the padding is valid</span>
+<span class="sd">    for it.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        txt: The encrypted ciphertext</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if the padding is valid.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ct</span> <span class="o">=</span> <span class="n">c10</span><span class="o">.</span><span class="n">aes_128_cbc_decrypt</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">iv</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Pad byte: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ct</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="n">c9</span><span class="o">.</span><span class="n">pkcs7_unpad</span><span class="p">(</span><span class="n">ct</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<span class="c1"># The actual attack. Implemented top-down, we can</span>
+<span class="c1"># ignore the real magic. This just iterates through</span>
+<span class="c1"># the blocks backwards.</span>
+<div class="viewcode-block" id="cbc_padding_attack"><a class="viewcode-back" href="../../set3.html#set3.c17.cbc_padding_attack">[docs]</a><span class="k">def</span> <span class="nf">cbc_padding_attack</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs the CBC padding attack on the encryption oracle.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The decrypted secret string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># The IV is given so we can get all blocks</span>
+    <span class="n">txt</span>        <span class="o">=</span> <span class="n">iv</span> <span class="o">+</span> <span class="n">encryption_oracle</span><span class="p">()</span>
+    <span class="n">num_blocks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span> <span class="o">//</span> <span class="mi">16</span>
+    <span class="n">result</span>     <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_blocks</span><span class="p">)):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">attack_block</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="n">result</span>
+    <span class="k">return</span> <span class="n">c9</span><span class="o">.</span><span class="n">pkcs7_unpad</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
+
+<span class="c1"># Basically the same thing as the last problem, it just</span>
+<span class="c1"># iterates through each byte backwards.</span>
+<div class="viewcode-block" id="attack_block"><a class="viewcode-back" href="../../set3.html#set3.c17.attack_block">[docs]</a><span class="k">def</span> <span class="nf">attack_block</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">block_num</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Attacks a single block of the ciphertext.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        txt: The full ciphertext</span>
+<span class="sd">        block_num: The block number to attack</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The plaintext of this block.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">plaintext</span>  <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
+    <span class="n">block</span>      <span class="o">=</span> <span class="n">c6</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">block_num</span><span class="p">)</span>
+    <span class="n">prev_b</span>     <span class="o">=</span> <span class="n">c6</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">block_num</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">16</span><span class="p">)):</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">attack_byte</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">prev_b</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">plaintext</span><span class="p">)</span>
+        <span class="n">plaintext</span> <span class="o">=</span> <span class="n">p</span> <span class="o">+</span> <span class="n">plaintext</span>
+    <span class="k">return</span> <span class="n">plaintext</span></div>
+
+<span class="c1"># This is where the magic happens.</span>
+<div class="viewcode-block" id="attack_byte"><a class="viewcode-back" href="../../set3.html#set3.c17.attack_byte">[docs]</a><span class="k">def</span> <span class="nf">attack_byte</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">prev_block</span><span class="p">,</span> <span class="n">byte_num</span><span class="p">,</span> <span class="n">plaintext</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Attacks a single byte using the padding oracle attack. This function</span>
+<span class="sd">    contains the real magic for the attack.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        block: The block of ciphertext that is being attacked.</span>
+<span class="sd">        prev_block: The previous block of ciphertext used to attack the current one.</span>
+<span class="sd">        byte_num: The byte number of the block that we are getting.</span>
+<span class="sd">        plaintext: The known plaintext so far.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The byte of decoded byte of plaintext</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        RuntimeException if no byte can be found</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Knownxor is super tricky. Read the link from the readme.</span>
+    <span class="c1"># We want all the last values to be good padding.</span>
+    <span class="c1"># To do this we xor the prev_block with the known plaintext with</span>
+    <span class="c1"># the value we want to get for padding.</span>
+    <span class="n">knownxor</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">plaintext</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">knownxor</span> <span class="o">=</span> <span class="n">c2</span><span class="o">.</span><span class="n">xorstrs</span><span class="p">(</span><span class="n">prev_block</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">plaintext</span><span class="p">):],</span> <span class="n">plaintext</span><span class="p">)</span>
+        <span class="n">knownxor</span> <span class="o">=</span> <span class="n">c2</span><span class="o">.</span><span class="n">xorstrs</span><span class="p">(</span><span class="nb">bytes</span><span class="p">([</span><span class="mi">16</span><span class="o">-</span><span class="n">byte_num</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">plaintext</span><span class="p">)),</span> <span class="n">knownxor</span><span class="p">)</span>
+    <span class="c1"># Test each byte, returning when the padding is valid.</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">256</span><span class="p">):</span>
+        <span class="n">bad_prev_b</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">byte_num</span>
+        <span class="c1"># The magic here will only allow for valid padding when i is</span>
+        <span class="c1"># the same as the value of the original plaintext.</span>
+        <span class="n">bad_prev_b</span> <span class="o">+=</span> <span class="nb">bytes</span><span class="p">([</span><span class="n">i</span> <span class="o">^</span> <span class="p">(</span><span class="mi">16</span><span class="o">-</span><span class="n">byte_num</span><span class="p">)</span> <span class="o">^</span> <span class="n">prev_block</span><span class="p">[</span><span class="n">byte_num</span><span class="p">]])</span>
+        <span class="n">bad_prev_b</span> <span class="o">+=</span> <span class="n">knownxor</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">decryption_oracle</span><span class="p">(</span><span class="n">bad_prev_b</span> <span class="o">+</span> <span class="n">block</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="nb">bytes</span><span class="p">([</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">raise</span> <span class="ne">Exception</span></div>
+
+<div class="viewcode-block" id="TestPaddingAttack"><a class="viewcode-back" href="../../set3.html#set3.c17.TestPaddingAttack">[docs]</a><span class="k">class</span> <span class="nc">TestPaddingAttack</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestPaddingAttack.test_challenge_17"><a class="viewcode-back" href="../../set3.html#set3.c17.TestPaddingAttack.test_challenge_17">[docs]</a>    <span class="k">def</span> <span class="nf">test_challenge_17</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;000002Quick to the point, to the point, no faking&#39;</span>
+        <span class="n">actual</span>   <span class="o">=</span> <span class="n">cbc_padding_attack</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;000009ith my rag-top down so my hair can blow&#39;</span>
+        <span class="n">actual</span>   <span class="o">=</span> <span class="n">cbc_padding_attack</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;000001With the bass kicked in and the Vega</span><span class="se">\&#39;</span><span class="s1">s are pumpin</span><span class="se">\&#39;</span><span class="s1">&#39;</span>
+        <span class="n">actual</span>   <span class="o">=</span> <span class="n">cbc_padding_attack</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span> <span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

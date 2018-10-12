@@ -1,6 +1,7 @@
 """
-Challenge 27
-Recover the key from CBC with IV=KEY
+**Challenge 27**
+
+*Recover the key from CBC with IV=KEY*
 
 Take your code from exercise 16 and modify it so that it uses the key for CBC
 encryption as the IV.
@@ -16,15 +17,18 @@ The CBC code from exercise 16 encrypts a URL string. Verify each byte of the
 plaintext for ASCII compliance. Noncompliant messages should raise an exception
 or return an error that includes the decrypted plaintext.
 
-Use your code to encrypt a message that is at least 3 blocks long:
+Use your code to encrypt a message that is at least 3 blocks long::
+
     AES-CBC(P_1, P_2, P_3) -> C_1, C_2, C_3
 
-Modify the message to:
+Modify the message to::
+
     C_1, C_2, C_3 -> C_1, 0, C_1
 
 Decrypt the message and raise the appropriate error.
 
-As the attacker, recovering the plaintext from the error, extract the key:
+As the attacker, recovering the plaintext from the error, extract the key::
+
     P'_1 ^ P'_3
 """
 import sys, os, unittest

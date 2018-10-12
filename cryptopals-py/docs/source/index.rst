@@ -1,0 +1,49 @@
+.. cryptopals-py documentation master file, created by
+   sphinx-quickstart on Fri Oct 12 08:41:11 2018.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+cryptopals-py3
+=========================================
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+This is the documentation for the Python3 solutions to the Cryptopals
+challenges. I generated these docs using Sphinx. Below are all the modules
+(sets).
+
+Links to all Challenges
+------------------------
+
+The following table contains a quick reference to each challenge. This
+effectively the module index (below) but a little more concise.
+
++------------------+-------------------+-------------------+-----------------+
+| :ref:`set1ref`   | :ref:`set2ref`    | :ref:`set3ref`    | :ref:`set4ref`  |
++==================+===================+===================+=================+
+| :ref:`set1c1ref` | :ref:`set2c9ref`  | :ref:`set3c17ref` | :ref:`set4c25`  |
++------------------+-------------------+-------------------+-----------------+
+| :ref:`set1c2ref` | :ref:`set2c10ref` | :ref:`set3c18ref` | :ref:`set4c26`  |
++------------------+-------------------+-------------------+-----------------+
+| :ref:`set1c3ref` | :ref:`set2c11ref` | :ref:`set3c19ref` | :ref:`set4c27`  |
++------------------+-------------------+-------------------+-----------------+
+| :ref:`set1c4ref` | :ref:`set2c12ref` | :ref:`set3c20ref` | :ref:`set4c28`  |
++------------------+-------------------+-------------------+-----------------+
+| :ref:`set1c5ref` | :ref:`set2c13ref` | :ref:`set3c21ref` | :ref:`set4c29`  |
++------------------+-------------------+-------------------+-----------------+
+| :ref:`set1c6ref` | :ref:`set2c14ref` | :ref:`set3c22ref` | :ref:`set4c30`  |
++------------------+-------------------+-------------------+-----------------+
+| :ref:`set1c7ref` | :ref:`set2c15ref` | :ref:`set3c23ref` | :ref:`set4c31c` |
++------------------+-------------------+-------------------+-----------------+
+| :ref:`set1c8ref` | :ref:`set2c16ref` | :ref:`set3c24ref` | :ref:`set4c32c` |
++------------------+-------------------+-------------------+-----------------+
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

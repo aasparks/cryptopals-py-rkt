@@ -1,12 +1,14 @@
 """
-Challenge 14
-Byte-at-a-time ECB Decryption (Harder)
+**Challenge 14**
+
+*Byte-at-a-time ECB Decryption (Harder)*
 
 
 Take your oracle function from #12. Now generate a random count
 of random bytes and prepend this string to every plaintext.
 
-You are now doing:
+You are now doing::
+
     AES-128-ECB(random-prefix || attacker-controlled || target-bytes, random-key)
 
 Same goal: decrypt the target bytes

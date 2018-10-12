@@ -1,10 +1,12 @@
 """
-Challenge 18
-Implement CTR, the stream cipher mode
+**Challenge 18**
+
+*Implement CTR, the Stream Cipher Mode*
 
 The given string decrypts to something approximating English
 in CTR mode, which is an AES block cipher mode that turns AES into
-a stream cipher, with the following parameters:
+a stream cipher, with the following parameters::
+
     key=YELLOW SUBMARINE
     nonce=0
     format=64 bit unsigned little endian nonce

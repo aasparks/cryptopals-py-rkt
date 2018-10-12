@@ -1,0 +1,814 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Set 1 &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cryptopals-py 0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="set-1">
+<span id="set1ref"></span><h1>Set 1<a class="headerlink" href="#set-1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-set1.c1">
+<span id="challenge-1"></span><span id="set1c1ref"></span><h2>Challenge 1<a class="headerlink" href="#module-set1.c1" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 1</strong></p>
+<p><em>Convert hex to base64</em></p>
+<p>The string:</p>
+<p><code class="docutils literal notranslate"><span class="pre">49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d</span></code></p>
+<p>Should produce:</p>
+<p><code class="docutils literal notranslate"><span class="pre">SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t</span></code></p>
+<p>So go ahead and make that happen. You’ll need to use this code
+for the rest of the exercises.</p>
+<dl class="class">
+<dt id="set1.c1.TestConversions">
+<em class="property">class </em><code class="descclassname">set1.c1.</code><code class="descname">TestConversions</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c1.html#TestConversions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c1.TestConversions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="attribute">
+<dt id="set1.c1.TestConversions.field">
+<code class="descname">field</code><em class="property"> = '__weakref__'</em><a class="headerlink" href="#set1.c1.TestConversions.field" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set1.c1.TestConversions.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c1.html#TestConversions.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c1.TestConversions.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="set1.c1.TestConversions.test_base64_ascii">
+<code class="descname">test_base64_ascii</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c1.html#TestConversions.test_base64_ascii"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c1.TestConversions.test_base64_ascii" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set1.c1.TestConversions.test_challenge_1">
+<code class="descname">test_challenge_1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c1.html#TestConversions.test_challenge_1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c1.TestConversions.test_challenge_1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set1.c1.TestConversions.test_hex_ascii">
+<code class="descname">test_hex_ascii</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c1.html#TestConversions.test_hex_ascii"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c1.TestConversions.test_hex_ascii" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set1.c1.TestConversions.test_hex_base64">
+<code class="descname">test_hex_base64</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c1.html#TestConversions.test_hex_base64"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c1.TestConversions.test_hex_base64" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c1.asciitobase64">
+<code class="descclassname">set1.c1.</code><code class="descname">asciitobase64</code><span class="sig-paren">(</span><em>abstr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c1.html#asciitobase64"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c1.asciitobase64" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encodes an ASCII bytestring into base64.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>abstr</strong> – An ASCII bytestring.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The bytestring encoded in base64.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c1.asciitohex">
+<code class="descclassname">set1.c1.</code><code class="descname">asciitohex</code><span class="sig-paren">(</span><em>abstr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c1.html#asciitohex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c1.asciitohex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encodes an ASCII bytestring into hex representation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>abstr</strong> – ASCII bytestring to encode.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The bytestring encoded in hex.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c1.base64toascii">
+<code class="descclassname">set1.c1.</code><code class="descname">base64toascii</code><span class="sig-paren">(</span><em>b64bstr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c1.html#base64toascii"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c1.base64toascii" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decodes a base64 bytestring into ASCII.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>b64bstr</strong> – A bytestring in base64</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The bytestring decoded into ASCII</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c1.base64tohex">
+<code class="descclassname">set1.c1.</code><code class="descname">base64tohex</code><span class="sig-paren">(</span><em>b64bstr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c1.html#base64tohex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c1.base64tohex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encodes a base64 bytestring into a hex-encoded bytestring.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>b64bstr</strong> – A bytestring encoded in base64.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The bytestring encoded in hex.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c1.hextoascii">
+<code class="descclassname">set1.c1.</code><code class="descname">hextoascii</code><span class="sig-paren">(</span><em>hexbstr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c1.html#hextoascii"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c1.hextoascii" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a bytestring in hex representation to ASCII.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hexbstr</strong> – a bytestring encoded in hex.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The bytestring decoded into ASCII.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c1.hextobase64">
+<code class="descclassname">set1.c1.</code><code class="descname">hextobase64</code><span class="sig-paren">(</span><em>hexbstr</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c1.html#hextobase64"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c1.hextobase64" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encodes a hex-encoded string into base64.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>hexbstr</strong> – A bytestring in hex representation.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The bytestring encoded in base64 representation.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set1.c2">
+<span id="challenge-2"></span><span id="set1c2ref"></span><h2>Challenge 2<a class="headerlink" href="#module-set1.c2" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 2</strong></p>
+<p><em>Fixed XOR</em></p>
+<p>Write a function that takes two equal-length buffers and produces
+their XOR combination.</p>
+<p>If your function works properly, then when you feed it the string:</p>
+<p><code class="docutils literal notranslate"><span class="pre">1c0111001f010100061a024b53535009181c</span></code></p>
+<p>…after hex decoding, and when XOR’d against:</p>
+<p><code class="docutils literal notranslate"><span class="pre">686974207468652062756c6c277320657965</span></code></p>
+<p>…should produce:</p>
+<p><code class="docutils literal notranslate"><span class="pre">746865206b696420646f6e277420706c6179</span></code></p>
+<dl class="class">
+<dt id="set1.c2.TestXOR">
+<em class="property">class </em><code class="descclassname">set1.c2.</code><code class="descname">TestXOR</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c2.html#TestXOR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c2.TestXOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set1.c2.TestXOR.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c2.html#TestXOR.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c2.TestXOR.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="set1.c2.TestXOR.test_challenge_2">
+<code class="descname">test_challenge_2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c2.html#TestXOR.test_challenge_2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c2.TestXOR.test_challenge_2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set1.c2.TestXOR.test_error_check">
+<code class="descname">test_error_check</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c2.html#TestXOR.test_error_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c2.TestXOR.test_error_check" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c2.xorstrs">
+<code class="descclassname">set1.c2.</code><code class="descname">xorstrs</code><span class="sig-paren">(</span><em>str1</em>, <em>str2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c2.html#xorstrs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c2.xorstrs" title="Permalink to this definition">¶</a></dt>
+<dd><p>XOR’s two bytestrings together</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>bstr1</strong> – The first bytestring</li>
+<li><strong>bstr2</strong> – The second bytestring</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A bytestring containing the result of XORing the two arguments</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">ValueError if the strings are not equal length</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set1.c3">
+<span id="challenge-3"></span><span id="set1c3ref"></span><h2>Challenge 3<a class="headerlink" href="#module-set1.c3" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 3</strong></p>
+<p><em>Single-byte XOR cipher</em></p>
+<p>The hex encoded string:</p>
+<p><code class="docutils literal notranslate"><span class="pre">1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736</span></code></p>
+<p>…has been XOR’d against a single character. Find the key,
+decrypt the message.</p>
+<p>You can do this by hand. But don’t: write code to do it for you.
+How? Devise some method for ‘scoring’ a piece of English plaintext.
+Character frequency is a good metric. Evaluate each output and choose
+the one with the best score.</p>
+<dl class="class">
+<dt id="set1.c3.TestSingleXOR">
+<em class="property">class </em><code class="descclassname">set1.c3.</code><code class="descname">TestSingleXOR</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c3.html#TestSingleXOR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c3.TestSingleXOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set1.c3.TestSingleXOR.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c3.html#TestSingleXOR.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c3.TestSingleXOR.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="set1.c3.TestSingleXOR.test_challenge_3">
+<code class="descname">test_challenge_3</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c3.html#TestSingleXOR.test_challenge_3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c3.TestSingleXOR.test_challenge_3" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c3.score">
+<code class="descclassname">set1.c3.</code><code class="descname">score</code><span class="sig-paren">(</span><em>txt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c3.html#score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c3.score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scores a piece of text on how likely it is to be English, using
+frequency analysis.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>txt</strong> – The bytestring to be analyzed for frequency of English characters</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A score in the range of 0 to 26 for the likelihood of being English</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c3.single_byte_xor">
+<code class="descclassname">set1.c3.</code><code class="descname">single_byte_xor</code><span class="sig-paren">(</span><em>txt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c3.html#single_byte_xor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c3.single_byte_xor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solves the single byte XOR cipher by trying every possible key value
+and scoring the resulting plaintext for its similarity to the English
+language.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>txt</strong> – The ciphertext to be deciphered.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The key with the highest score.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set1.c4">
+<span id="challenge-4"></span><span id="set1c4ref"></span><h2>Challenge 4<a class="headerlink" href="#module-set1.c4" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 4</strong></p>
+<p><em>Detect single-character XOR</em></p>
+<p>One of the 60-character strings in this file has been encrypted by
+single-character XOR. Find it.</p>
+<dl class="class">
+<dt id="set1.c4.TestDetectXOR">
+<em class="property">class </em><code class="descclassname">set1.c4.</code><code class="descname">TestDetectXOR</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c4.html#TestDetectXOR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c4.TestDetectXOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set1.c4.TestDetectXOR.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c4.html#TestDetectXOR.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c4.TestDetectXOR.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="set1.c4.TestDetectXOR.tearDown">
+<code class="descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c4.html#TestDetectXOR.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c4.TestDetectXOR.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for deconstructing the test fixture after testing it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="set1.c4.TestDetectXOR.test_challenge_4">
+<code class="descname">test_challenge_4</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c4.html#TestDetectXOR.test_challenge_4"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c4.TestDetectXOR.test_challenge_4" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c4.detect_xor">
+<code class="descclassname">set1.c4.</code><code class="descname">detect_xor</code><span class="sig-paren">(</span><em>file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c4.html#detect_xor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c4.detect_xor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the line that is encrypted with single byte XOR</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file</strong> – The file to read lines from</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The pair containing the line from the file that was detected, and the
+decryption key for it.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set1.c5">
+<span id="challenge-5"></span><span id="set1c5ref"></span><h2>Challenge 5<a class="headerlink" href="#module-set1.c5" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 5</strong></p>
+<p><em>Implement repeating-key XOR</em></p>
+<p>Here is the opening stanza of an important work of the
+English language:</p>
+<p><code class="docutils literal notranslate"><span class="pre">Burning</span> <span class="pre">'em,</span> <span class="pre">if</span> <span class="pre">you</span> <span class="pre">ain't</span> <span class="pre">quick</span> <span class="pre">and</span> <span class="pre">nimble</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">I</span> <span class="pre">go</span> <span class="pre">crazy</span> <span class="pre">when</span> <span class="pre">I</span> <span class="pre">hear</span> <span class="pre">a</span> <span class="pre">cymbal</span></code></p>
+<p>Encrypt it, under the key “ICE”, using repeating-key XOR.</p>
+<p>In repeating-key XOR, you’ll sequentially apply each byte of the key;
+the first byte of plaintext will be XOR’d against I, the next C, the next E,
+then I again for the 4th byte, and so on.</p>
+<p>It should come out to:</p>
+<p><code class="docutils literal notranslate"><span class="pre">0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272</span>
+<span class="pre">a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f</span></code></p>
+<p>Encrypt a bunch of stuff using your repeating-key XOR function. Encrypt
+your mail. Encrypt your password file. Your .sig file. Get a feel for it.
+I promise, we aren’t wasting your time with this.</p>
+<dl class="class">
+<dt id="set1.c5.TestRepeatingKeyXOR">
+<em class="property">class </em><code class="descclassname">set1.c5.</code><code class="descname">TestRepeatingKeyXOR</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c5.html#TestRepeatingKeyXOR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c5.TestRepeatingKeyXOR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set1.c5.TestRepeatingKeyXOR.test_challenge_5">
+<code class="descname">test_challenge_5</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c5.html#TestRepeatingKeyXOR.test_challenge_5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c5.TestRepeatingKeyXOR.test_challenge_5" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set1.c5.TestRepeatingKeyXOR.test_key_extend">
+<code class="descname">test_key_extend</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c5.html#TestRepeatingKeyXOR.test_key_extend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c5.TestRepeatingKeyXOR.test_key_extend" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c5.key_extend">
+<code class="descclassname">set1.c5.</code><code class="descname">key_extend</code><span class="sig-paren">(</span><em>key</em>, <em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c5.html#key_extend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c5.key_extend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extends a key to size n</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>key</strong> – The key to be extended</li>
+<li><strong>n</strong> – The size to extend the key out to</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The key repeated as many times as needed to be of length n.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c5.repeating_key_xor">
+<code class="descclassname">set1.c5.</code><code class="descname">repeating_key_xor</code><span class="sig-paren">(</span><em>txt</em>, <em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c5.html#repeating_key_xor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c5.repeating_key_xor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypts the given plain text under the given key after extending it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>txt</strong> – The plain text to be encrypted</li>
+<li><strong>key</strong> – The key to encrypt under</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The ciphertext created by XORing the plaintext under the repeating key.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set1.c6">
+<span id="challenge-6"></span><span id="set1c6ref"></span><h2>Challenge 6<a class="headerlink" href="#module-set1.c6" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 6</strong></p>
+<p><em>Break repeating-key XOR</em></p>
+<p>There’s a file here. It’s been base64’d after being encrypted
+with repeating-key XOR.</p>
+<p>Decrypt it. Here’s how:</p>
+<ol class="arabic">
+<li><p class="first">Let KEYSIZE be the guessed length of the key; try values from 2 to (say) 40.</p>
+</li>
+<li><p class="first">Write a function to compute the edit distance/Hamming distance between two
+strings. The Hamming distance is just the number of differing bits.
+The distance between:</p>
+<p><code class="docutils literal notranslate"><span class="pre">this</span> <span class="pre">is</span> <span class="pre">a</span> <span class="pre">test</span></code></p>
+<p>and</p>
+<p><code class="docutils literal notranslate"><span class="pre">wokka</span> <span class="pre">wokka!!!</span></code></p>
+<p>is <code class="docutils literal notranslate"><span class="pre">37</span></code>. Make sure your code agrees before you proceed.</p>
+</li>
+<li><p class="first">For each KEYSIZE, take the first KEYSIZE worth of bytes, and the second
+KEYSIZE worth of bytes, and find the edit distance between them.
+Normalize this result by dividing by KEYSIZE.</p>
+</li>
+<li><p class="first">The KEYSIZE with the smallest normalized edit distance is probably the key.
+You could proceed perhaps with the smallest 2-3 KEYSIZE values. Or take 4
+KEYSIZE blocks instead of 2 and average the distances.</p>
+</li>
+<li><p class="first">Now that you probably know the KEYSIZE; break the ciphertext into blocks
+of KEYSIZE length.</p>
+</li>
+<li><p class="first">Now transpose the blocks: make a block that is the first byte of every
+block, and a block that is the second byte of every block, and so on.</p>
+</li>
+<li><p class="first">Solve each block as if it was single-character XOR. You already have code to
+do this.</p>
+</li>
+<li><p class="first">For each block, the single-byte XOR key that produces the best looking
+histogram is the repeating-key XOR key byte for that block. Put them together
+and you have the key.</p>
+</li>
+</ol>
+<p>This code is going to turn out to be surprisingly useful later on. Breaking
+repeating-key XOR (‘Vigenere’) statistically is obviously an academic exercise,
+a “Crypto 101” thing. But more people “know how” to break it than can actually
+break it, and a similar technique breaks something much more important.</p>
+<dl class="class">
+<dt id="set1.c6.TestVigenereBreak">
+<em class="property">class </em><code class="descclassname">set1.c6.</code><code class="descname">TestVigenereBreak</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c6.html#TestVigenereBreak"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c6.TestVigenereBreak" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set1.c6.TestVigenereBreak.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c6.html#TestVigenereBreak.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c6.TestVigenereBreak.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="set1.c6.TestVigenereBreak.test_challenge_6">
+<code class="descname">test_challenge_6</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c6.html#TestVigenereBreak.test_challenge_6"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c6.TestVigenereBreak.test_challenge_6" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c6.edit_distance">
+<code class="descclassname">set1.c6.</code><code class="descname">edit_distance</code><span class="sig-paren">(</span><em>keysize</em>, <em>txt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c6.html#edit_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c6.edit_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the edit distance for a keysize-sized block from the text</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>keysize</strong> – The keysize to get the edit distance for</li>
+<li><strong>txt</strong> – The text to split into blocks</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The average hamming distance between the blocks of text.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c6.get_block">
+<code class="descclassname">set1.c6.</code><code class="descname">get_block</code><span class="sig-paren">(</span><em>txt</em>, <em>n</em>, <em>size=16</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c6.html#get_block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c6.get_block" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the n’th block of txt.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>txt</strong> – The text to extract a block from</li>
+<li><strong>n</strong> – The 0-indexed block number</li>
+<li><strong>size</strong> – The block size</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c6.guess_keysize">
+<code class="descclassname">set1.c6.</code><code class="descname">guess_keysize</code><span class="sig-paren">(</span><em>txt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c6.html#guess_keysize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c6.guess_keysize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Guesses the keysize of the given ciphertext by taking the keysize with the
+smallest normalized edit distance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>txt</strong> – The ciphertext to get the keysize for</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The most likely keysize for the text.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c6.hamming_dist">
+<code class="descclassname">set1.c6.</code><code class="descname">hamming_dist</code><span class="sig-paren">(</span><em>str1</em>, <em>str2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c6.html#hamming_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c6.hamming_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the Hamming distance between two bytestrings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>str1</strong> – The first bytestring</li>
+<li><strong>str2</strong> – The second bytestring</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The hamming distance between the two given strings</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c6.solve_blocks">
+<code class="descclassname">set1.c6.</code><code class="descname">solve_blocks</code><span class="sig-paren">(</span><em>blocks</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c6.html#solve_blocks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c6.solve_blocks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solves each block of ciphertext as a single byte XOR cipher.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>blocks</strong> – The blocks of ciphertext, split up and transposed as described</li>
+<li><strong>step 6.</strong> (<em>in</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The key for the ciphertext</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c6.split_ct">
+<code class="descclassname">set1.c6.</code><code class="descname">split_ct</code><span class="sig-paren">(</span><em>txt</em>, <em>size</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c6.html#split_ct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c6.split_ct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits the ciphertext into blocks of the given size.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>txt</strong> – The ciphertext to be split</li>
+<li><strong>size</strong> – The size of each block</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of blocks of size [size] created from the ciphertext. The last
+element may be smaller than [size].</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set1.c7">
+<span id="challenge-7"></span><span id="set1c7ref"></span><h2>Challenge 7<a class="headerlink" href="#module-set1.c7" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 7</strong></p>
+<p><em>AES in ECB mode</em></p>
+<p>The base64-encoded content in this file has been encrypted via
+AES-128 in ECB mode under the key</p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;YELLOW</span> <span class="pre">SUBMARINE&quot;</span></code></p>
+<p>(case-sensitive, without the quotes; exactly 16 characters).</p>
+<p>Decrypt it. You know the key, after all.</p>
+<dl class="class">
+<dt id="set1.c7.TestAESECB">
+<em class="property">class </em><code class="descclassname">set1.c7.</code><code class="descname">TestAESECB</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c7.html#TestAESECB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c7.TestAESECB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set1.c7.TestAESECB.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c7.html#TestAESECB.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c7.TestAESECB.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="set1.c7.TestAESECB.test_challenge_7">
+<code class="descname">test_challenge_7</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c7.html#TestAESECB.test_challenge_7"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c7.TestAESECB.test_challenge_7" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c7.aes_128_ecb_decrypt">
+<code class="descclassname">set1.c7.</code><code class="descname">aes_128_ecb_decrypt</code><span class="sig-paren">(</span><em>txt</em>, <em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c7.html#aes_128_ecb_decrypt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c7.aes_128_ecb_decrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrypts AES-128 under ECB mode.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>txt</strong> – The ciphertext to be decrypted.</li>
+<li><strong>key</strong> – The key for decryption</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The decrypted plaintext.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c7.aes_128_ecb_encrypt">
+<code class="descclassname">set1.c7.</code><code class="descname">aes_128_ecb_encrypt</code><span class="sig-paren">(</span><em>txt</em>, <em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c7.html#aes_128_ecb_encrypt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c7.aes_128_ecb_encrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypts AES-128 under ECB mode.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>txt</strong> – The plaintext to be encrypted.</li>
+<li><strong>key</strong> – The key for encryption</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The encrypted ciphertext.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set1.c8">
+<span id="challenge-8"></span><span id="set1c8ref"></span><h2>Challenge 8<a class="headerlink" href="#module-set1.c8" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 8</strong></p>
+<p><em>Detect AES in ECB Mode</em></p>
+<p>In this file are a bunch of hex-encoded ciphertexts. One of them
+has been encrypted with ECB.</p>
+<p>Detect it.</p>
+<p>Remember that the problem with ECB is that it is stateless and
+deterministic; the same 16-byte plaintext block will always produce
+the same 16-byte ciphertext.</p>
+<dl class="class">
+<dt id="set1.c8.TestIsECB">
+<em class="property">class </em><code class="descclassname">set1.c8.</code><code class="descname">TestIsECB</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c8.html#TestIsECB"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c8.TestIsECB" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set1.c8.TestIsECB.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c8.html#TestIsECB.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c8.TestIsECB.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="set1.c8.TestIsECB.tearDown">
+<code class="descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c8.html#TestIsECB.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c8.TestIsECB.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for deconstructing the test fixture after testing it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="set1.c8.TestIsECB.test_challenge_8">
+<code class="descname">test_challenge_8</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c8.html#TestIsECB.test_challenge_8"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c8.TestIsECB.test_challenge_8" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set1.c8.is_ecb">
+<code class="descclassname">set1.c8.</code><code class="descname">is_ecb</code><span class="sig-paren">(</span><em>txt</em>, <em>maxBlocks=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set1/c8.html#is_ecb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set1.c8.is_ecb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines if a given ciphertext was encrypted in ECB mode looking for
+repeated blocks.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>txt</strong> – The ciphertext in question</li>
+<li><strong>maxBlocks</strong> – The maximum number of repeated blocks allowed before it is</li>
+<li><strong>to be ECB.</strong> (<em>considered</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if the txt was encrypted with ECB</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set1">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-set1" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Set 1</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-set1.c1">Challenge 1</a></li>
+<li><a class="reference internal" href="#module-set1.c2">Challenge 2</a></li>
+<li><a class="reference internal" href="#module-set1.c3">Challenge 3</a></li>
+<li><a class="reference internal" href="#module-set1.c4">Challenge 4</a></li>
+<li><a class="reference internal" href="#module-set1.c5">Challenge 5</a></li>
+<li><a class="reference internal" href="#module-set1.c6">Challenge 6</a></li>
+<li><a class="reference internal" href="#module-set1.c7">Challenge 7</a></li>
+<li><a class="reference internal" href="#module-set1.c8">Challenge 8</a></li>
+<li><a class="reference internal" href="#module-set1">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/set1.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cryptopals-py 0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

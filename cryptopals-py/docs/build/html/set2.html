@@ -1,0 +1,916 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Set 2 &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cryptopals-py 0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="set-2">
+<span id="set2ref"></span><h1>Set 2<a class="headerlink" href="#set-2" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-set2.c9">
+<span id="challenge-9"></span><span id="set2c9ref"></span><h2>Challenge 9<a class="headerlink" href="#module-set2.c9" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 9</strong></p>
+<p><em>Implement PKCS7 padding</em></p>
+<p>A block cipher transforms a fixed-sized block of plaintext into
+ciphertext. But we almost never want to transform a single block; we
+encrypt irregularly-sized messages.</p>
+<p>One way we account for irregularly-sized messages is by padding,
+creating a plaintext that is an even multiple of the blocksize. The most
+popular padding scheme is called PKCS#7.</p>
+<p>So; pad any block to a specific block length, by appending the number
+of bytes of padding to the end of the block. For instance,</p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;YELLOW</span> <span class="pre">SUBMARINE&quot;</span></code></p>
+<p>… padded to 20 bytes would be</p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;YELLOW</span> <span class="pre">SUBMARINE\x04\x04\x04\x04&quot;</span></code></p>
+<dl class="exception">
+<dt id="set2.c9.PaddingError">
+<em class="property">exception </em><code class="descclassname">set2.c9.</code><code class="descname">PaddingError</code><a class="reference internal" href="_modules/set2/c9.html#PaddingError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c9.PaddingError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="set2.c9.TestPKCS7">
+<em class="property">class </em><code class="descclassname">set2.c9.</code><code class="descname">TestPKCS7</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c9.html#TestPKCS7"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c9.TestPKCS7" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set2.c9.TestPKCS7.test_challenge_9">
+<code class="descname">test_challenge_9</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c9.html#TestPKCS7.test_challenge_9"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c9.TestPKCS7.test_challenge_9" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set2.c9.TestPKCS7.test_pad">
+<code class="descname">test_pad</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c9.html#TestPKCS7.test_pad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c9.TestPKCS7.test_pad" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set2.c9.TestPKCS7.test_unpad">
+<code class="descname">test_unpad</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c9.html#TestPKCS7.test_unpad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c9.TestPKCS7.test_unpad" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c9.pkcs7_pad">
+<code class="descclassname">set2.c9.</code><code class="descname">pkcs7_pad</code><span class="sig-paren">(</span><em>txt</em>, <em>n=16</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c9.html#pkcs7_pad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c9.pkcs7_pad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds padding according to the PKCS#7 standard.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>txt</strong> – The text to be padded</li>
+<li><strong>n</strong> (<em>optional</em>) – The blocksize. Defaults to 16 bytes</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The bytestring padded out to a multiple of blocksize</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c9.pkcs7_unpad">
+<code class="descclassname">set2.c9.</code><code class="descname">pkcs7_unpad</code><span class="sig-paren">(</span><em>txt</em>, <em>n=16</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c9.html#pkcs7_unpad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c9.pkcs7_unpad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unpads according to PKCS#7 with padding validation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>txt</strong> – The text to unpad.</li>
+<li><strong>n</strong> (<em>optional</em>) – The blocksize</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set2.c10">
+<span id="challenge-10"></span><span id="set2c10ref"></span><h2>Challenge 10<a class="headerlink" href="#module-set2.c10" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 10</strong></p>
+<p><em>Implement CBC Mode</em></p>
+<p>CBC mode is a block cipher mode that allows us to encrypt irregularly-sized
+messages, despite the fact that a block cipher natively only transforms
+individual blocks.</p>
+<p>In CBC mode, each ciphertext block is added to the next plaintext block
+before the next call to the cipher core.</p>
+<p>The first plaintext block, which has no associated previous ciphertext block,
+is added to a “fake 0th ciphertext block” called the initialization vector,
+or IV.</p>
+<p>Implement CBC mode by hand by taking the ECB function you wrote earlier, making
+it encrypt instead of decrypt, and using your XOR function from the previous
+exercise to combine them.</p>
+<p>The file here is intelligible when CBC decrypted against “YELLOW SUBMARINE”
+with an IV of all ASCII 0.</p>
+<dl class="class">
+<dt id="set2.c10.TestCBCMode">
+<em class="property">class </em><code class="descclassname">set2.c10.</code><code class="descname">TestCBCMode</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c10.html#TestCBCMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c10.TestCBCMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set2.c10.TestCBCMode.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c10.html#TestCBCMode.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c10.TestCBCMode.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="set2.c10.TestCBCMode.smoke_test">
+<code class="descname">smoke_test</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c10.html#TestCBCMode.smoke_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c10.TestCBCMode.smoke_test" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set2.c10.TestCBCMode.test_challenge_10">
+<code class="descname">test_challenge_10</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c10.html#TestCBCMode.test_challenge_10"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c10.TestCBCMode.test_challenge_10" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c10.aes_128_cbc_decrypt">
+<code class="descclassname">set2.c10.</code><code class="descname">aes_128_cbc_decrypt</code><span class="sig-paren">(</span><em>txt</em>, <em>key</em>, <em>IV=b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c10.html#aes_128_cbc_decrypt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c10.aes_128_cbc_decrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrypts the given bytestring using AES-128 in CBC mode</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>txt</strong> – The text to be decrypted</li>
+<li><strong>key</strong> – The encryption key</li>
+<li><strong>iv</strong> – The initialization vector</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The decrypted bytestring.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c10.aes_128_cbc_encrypt">
+<code class="descclassname">set2.c10.</code><code class="descname">aes_128_cbc_encrypt</code><span class="sig-paren">(</span><em>txt</em>, <em>key</em>, <em>IV=b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c10.html#aes_128_cbc_encrypt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c10.aes_128_cbc_encrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypts a bytestring under AES-128 in CBC mode</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>txt</strong> – The plaintext to be encrypted</li>
+<li><strong>key</strong> – The key to encrypt under</li>
+<li><strong>iv</strong> – The initialization vector</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The encrypted text under AES-128 in CBC mode.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set2.c11">
+<span id="challenge-11"></span><span id="set2c11ref"></span><h2>Challenge 11<a class="headerlink" href="#module-set2.c11" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 11</strong></p>
+<p><em>An ECB/CBC Detection Oracle</em></p>
+<p>Now that you have ECB and CBC working:</p>
+<p>Write a function to generate a random AES key; that’s just
+16 random bytes.</p>
+<p>Write a function that encrypts data under an unknown key —
+that is, a function that generates a random key and encrypts
+under it.</p>
+<p>The function should look like</p>
+<p><code class="docutils literal notranslate"><span class="pre">encryption_oracle(your-input)</span> <span class="pre">=&gt;</span> <span class="pre">[MEANINGLESS</span> <span class="pre">JIBBER</span> <span class="pre">JABBER]</span></code></p>
+<p>Under the hood, have the function append 5-10 bytes before the
+plaintext and 5-10 bytes after the plaintext.</p>
+<p>Now have the function choose to encrypt under ECB 1/2 the time,
+and under CBC the other half (just use random IV’s each time
+for CBC). Use rand(2) to decide which to use.</p>
+<p>Detect the block cipher mode the function is using each time. You
+should end up with a piece of code that, pointed at a black box
+that might be encrypting ECB or CBC, tells which one is happening.</p>
+<dl class="class">
+<dt id="set2.c11.TestECBOrCBC">
+<em class="property">class </em><code class="descclassname">set2.c11.</code><code class="descname">TestECBOrCBC</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c11.html#TestECBOrCBC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c11.TestECBOrCBC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set2.c11.TestECBOrCBC.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c11.html#TestECBOrCBC.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c11.TestECBOrCBC.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="set2.c11.TestECBOrCBC.test_challenge_11">
+<code class="descname">test_challenge_11</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c11.html#TestECBOrCBC.test_challenge_11"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c11.TestECBOrCBC.test_challenge_11" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c11.ecb_or_cbc">
+<code class="descclassname">set2.c11.</code><code class="descname">ecb_or_cbc</code><span class="sig-paren">(</span><em>txt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c11.html#ecb_or_cbc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c11.ecb_or_cbc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines if the given ciphertext was encrypted with ECB or CBC.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>txt</strong> – The ciphertext in question</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if using ECB, False if using CBC.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c11.encryption_oracle">
+<code class="descclassname">set2.c11.</code><code class="descname">encryption_oracle</code><span class="sig-paren">(</span><em>txt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c11.html#encryption_oracle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c11.encryption_oracle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-set2.c12">
+<span id="challenge-12"></span><span id="set2c12ref"></span><h2>Challenge 12<a class="headerlink" href="#module-set2.c12" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 12</strong></p>
+<p><em>Byte-at-a-time ECB Decryption (Simple)</em></p>
+<p>Copy your oracle function to a new function that encrypts under ECB mode
+using a consistent but unknown key (for instance, assign a single random key,
+once, to a global variable).</p>
+<p>Now take that same function and have it append to the plaintext, BEFORE
+ENCRYPTING, the following string:</p>
+<p><code class="docutils literal notranslate"><span class="pre">Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkg</span>
+<span class="pre">aGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBq</span>
+<span class="pre">dXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUg</span>
+<span class="pre">YnkK</span></code></p>
+<p>Base64 decode the string before appending it. Do not base64 decode the
+string by hand; make your code do it. The point is that you don’t know
+its contents.</p>
+<p>What you have now is a function that produces:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AES</span><span class="o">-</span><span class="mi">128</span><span class="o">-</span><span class="n">ECB</span><span class="p">(</span><span class="n">your</span><span class="o">-</span><span class="n">string</span> <span class="o">||</span> <span class="n">unknown</span><span class="o">-</span><span class="n">string</span><span class="p">,</span> <span class="n">random</span><span class="o">-</span><span class="n">key</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>It turns out: you can decrypt “unknown-string” with repeated calls to the
+oracle function!</p>
+<p>Here’s roughly how:</p>
+<ol class="arabic simple">
+<li>Feed identical bytes of your-string to the function 1 at a time – start
+with 1 byte (“A”), then “AA”, then “AAA”, and so on. Discover the block
+size of the cipher. You know it, but do this step anyway.</li>
+<li>Detect that the function is using ECB. You already know, but do this step
+anyways.</li>
+<li>Knowing the block size, craft an input block that is exactly 1 byte short
+(for instance, if the block size is 8 bytes, make “AAAAAAA”). Think about
+what the oracle function is going to put in that last byte position.</li>
+<li>Make a dictionary of every possible last byte by feeding different
+strings to the oracle; for instance, “AAAAAAAA”, “AAAAAAAB”, “AAAAAAAC”,
+remembering the first block of each invocation.</li>
+<li>Match the output of the one-byte-short input to one of the entries in
+your dictionary. You’ve now discovered the first byte of unknown-string.</li>
+<li>Repeat for the next byte.</li>
+</ol>
+<dl class="class">
+<dt id="set2.c12.TestECBByteAtATime">
+<em class="property">class </em><code class="descclassname">set2.c12.</code><code class="descname">TestECBByteAtATime</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c12.html#TestECBByteAtATime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c12.TestECBByteAtATime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set2.c12.TestECBByteAtATime.test_challenge_12">
+<code class="descname">test_challenge_12</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c12.html#TestECBByteAtATime.test_challenge_12"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c12.TestECBByteAtATime.test_challenge_12" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c12.craft_block">
+<code class="descclassname">set2.c12.</code><code class="descname">craft_block</code><span class="sig-paren">(</span><em>offset</em>, <em>num_bytes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c12.html#craft_block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c12.craft_block" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crafts a block that is one byte short of the num_bytes - offset</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>offset</strong> – The number of bytes already known, that don’t need to be crafted</li>
+<li><strong>num_bytes</strong> – The number of bytes that need to be found in total</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A bytestring of all A’s that is of length num_bytes - offset - 1</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c12.decode_byte">
+<code class="descclassname">set2.c12.</code><code class="descname">decode_byte</code><span class="sig-paren">(</span><em>known</em>, <em>num_bytes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c12.html#decode_byte"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c12.decode_byte" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decodes a single byte of the unknown string by trying every possible value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>known</strong> – The parts of unknown-string that we already know</li>
+<li><strong>num_bytes</strong> – The length of unknown-string</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The next decoded byte of unknown-string</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c12.decode_secret">
+<code class="descclassname">set2.c12.</code><code class="descname">decode_secret</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c12.html#decode_secret"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c12.decode_secret" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decodes unknown-string from the encryption oracle</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The decoded bytestring</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c12.encryption_oracle">
+<code class="descclassname">set2.c12.</code><code class="descname">encryption_oracle</code><span class="sig-paren">(</span><em>txt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c12.html#encryption_oracle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c12.encryption_oracle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Black box encryption oracle that appends an unknown string to the given
+text, pads it out, and encrypts under AES-128-ECB with an unknown key.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>txt</strong> – The plaintext to be encrypted.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">AES-128-ECB(txt || unknown-string, random-key) as a bytestring</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c12.get_blocksize">
+<code class="descclassname">set2.c12.</code><code class="descname">get_blocksize</code><span class="sig-paren">(</span><em>oracle</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c12.html#get_blocksize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c12.get_blocksize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the block size of encryption_oracle.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>oracle</strong> – The encryption oracle function to be run.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The block size that the encryption oracle is using (16)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c12.is_ecb">
+<code class="descclassname">set2.c12.</code><code class="descname">is_ecb</code><span class="sig-paren">(</span><em>oracle</em>, <em>blocksize</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c12.html#is_ecb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c12.is_ecb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detects whether or not the given encryption oracle is using ECB mode</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>oracle</strong> – The encryption oracle</li>
+<li><strong>blocksize</strong> – The block size of the oracle</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if oracle is using ECB mode</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set2.c13">
+<span id="challenge-13"></span><span id="set2c13ref"></span><h2>Challenge 13<a class="headerlink" href="#module-set2.c13" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 13</strong></p>
+<p><em>ECB cut-and-paste</em></p>
+<p>Write a k=v parsing routine, as if for a structured cookie. The routine
+should take:</p>
+<p><code class="docutils literal notranslate"><span class="pre">foo=bar&amp;baz=qux&amp;zap=zazzle</span></code></p>
+<p>…and produce:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="n">foo</span><span class="p">:</span> <span class="s1">&#39;bar&#39;</span><span class="p">,</span>
+    <span class="n">baz</span><span class="p">:</span> <span class="s1">&#39;qux&#39;</span><span class="p">,</span>
+    <span class="n">zap</span><span class="p">:</span> <span class="s1">&#39;zazzle&#39;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>(you know, the object; I don’t care if you convert it to JSON).</p>
+<p>Now write a function that encodes a user profile in that format, given an email
+address. You should have something like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">profile_for</span><span class="p">(</span><span class="s2">&quot;foo@bar.com&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>…and it should produce:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="n">email</span><span class="p">:</span> <span class="s1">&#39;foo@bar.com&#39;</span><span class="p">,</span>
+    <span class="n">uid</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="n">role</span><span class="p">:</span> <span class="s1">&#39;user&#39;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>…encoded as</p>
+<p><code class="docutils literal notranslate"><span class="pre">email=foo&#64;bar.com&amp;uid=10&amp;role=user</span></code></p>
+<p>You “profile_for” function should not allow encoding metacharacters (&amp; and =).
+Eat them, quote them, whatever you want to do, but don’t let people set their
+email address to</p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;foo&#64;bar.com&amp;role=admin&quot;</span></code>.</p>
+<p>Now, two more easy functions. Generate a random AES key, then:
+* A. Encrypt the encoded user profile under the key; “provide” that to the
+“attacker”.
+* B. Decrypt the encoded user profile and parse it.</p>
+<p>Using only the user input to <code class="docutils literal notranslate"><span class="pre">profile_for()</span></code> (an an oracle to generate “valid”
+ciphertexts) and the ciphertexts themselves, make a role=admin profile.</p>
+<dl class="class">
+<dt id="set2.c13.TestECBCutAndPaste">
+<em class="property">class </em><code class="descclassname">set2.c13.</code><code class="descname">TestECBCutAndPaste</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c13.html#TestECBCutAndPaste"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c13.TestECBCutAndPaste" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set2.c13.TestECBCutAndPaste.test_challenge_13">
+<code class="descname">test_challenge_13</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c13.html#TestECBCutAndPaste.test_challenge_13"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c13.TestECBCutAndPaste.test_challenge_13" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set2.c13.TestECBCutAndPaste.test_parse_cookie">
+<code class="descname">test_parse_cookie</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c13.html#TestECBCutAndPaste.test_parse_cookie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c13.TestECBCutAndPaste.test_parse_cookie" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set2.c13.TestECBCutAndPaste.test_profile_for">
+<code class="descname">test_profile_for</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c13.html#TestECBCutAndPaste.test_profile_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c13.TestECBCutAndPaste.test_profile_for" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c13.decode_profile">
+<code class="descclassname">set2.c13.</code><code class="descname">decode_profile</code><span class="sig-paren">(</span><em>ct</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c13.html#decode_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c13.decode_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decodes the encrypted cookie and parses it into a dictionary.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ct</strong> – The encrypted cookie containing the profile information</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dictionary containing the profile’s information</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c13.encode_profile">
+<code class="descclassname">set2.c13.</code><code class="descname">encode_profile</code><span class="sig-paren">(</span><em>email</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c13.html#encode_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c13.encode_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypts the encoded profile cookie for the given email address.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>email</strong> – The user’s email address</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The encrypted cookie</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c13.fake_admin">
+<code class="descclassname">set2.c13.</code><code class="descname">fake_admin</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c13.html#fake_admin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c13.fake_admin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a fake admin account using ECB cut-and-paste attack</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The decoded profile as a dictionary with dict[role] == admin</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c13.parse_cookie">
+<code class="descclassname">set2.c13.</code><code class="descname">parse_cookie</code><span class="sig-paren">(</span><em>cookie</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c13.html#parse_cookie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c13.parse_cookie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parses a cookie as described above and produces a dictionary with the
+values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cookie</strong> – The cookie encoded as foo=bar&amp;baz=qux&amp;zap=zazzle</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A dictionary containing the key,value pairs from the cookie as
+described above.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c13.profile_for">
+<code class="descclassname">set2.c13.</code><code class="descname">profile_for</code><span class="sig-paren">(</span><em>email</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c13.html#profile_for"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c13.profile_for" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a profile for the given email address with a user id and the
+role set to user.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>email</strong> – The profile’s email address</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A cookie for the user’s profile encoded as email=foo&amp;uid=1&amp;role=user</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set2.c14">
+<span id="challenge-14"></span><span id="set2c14ref"></span><h2>Challenge 14<a class="headerlink" href="#module-set2.c14" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 14</strong></p>
+<p><em>Byte-at-a-time ECB Decryption (Harder)</em></p>
+<p>Take your oracle function from #12. Now generate a random count
+of random bytes and prepend this string to every plaintext.</p>
+<p>You are now doing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AES</span><span class="o">-</span><span class="mi">128</span><span class="o">-</span><span class="n">ECB</span><span class="p">(</span><span class="n">random</span><span class="o">-</span><span class="n">prefix</span> <span class="o">||</span> <span class="n">attacker</span><span class="o">-</span><span class="n">controlled</span> <span class="o">||</span> <span class="n">target</span><span class="o">-</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">random</span><span class="o">-</span><span class="n">key</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Same goal: decrypt the target bytes</p>
+<dl class="class">
+<dt id="set2.c14.TestECBByteAtATimeHarder">
+<em class="property">class </em><code class="descclassname">set2.c14.</code><code class="descname">TestECBByteAtATimeHarder</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c14.html#TestECBByteAtATimeHarder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c14.TestECBByteAtATimeHarder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set2.c14.TestECBByteAtATimeHarder.test_challenge_14">
+<code class="descname">test_challenge_14</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c14.html#TestECBByteAtATimeHarder.test_challenge_14"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c14.TestECBByteAtATimeHarder.test_challenge_14" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c14.craft_block">
+<code class="descclassname">set2.c14.</code><code class="descname">craft_block</code><span class="sig-paren">(</span><em>offset</em>, <em>num_bytes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c14.html#craft_block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c14.craft_block" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crafts a block that is one byte short of the num_bytes - offset</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>offset</strong> – The number of bytes already known, that don’t need to be crafted</li>
+<li><strong>num_bytes</strong> – The number of bytes that need to be found in total</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A bytestring of all A’s that is of length num_bytes - offset - 1</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c14.decode_byte">
+<code class="descclassname">set2.c14.</code><code class="descname">decode_byte</code><span class="sig-paren">(</span><em>known</em>, <em>num_bytes</em>, <em>prefix_size</em>, <em>needed_extra</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c14.html#decode_byte"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c14.decode_byte" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decodes the next byte of the unknown string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>known</strong> – Bytestring containing the bytes from unknown-string that we</li>
+<li><strong>so far.</strong> (<em>know</em>) – </li>
+<li><strong>num_bytes</strong> – The length of the ciphertext</li>
+<li><strong>prefix_size</strong> – The length of the secret prefix</li>
+<li><strong>needed_extra</strong> – The length of bytes we still need</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c14.decode_secret">
+<code class="descclassname">set2.c14.</code><code class="descname">decode_secret</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c14.html#decode_secret"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c14.decode_secret" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decodes the secret bytes from the encryption oracle</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The secret bytes that it found</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c14.encryption_oracle">
+<code class="descclassname">set2.c14.</code><code class="descname">encryption_oracle</code><span class="sig-paren">(</span><em>txt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c14.html#encryption_oracle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c14.encryption_oracle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypts the given text under a secret key with a secret, random prefix, and
+and unknown suffix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>txt</strong> – The (attacker-controlled) text to be encrypted</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">AES-128-ECB(random-prefix || txt || unknown-string, random-key)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c14.find_prefix_block">
+<code class="descclassname">set2.c14.</code><code class="descname">find_prefix_block</code><span class="sig-paren">(</span><em>oracle</em>, <em>test</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c14.html#find_prefix_block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c14.find_prefix_block" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the block that contains the prefix</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>original</strong> – The result of encryption_oracle(b’‘)</li>
+<li><strong>test</strong> – The result of encryption_oracle(b’A’)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The block number where the prefix ends</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">RuntimeError if the block is not found</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c14.get_prefix_size">
+<code class="descclassname">set2.c14.</code><code class="descname">get_prefix_size</code><span class="sig-paren">(</span><em>oracle</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c14.html#get_prefix_size"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c14.get_prefix_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines the size of the prefix for the encryption oracle.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>oracle</strong> – The encryption oracle</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The size of the prefix and the length of the secret</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set2.c15">
+<span id="challenge-15"></span><span id="set2c15ref"></span><h2>Challenge 15<a class="headerlink" href="#module-set2.c15" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 15</strong></p>
+<p><em>PKCS7 Padding Validation</em></p>
+<p>Write a function that takes a plaintext, determines if it has valid
+PKCS#7 padding, and strips the padding off.</p>
+<p>The string:</p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;ICE</span> <span class="pre">ICE</span> <span class="pre">BABY\x04\x04\x04\x04&quot;</span></code></p>
+<p>…has valid padding, and produces the result</p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;ICE</span> <span class="pre">ICE</span> <span class="pre">BABY&quot;</span></code></p>
+<p>The string:</p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;ICE</span> <span class="pre">ICE</span> <span class="pre">BABY\x05\x05\x05\x05&quot;</span></code></p>
+<p>…does not have valid padding, nor does:</p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;ICE</span> <span class="pre">ICE</span> <span class="pre">BABY\x01\x02\x03\x04&quot;</span></code></p>
+<p>If you are writing in a language with exceptions, like Python or Ruby, make
+your function throw an exception on bad padding.</p>
+<p>Crypto nerds know where we’re going with this. Bear with us.</p>
+<dl class="class">
+<dt id="set2.c15.TestPKCS7Unpad">
+<em class="property">class </em><code class="descclassname">set2.c15.</code><code class="descname">TestPKCS7Unpad</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c15.html#TestPKCS7Unpad"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c15.TestPKCS7Unpad" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set2.c15.TestPKCS7Unpad.test_challenge_15">
+<code class="descname">test_challenge_15</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c15.html#TestPKCS7Unpad.test_challenge_15"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c15.TestPKCS7Unpad.test_challenge_15" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-set2.c16">
+<span id="challenge-16"></span><span id="set2c16ref"></span><h2>Challenge 16<a class="headerlink" href="#module-set2.c16" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 16</strong></p>
+<p><em>CBC Bitflipping Attacks</em></p>
+<p>Combine your padding code and CBC code to write two functions.</p>
+<p>The first function should take an arbitrary input string, prepend
+the string:</p>
+<p><code class="docutils literal notranslate"><span class="pre">'comment1=cooking%20MCs;userdata='</span></code></p>
+<p>…and append the string:</p>
+<p><code class="docutils literal notranslate"><span class="pre">';comment2=%20like%20a%20pound%20of%20bacon'</span></code></p>
+<p>The function should quote out the ‘;’ and ‘=’ characters.</p>
+<p>The function should then pad out the input to the 16-byte AES block length
+and encrypt it under the random AES key.</p>
+<p>The second function should decrypt the string and look for the characters
+“;admin=true;”.</p>
+<p>Return true or false based on whether the string exists.</p>
+<p>If you’ve written the first function properly, it should not be possible to
+provide user input to it that will generate the string the second function is
+looking for. We’ll have to break the crypto to do that.</p>
+<p>Instead modify the ciphertext (without knowledge of the AES key) to accomplish
+this.</p>
+<p>You’re relying on the fact that in CBC mode, a 1-bit error in a ciphertext
+block:
+* Completely scrambles the block the error occurs in
+* Produces the identical 1-bit error in the next ciphertext block</p>
+<dl class="class">
+<dt id="set2.c16.TestCBCBitflip">
+<em class="property">class </em><code class="descclassname">set2.c16.</code><code class="descname">TestCBCBitflip</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c16.html#TestCBCBitflip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c16.TestCBCBitflip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set2.c16.TestCBCBitflip.test_challenge_16">
+<code class="descname">test_challenge_16</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c16.html#TestCBCBitflip.test_challenge_16"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c16.TestCBCBitflip.test_challenge_16" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c16.cbc_attack">
+<code class="descclassname">set2.c16.</code><code class="descname">cbc_attack</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c16.html#cbc_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c16.cbc_attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the CBC bitflipping attack on the oracle</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if the attack is successful</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c16.convert_char">
+<code class="descclassname">set2.c16.</code><code class="descname">convert_char</code><span class="sig-paren">(</span><em>orig</em>, <em>now</em>, <em>later</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c16.html#convert_char"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c16.convert_char" title="Permalink to this definition">¶</a></dt>
+<dd><p>XORs all the characters together so that the decryption will result
+in the character I want.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>orig</strong> – Character from the ciphertext</li>
+<li><strong>now</strong> – Character that the decryption would currently be (X)</li>
+<li><strong>later</strong> – Character that we want to get</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The byte value that is the result of XORing all the given arguments,
+which will make the decryption result in the value needed.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c16.encrypt_userdata">
+<code class="descclassname">set2.c16.</code><code class="descname">encrypt_userdata</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c16.html#encrypt_userdata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c16.encrypt_userdata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypts the given data under AES-128-CBC with a secret key, after
+appending and prepending data and quoting out metacharacters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> – The user data to be encrypted</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">AES-128-CBC(prefix || user-data || suffix, random-key)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set2.c16.is_admin">
+<code class="descclassname">set2.c16.</code><code class="descname">is_admin</code><span class="sig-paren">(</span><em>cookie</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set2/c16.html#is_admin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set2.c16.is_admin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decryption oracle. Decrypts the cookie and searches for the admin token.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cookie</strong> – The encrypted cookie containing the user data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if the cookie contains ‘;admin=true;’</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set2">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-set2" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Set 2</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-set2.c9">Challenge 9</a></li>
+<li><a class="reference internal" href="#module-set2.c10">Challenge 10</a></li>
+<li><a class="reference internal" href="#module-set2.c11">Challenge 11</a></li>
+<li><a class="reference internal" href="#module-set2.c12">Challenge 12</a></li>
+<li><a class="reference internal" href="#module-set2.c13">Challenge 13</a></li>
+<li><a class="reference internal" href="#module-set2.c14">Challenge 14</a></li>
+<li><a class="reference internal" href="#module-set2.c15">Challenge 15</a></li>
+<li><a class="reference internal" href="#module-set2.c16">Challenge 16</a></li>
+<li><a class="reference internal" href="#module-set2">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/set2.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cryptopals-py 0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,173 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>set4.c32_server &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for set4.c32_server</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**Challenge 32 - SERVER**</span>
+
+<span class="sd">*Implement and Break HMAC-SHA1 with an Artificial Timing Leak*</span>
+
+<span class="sd">Reduce the sleep in your &quot;insecure_compare&quot; until your previous solution breaks.</span>
+<span class="sd">(Try 5ms to start)</span>
+
+<span class="sd">Now break it again.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">web</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">unittest</span><span class="o">,</span> <span class="nn">threading</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;../set1&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">c1</span><span class="o">,</span> <span class="nn">c2</span>
+<span class="kn">from</span> <span class="nn">MYSHA1</span> <span class="k">import</span> <span class="n">MYSHA1</span> <span class="k">as</span> <span class="n">sha1</span>
+
+<span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">DELAY</span> <span class="o">=</span> <span class="mf">0.03</span>
+
+<div class="viewcode-block" id="hmac_sha1"><a class="viewcode-back" href="../../set4.html#set4.c32_server.hmac_sha1">[docs]</a><span class="k">def</span> <span class="nf">hmac_sha1</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates an HMAC using SHA-1.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        key: The HMAC key.</span>
+<span class="sd">        message: The message to generate the MAC for.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The HMAC for the message under the given key</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># If the key is longer than the blocksize,</span>
+    <span class="c1"># then truncate it by hashing it</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">64</span><span class="p">):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">sha1</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+
+    <span class="c1"># If the key is shorter than blocksize,</span>
+    <span class="c1"># pad with 0s</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">64</span><span class="p">):</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">key</span> <span class="o">+</span> <span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">64</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">key</span><span class="p">)))</span>
+
+    <span class="n">o_pad</span> <span class="o">=</span> <span class="n">c2</span><span class="o">.</span><span class="n">xorstrs</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x5c</span><span class="s1">&#39;</span><span class="o">*</span><span class="mi">64</span><span class="p">)</span>
+    <span class="n">i_pad</span> <span class="o">=</span> <span class="n">c2</span><span class="o">.</span><span class="n">xorstrs</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x36</span><span class="s1">&#39;</span><span class="o">*</span><span class="mi">64</span><span class="p">)</span>
+    <span class="n">i_msg</span> <span class="o">=</span> <span class="n">i_pad</span> <span class="o">+</span> <span class="n">message</span>
+    <span class="n">o_msg</span> <span class="o">=</span> <span class="n">o_pad</span> <span class="o">+</span> <span class="n">sha1</span><span class="p">(</span><span class="n">i_msg</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">sha1</span><span class="p">(</span><span class="n">o_msg</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="insecure_compare"><a class="viewcode-back" href="../../set4.html#set4.c32_server.insecure_compare">[docs]</a><span class="k">def</span> <span class="nf">insecure_compare</span><span class="p">(</span><span class="n">str1</span><span class="p">,</span> <span class="n">str2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compares two strings for equality with an artificial timing leak.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        str1: The first string</span>
+<span class="sd">        str2: The second string</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if the strings are equal.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">c1</span><span class="o">.</span><span class="n">asciitohex</span><span class="p">(</span><span class="n">str1</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">c1</span><span class="o">.</span><span class="n">asciitohex</span><span class="p">(</span><span class="n">str2</span><span class="p">))</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">str1</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">str2</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">str1</span><span class="p">)):</span>
+        <span class="n">result</span> <span class="o">&amp;=</span> <span class="n">str1</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">str2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">DELAY</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+<span class="n">urls</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="s1">&#39;index&#39;</span><span class="p">)</span>
+<span class="n">key</span>  <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+
+<div class="viewcode-block" id="index"><a class="viewcode-back" href="../../set4.html#set4.c32_server.index">[docs]</a><span class="k">class</span> <span class="nc">index</span><span class="p">:</span>
+<div class="viewcode-block" id="index.GET"><a class="viewcode-back" href="../../set4.html#set4.c32_server.index.GET">[docs]</a>    <span class="k">def</span> <span class="nf">GET</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">user_data</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">signature</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">user_data</span><span class="o">.</span><span class="n">file</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">or</span> <span class="n">user_data</span><span class="o">.</span><span class="n">signature</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">500</span>
+
+        <span class="n">expected</span> <span class="o">=</span> <span class="n">hmac_sha1</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">user_data</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+        <span class="n">actual</span>   <span class="o">=</span> <span class="n">c1</span><span class="o">.</span><span class="n">hextoascii</span><span class="p">(</span><span class="n">user_data</span><span class="o">.</span><span class="n">signature</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">insecure_compare</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">actual</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">200</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">500</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">web</span><span class="o">.</span><span class="n">application</span><span class="p">(</span><span class="n">urls</span><span class="p">,</span> <span class="nb">globals</span><span class="p">())</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

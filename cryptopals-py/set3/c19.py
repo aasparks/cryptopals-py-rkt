@@ -1,6 +1,7 @@
 """
-Challenge 19
-Break fixed-nonce CTR mode using substitutions
+**Challenge 19**
+
+*Break fixed-nonce CTR mode using substitutions*
 
 Take your CTR encrypt/decrypt function and fix its nonce value to 0. Generate a
 random AES key.
@@ -15,10 +16,13 @@ been encrypted against the same keystream. This is very bad.
 
 Understanding that, like most stream ciphers (including RC4, and obviously any
 block cipher run in CTR mode), the actual "encryption" of a byte of data boils
-down to a single XOR operation, it should be plain that:
-     CTXT-BYTE ^ PTXT-BYTE = KEY-BYTE
-And since the keystream is the same for every ciphertext:
-     CTXT-BYTE ^ KEY-BYTE = PTXT-BYTE
+down to a single XOR operation, it should be plain that::
+
+    CTXT-BYTE ^ PTXT-BYTE = KEY-BYTE
+
+And since the keystream is the same for every ciphertext::
+
+    CTXT-BYTE ^ KEY-BYTE = PTXT-BYTE
 
 Attack this cryptosystem piecemeal; guess letters, use expected English language
 frequency to validate guesses, catch common English trigrams, and so on.

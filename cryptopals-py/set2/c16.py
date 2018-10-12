@@ -1,14 +1,18 @@
 """
-Challenge 16
-CBC Bitflipping Attacks
+**Challenge 16**
+
+*CBC Bitflipping Attacks*
 
 Combine your padding code and CBC code to write two functions.
 
 The first function should take an arbitrary input string, prepend
 the string:
-    'comment1=cooking%20MCs;userdata='
+
+``'comment1=cooking%20MCs;userdata='``
+
 ...and append the string:
-    ';comment2=%20like%20a%20pound%20of%20bacon'
+
+``';comment2=%20like%20a%20pound%20of%20bacon'``
 
 The function should quote out the ';' and '=' characters.
 
@@ -29,8 +33,8 @@ this.
 
 You're relying on the fact that in CBC mode, a 1-bit error in a ciphertext
 block:
-    - Completely scrambles the block the error occurs in
-    - Produces the identical 1-bit error in the next ciphertext block
+* Completely scrambles the block the error occurs in
+* Produces the identical 1-bit error in the next ciphertext block
 """
 import sys, os, unittest
 sys.path.insert(0, '../set1')

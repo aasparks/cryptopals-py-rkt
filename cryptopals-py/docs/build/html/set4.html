@@ -1,0 +1,1129 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Set 4 &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cryptopals-py 0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="set-4">
+<span id="set4ref"></span><h1>Set 4<a class="headerlink" href="#set-4" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-set4.MD4">
+<span id="md4"></span><span id="set4md4"></span><h2>MD4<a class="headerlink" href="#module-set4.MD4" title="Permalink to this headline">¶</a></h2>
+<p><strong>MD4</strong></p>
+<p>My MD4 implementation for Python. Once again, I decided to do it myself.
+This is very similar to SHA-1, so it wasn’t too bad.</p>
+<dl class="class">
+<dt id="set4.MD4.MD4">
+<em class="property">class </em><code class="descclassname">set4.MD4.</code><code class="descname">MD4</code><span class="sig-paren">(</span><em>message</em>, <em>n_l=0</em>, <em>new_reg=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MD4.html#MD4"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MD4.MD4" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>My MD4 implementation.</p>
+<dl class="attribute">
+<dt id="set4.MD4.MD4.h">
+<code class="descname">h</code><a class="headerlink" href="#set4.MD4.MD4.h" title="Permalink to this definition">¶</a></dt>
+<dd><p>The hash value</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="set4.MD4.MD4.l">
+<code class="descname">l</code><a class="headerlink" href="#set4.MD4.MD4.l" title="Permalink to this definition">¶</a></dt>
+<dd><p>The message length</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="set4.MD4.MD4.message">
+<code class="descname">message</code><a class="headerlink" href="#set4.MD4.MD4.message" title="Permalink to this definition">¶</a></dt>
+<dd><p>The message to be digested</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="set4.MD4.MD4.n">
+<code class="descname">n</code><a class="headerlink" href="#set4.MD4.MD4.n" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of blocks</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="set4.MD4.MD4.digest">
+<code class="descname">digest</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MD4.html#MD4.digest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MD4.MD4.digest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produces the message digest.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A bytestring containing the message digest.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="set4.MD4.MD4.pre_process">
+<code class="descname">pre_process</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MD4.html#MD4.pre_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MD4.MD4.pre_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Preproccesses the messages by padding appropriately.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="set4.MD4.TestMD4">
+<em class="property">class </em><code class="descclassname">set4.MD4.</code><code class="descname">TestMD4</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MD4.html#TestMD4"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MD4.TestMD4" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set4.MD4.TestMD4.test1">
+<code class="descname">test1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MD4.html#TestMD4.test1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MD4.TestMD4.test1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set4.MD4.TestMD4.test2">
+<code class="descname">test2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MD4.html#TestMD4.test2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MD4.TestMD4.test2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set4.MD4.TestMD4.test3">
+<code class="descname">test3</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MD4.html#TestMD4.test3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MD4.TestMD4.test3" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set4.MD4.TestMD4.test4">
+<code class="descname">test4</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MD4.html#TestMD4.test4"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MD4.TestMD4.test4" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.MD4.rotl">
+<code class="descclassname">set4.MD4.</code><code class="descname">rotl</code><span class="sig-paren">(</span><em>x</em>, <em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MD4.html#rotl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MD4.rotl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the circular left rotate function from FIPS 180-4.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> – The number to rotate.</li>
+<li><strong>n</strong> – The amount to rotate by.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">x left rotated by n.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.MD4.sum32">
+<code class="descclassname">set4.MD4.</code><code class="descname">sum32</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MD4.html#sum32"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MD4.sum32" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds an arbitrary amount of numbers and truncates to 32-bits.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>x</strong> – A list of numbers to add</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The sum of the numbers, truncated to 32-bits.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set4.MYSHA1">
+<span id="sha-1"></span><span id="set4sha1"></span><h2>SHA-1<a class="headerlink" href="#module-set4.MYSHA1" title="Permalink to this headline">¶</a></h2>
+<p><strong>SHA1</strong></p>
+<p>For challenge 28, I decided to implement SHA-1 myself, rather than use
+someone else’s implementation.</p>
+<dl class="class">
+<dt id="set4.MYSHA1.MYSHA1">
+<em class="property">class </em><code class="descclassname">set4.MYSHA1.</code><code class="descname">MYSHA1</code><span class="sig-paren">(</span><em>message, n_l=0, n_h=[1732584193, 4023233417, 2562383102, 271733878, 3285377520]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MYSHA1.html#MYSHA1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MYSHA1.MYSHA1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>My byte-oriented implementation of SHA-1 as described in FIPS 180-4</p>
+<dl class="attribute">
+<dt id="set4.MYSHA1.MYSHA1.l">
+<code class="descname">l</code><a class="headerlink" href="#set4.MYSHA1.MYSHA1.l" title="Permalink to this definition">¶</a></dt>
+<dd><p>Length of the message (in bytes)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="set4.MYSHA1.MYSHA1.h">
+<code class="descname">h</code><a class="headerlink" href="#set4.MYSHA1.MYSHA1.h" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initial hash value</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="set4.MYSHA1.MYSHA1.message">
+<code class="descname">message</code><a class="headerlink" href="#set4.MYSHA1.MYSHA1.message" title="Permalink to this definition">¶</a></dt>
+<dd><p>The message to be hashed</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="set4.MYSHA1.MYSHA1.n">
+<code class="descname">n</code><a class="headerlink" href="#set4.MYSHA1.MYSHA1.n" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of blocks</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="set4.MYSHA1.MYSHA1.digest">
+<code class="descname">digest</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MYSHA1.html#MYSHA1.digest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MYSHA1.MYSHA1.digest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produces the message digest.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A bytestring containing the message digest.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="set4.MYSHA1.MYSHA1.pre_process">
+<code class="descname">pre_process</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MYSHA1.html#MYSHA1.pre_process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MYSHA1.MYSHA1.pre_process" title="Permalink to this definition">¶</a></dt>
+<dd><p>Preproccesses the messages by padding appropriately.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="set4.MYSHA1.TestSHA1">
+<em class="property">class </em><code class="descclassname">set4.MYSHA1.</code><code class="descname">TestSHA1</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MYSHA1.html#TestSHA1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MYSHA1.TestSHA1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set4.MYSHA1.TestSHA1.test1">
+<code class="descname">test1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MYSHA1.html#TestSHA1.test1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MYSHA1.TestSHA1.test1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set4.MYSHA1.TestSHA1.test2">
+<code class="descname">test2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MYSHA1.html#TestSHA1.test2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MYSHA1.TestSHA1.test2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set4.MYSHA1.TestSHA1.test3">
+<code class="descname">test3</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MYSHA1.html#TestSHA1.test3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MYSHA1.TestSHA1.test3" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set4.MYSHA1.TestSHA1.test4">
+<code class="descname">test4</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MYSHA1.html#TestSHA1.test4"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MYSHA1.TestSHA1.test4" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.MYSHA1.print_line">
+<code class="descclassname">set4.MYSHA1.</code><code class="descname">print_line</code><span class="sig-paren">(</span><em>i</em>, <em>a</em>, <em>b</em>, <em>c</em>, <em>d</em>, <em>e</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MYSHA1.html#print_line"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MYSHA1.print_line" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="set4.MYSHA1.rotl">
+<code class="descclassname">set4.MYSHA1.</code><code class="descname">rotl</code><span class="sig-paren">(</span><em>x</em>, <em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MYSHA1.html#rotl"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MYSHA1.rotl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the circular left rotate function from FIPS 180-4.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>x</strong> – The number to rotate.</li>
+<li><strong>n</strong> – The amount to rotate by.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">x left rotated by n.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.MYSHA1.sum32">
+<code class="descclassname">set4.MYSHA1.</code><code class="descname">sum32</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/MYSHA1.html#sum32"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.MYSHA1.sum32" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-set4.c25">
+<span id="challenge-25"></span><span id="set4c25"></span><h2>Challenge 25<a class="headerlink" href="#module-set4.c25" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 25</strong></p>
+<p><em>Break ‘random access read/write’ AES CTR</em></p>
+<p>Back to CTR. Encrypt the recovered plaintext from this file under CTR with a
+random key (unknown to you).</p>
+<p>Now write the code that allows you to ‘seek’ into the ct, decrypt, and
+re-encrypt with different pt. Expose this function as
+edit(ct, key, offset, newtext)</p>
+<p>Imagine the edit function was exposed to attackers by means of an API call
+that didn’t reveal the key or the original plaintext; the attacker has the ct
+and controls the offset and newtext.</p>
+<p>Recover the original plaintext</p>
+<dl class="class">
+<dt id="set4.c25.Test25">
+<em class="property">class </em><code class="descclassname">set4.c25.</code><code class="descname">Test25</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c25.html#Test25"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c25.Test25" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set4.c25.Test25.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c25.html#Test25.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c25.Test25.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="set4.c25.Test25.test_challenge_25">
+<code class="descname">test_challenge_25</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c25.html#Test25.test_challenge_25"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c25.Test25.test_challenge_25" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c25.api_edit">
+<code class="descclassname">set4.c25.</code><code class="descname">api_edit</code><span class="sig-paren">(</span><em>ct</em>, <em>offset</em>, <em>newtext</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c25.html#api_edit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c25.api_edit" title="Permalink to this definition">¶</a></dt>
+<dd><p>API edit call that does not expose the key.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ct</strong> – The full ciphertext to seek into.</li>
+<li><strong>offset</strong> – The byte offset to make the edit at.</li>
+<li><strong>newtext</strong> – The new plaintext</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The ciphertext re-encrypted with the new plaintext starting at offset.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c25.edit">
+<code class="descclassname">set4.c25.</code><code class="descname">edit</code><span class="sig-paren">(</span><em>ct</em>, <em>key</em>, <em>offset</em>, <em>newtext</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c25.html#edit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c25.edit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Seeks into ciphertext at an offset and re-encrypts with a different
+plaintext, using AES-128-CTR.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ct</strong> – The full ciphertext to seek into.</li>
+<li><strong>key</strong> – The encryption key.</li>
+<li><strong>offset</strong> – The byte offset to make the edit at.</li>
+<li><strong>newtext</strong> – The new plaintext.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The ciphertext re-encrypted with the new plaintext starting at offset.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set4.c26">
+<span id="challenge-26"></span><span id="set4c26"></span><h2>Challenge 26<a class="headerlink" href="#module-set4.c26" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 26</strong></p>
+<p><em>CTR Bitflipping</em></p>
+<p>There are people in the world that believe that CTR resists bit flipping
+attacks of the kind to which CBC mode is susceptible.</p>
+<p>Re-implement the CBC bitflipping exercise from earlier to use CTR mode instead
+of CBC mode. Inject an <code class="docutils literal notranslate"><span class="pre">'admin=true'</span></code> token.</p>
+<dl class="class">
+<dt id="set4.c26.TestCTRBitflip">
+<em class="property">class </em><code class="descclassname">set4.c26.</code><code class="descname">TestCTRBitflip</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c26.html#TestCTRBitflip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c26.TestCTRBitflip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set4.c26.TestCTRBitflip.test_challenge_26">
+<code class="descname">test_challenge_26</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c26.html#TestCTRBitflip.test_challenge_26"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c26.TestCTRBitflip.test_challenge_26" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c26.convert_char">
+<code class="descclassname">set4.c26.</code><code class="descname">convert_char</code><span class="sig-paren">(</span><em>orig</em>, <em>now</em>, <em>later</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c26.html#convert_char"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c26.convert_char" title="Permalink to this definition">¶</a></dt>
+<dd><p>XORs all the characters together so that the decryption will result
+in the character I want.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>orig</strong> – Character from the ciphertext</li>
+<li><strong>now</strong> – Character that the decryption would currently be (X)</li>
+<li><strong>later</strong> – Character that we want to get</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The byte value that is the result of XORing all the given arguments,
+which will make the decryption result in the value needed.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c26.ctr_attack">
+<code class="descclassname">set4.c26.</code><code class="descname">ctr_attack</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c26.html#ctr_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c26.ctr_attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the CBC bitflipping attack on the oracle</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if the attack is successful</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c26.encrypt_userdata">
+<code class="descclassname">set4.c26.</code><code class="descname">encrypt_userdata</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c26.html#encrypt_userdata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c26.encrypt_userdata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypts the given data under AES-128-CTR with a secret key, after
+appending and prepending data and quoting out metacharacters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> – The user data to be encrypted</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">AES-128-CBC(prefix || user-data || suffix, random-key)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c26.is_admin">
+<code class="descclassname">set4.c26.</code><code class="descname">is_admin</code><span class="sig-paren">(</span><em>cookie</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c26.html#is_admin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c26.is_admin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decryption oracle. Decrypts the cookie and searches for the admin token.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cookie</strong> – The encrypted cookie containing the user data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if the cookie contains ‘;admin=true;’</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set4.c27">
+<span id="challenge-27"></span><span id="set4c27"></span><h2>Challenge 27<a class="headerlink" href="#module-set4.c27" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 27</strong></p>
+<p><em>Recover the key from CBC with IV=KEY</em></p>
+<p>Take your code from exercise 16 and modify it so that it uses the key for CBC
+encryption as the IV.</p>
+<p>Applications sometimes use the key as an IV on the auspices that both the
+sender and the receiver have to know the key already, and can save some space
+by using it as both the key and an IV.</p>
+<p>Using the key as an IV is insecure; an attacker that can modify ciphertext in
+flight can get the receiver to decrypt a value that will reveal the key.</p>
+<p>The CBC code from exercise 16 encrypts a URL string. Verify each byte of the
+plaintext for ASCII compliance. Noncompliant messages should raise an exception
+or return an error that includes the decrypted plaintext.</p>
+<p>Use your code to encrypt a message that is at least 3 blocks long:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AES</span><span class="o">-</span><span class="n">CBC</span><span class="p">(</span><span class="n">P_1</span><span class="p">,</span> <span class="n">P_2</span><span class="p">,</span> <span class="n">P_3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">C_1</span><span class="p">,</span> <span class="n">C_2</span><span class="p">,</span> <span class="n">C_3</span>
+</pre></div>
+</div>
+<p>Modify the message to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">C_1</span><span class="p">,</span> <span class="n">C_2</span><span class="p">,</span> <span class="n">C_3</span> <span class="o">-&gt;</span> <span class="n">C_1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">C_1</span>
+</pre></div>
+</div>
+<p>Decrypt the message and raise the appropriate error.</p>
+<p>As the attacker, recovering the plaintext from the error, extract the key:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">P</span><span class="s1">&#39;_1 ^ P&#39;</span><span class="n">_3</span>
+</pre></div>
+</div>
+<dl class="class">
+<dt id="set4.c27.Test27">
+<em class="property">class </em><code class="descclassname">set4.c27.</code><code class="descname">Test27</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c27.html#Test27"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c27.Test27" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set4.c27.Test27.test_challenge_27">
+<code class="descname">test_challenge_27</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c27.html#Test27.test_challenge_27"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c27.Test27.test_challenge_27" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c27.attack_cbc">
+<code class="descclassname">set4.c27.</code><code class="descname">attack_cbc</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c27.html#attack_cbc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c27.attack_cbc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Breaks CBC mode when the IV is key, as described in the challenge.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True if the attack worked</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c27.encrypt_userdata">
+<code class="descclassname">set4.c27.</code><code class="descname">encrypt_userdata</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c27.html#encrypt_userdata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c27.encrypt_userdata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypts the given data under AES-128-CBC with a secret key, after
+appending and prepending data and quoting out metacharacters. This function
+uses the key as the IV as well.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> – The user data to be encrypted</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">AES-128-CBC(prefix || user-data || suffix, random-key, iv=random-key)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c27.verify_url">
+<code class="descclassname">set4.c27.</code><code class="descname">verify_url</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c27.html#verify_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c27.verify_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verifies that a URL is valid by decrypting the data, and checking all
+bytes are below 128 in value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>data</strong> – The encrypted URL</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if the plaintext is valid, and the plaintext</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set4.c28">
+<span id="challenge-28"></span><span id="set4c28"></span><h2>Challenge 28<a class="headerlink" href="#module-set4.c28" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 28</strong></p>
+<p><em>Implement a SHA-1 Keyed MAC</em></p>
+<p>Find a SHA-1 implementation in the language you code in.</p>
+<p>Write a function to authenticate a message under a secret key by using a
+secret-prefix MAC, which is simply:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SHA1</span><span class="p">(</span><span class="n">key</span> <span class="o">||</span> <span class="n">message</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Verify that you cannot tamper with the message without breaking the MAC you’ve
+produced, and that you can’t produce a new MAC without knowing the secret key.</p>
+<dl class="class">
+<dt id="set4.c28.TestMACSHA1">
+<em class="property">class </em><code class="descclassname">set4.c28.</code><code class="descname">TestMACSHA1</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c28.html#TestMACSHA1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c28.TestMACSHA1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set4.c28.TestMACSHA1.test_challenge_28">
+<code class="descname">test_challenge_28</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c28.html#TestMACSHA1.test_challenge_28"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c28.TestMACSHA1.test_challenge_28" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c28.mac_sha1">
+<code class="descclassname">set4.c28.</code><code class="descname">mac_sha1</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c28.html#mac_sha1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c28.mac_sha1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a message authentication code using SHA-1.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> – The message to create a code for.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The MAC generated from the message by using SHA-1.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set4.c29">
+<span id="challenge-29"></span><span id="set4c29"></span><h2>Challenge 29<a class="headerlink" href="#module-set4.c29" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 29</strong></p>
+<p><em>Break a SHA-1 Keyed MAC Using Length Extension.</em></p>
+<p>Secret-prefix SHA-1 MACs are trivially breakable. The attack on secret-prefix
+SHA1 relies on the fact that you can take the output of SHA-1 and use it as
+a new starting for SHA-1, thus taking an arbitrary SHA-1 hash and ‘feeding it
+more data’.</p>
+<p>Since the key precedes the data in secret-prefix, any additional data you feed
+the sHA-1 hash in this fashion will appear to have been hashed with the secret
+key.</p>
+<p>To carry out the attack, you’ll need to account for the fact that SHA-1 is
+‘padded’ with the bit-length of the message; your forged message will need to
+include that padding. We call this the ‘glue padding’. The final message you
+actually forge will be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SHA1</span><span class="p">(</span><span class="n">key</span> <span class="o">||</span> <span class="n">original</span><span class="o">-</span><span class="n">message</span> <span class="o">||</span> <span class="n">glue</span><span class="o">-</span><span class="n">padding</span> <span class="o">||</span> <span class="n">new</span><span class="o">-</span><span class="n">message</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(where the final padding on the whole constructed message is implied)</p>
+<p>Note that to generate the glue padding, you’ll need to know the original bit
+length of the message; the message itself is known to the attacker, but the
+secret key isn’t, so you’ll need to guess at it.</p>
+<p>This sounds more complicated than it is in practice.</p>
+<p>To implement this attack, first write the function that computes the MD padding
+of an arbitrary message and verify that you’re generating the same padding that
+your SHA-1 implementation is using. This should take you 5-10 minutes.</p>
+<p>Now, take the SHA-1 secret-prefix MAC of the message you want to forge – this
+is just the SHA-1 hash – and break it into 32-bit SHA-1 registers.</p>
+<p>Modify your SHA-1 implementation so that callers can pass in new values for the
+registers. With the registers ‘fixated’, hash the additional data you want to
+forge.</p>
+<p>Using this attack, generate a secret-prefix MAC under a secret key of the string</p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;comment1=cooking%20MCs;userdata=foo;comment2=%20like%20a%20pound%20of%20bacon&quot;</span></code></p>
+<p>Forge a variant of this message that ends with <code class="docutils literal notranslate"><span class="pre">&quot;;admin=true&quot;</span></code>.</p>
+<dl class="class">
+<dt id="set4.c29.TestSHA1LengthExt">
+<em class="property">class </em><code class="descclassname">set4.c29.</code><code class="descname">TestSHA1LengthExt</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c29.html#TestSHA1LengthExt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c29.TestSHA1LengthExt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set4.c29.TestSHA1LengthExt.test_forge">
+<code class="descname">test_forge</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c29.html#TestSHA1LengthExt.test_forge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c29.TestSHA1LengthExt.test_forge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set4.c29.TestSHA1LengthExt.test_glue_padding">
+<code class="descname">test_glue_padding</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c29.html#TestSHA1LengthExt.test_glue_padding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c29.TestSHA1LengthExt.test_glue_padding" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c29.forge_message">
+<code class="descclassname">set4.c29.</code><code class="descname">forge_message</code><span class="sig-paren">(</span><em>message</em>, <em>attack</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c29.html#forge_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c29.forge_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forge’s a message with the associated MAC for a SHA-1 MAC</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>message</strong> – The untainted message</li>
+<li><strong>attack</strong> – The message to inject using length extension</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The forged message, tag pair for a SHA-1 length extension attack.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c29.get_state">
+<code class="descclassname">set4.c29.</code><code class="descname">get_state</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c29.html#get_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c29.get_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the SHA-1 state array from the message</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> – The message to extract the state from</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List containing the SHA-1 state for injection.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c29.glue_padding">
+<code class="descclassname">set4.c29.</code><code class="descname">glue_padding</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c29.html#glue_padding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c29.glue_padding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Figures out the glue padding for the SHA-1 message. Almost identical to
+MYSHA1.pre_process()</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> – The message to get the padding for</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The message with the glue padding</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set4.c30">
+<span id="challenge-30"></span><span id="set4c30"></span><h2>Challenge 30<a class="headerlink" href="#module-set4.c30" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 30</strong></p>
+<p><em>Break an MD4 Keyed MAC Using Length Extension</em></p>
+<p>Second verse, same as the first, but use MD4 instead of SHA-1. Having done this
+attack once against SHA-1, the MD4 variant should take much less time; mostly
+just the time you’ll spend Googling for an implementation of MD4.</p>
+<dl class="class">
+<dt id="set4.c30.TestMD4LengthExt">
+<em class="property">class </em><code class="descclassname">set4.c30.</code><code class="descname">TestMD4LengthExt</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c30.html#TestMD4LengthExt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c30.TestMD4LengthExt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set4.c30.TestMD4LengthExt.test_forge">
+<code class="descname">test_forge</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c30.html#TestMD4LengthExt.test_forge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c30.TestMD4LengthExt.test_forge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set4.c30.TestMD4LengthExt.test_glue_padding">
+<code class="descname">test_glue_padding</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c30.html#TestMD4LengthExt.test_glue_padding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c30.TestMD4LengthExt.test_glue_padding" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c30.forge_message">
+<code class="descclassname">set4.c30.</code><code class="descname">forge_message</code><span class="sig-paren">(</span><em>message</em>, <em>attack</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c30.html#forge_message"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c30.forge_message" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forge’s a message with the associated MAC for an MD4 MAC</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>message</strong> – The untainted message</li>
+<li><strong>attack</strong> – The message to inject using length extension</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The forged message, tag pair for an MD4 length extension attack.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c30.get_state">
+<code class="descclassname">set4.c30.</code><code class="descname">get_state</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c30.html#get_state"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c30.get_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the MD4 state array from the message</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> – The message to extract the state from</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List containing the MD4 state for injection.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c30.glue_padding">
+<code class="descclassname">set4.c30.</code><code class="descname">glue_padding</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c30.html#glue_padding"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c30.glue_padding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Figures out the glue padding for the MD4 message. Almost identical to
+MD4.pre_process()</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> – The message to get the padding for</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The message with the glue padding</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c30.mac_md4">
+<code class="descclassname">set4.c30.</code><code class="descname">mac_md4</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c30.html#mac_md4"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c30.mac_md4" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a message authentication code using MD4.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>message</strong> – The message to create a code for.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The MAC generated from the message by using MD4.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set4.c31_client">
+<span id="challenge-31-client"></span><span id="set4c31c"></span><h2>Challenge 31 (Client)<a class="headerlink" href="#module-set4.c31_client" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 31 - CLIENT</strong></p>
+<p><em>Implement and Break HMAC-SHA1 with an Artificial Timing Leak</em></p>
+<p>The pseudocode on Wikipedia should be enough. HMAC is very easy.</p>
+<p>Using the web framework of your choosing, write a tiny application that
+has a URL that takes a “file” argument and a “signature” argument, like so:</p>
+<p><code class="docutils literal notranslate"><span class="pre">http://localhost:9000/test?file=foo&amp;signature=bar</span></code></p>
+<p>Have the server generate an HMAC key, and then verify that the signature on
+incoming requests is valid for ‘file’, using the ‘==’ operator to compare the
+valid MAC for a file with the signature parameter (in other words, verify the
+HMAC the way any normal programmer would verify it).</p>
+<p>Write a function, call it <code class="docutils literal notranslate"><span class="pre">insecure_compare</span></code>, that implements the == operation
+by doing byte-at-a-time comparisons with early exit (ie, return false at the
+first non-matching byte).</p>
+<p>In the loop for <code class="docutils literal notranslate"><span class="pre">insecure_compare</span></code>, add a 50ms sleep (sleep 50ms after each byte)</p>
+<p>Use your <code class="docutils literal notranslate"><span class="pre">insecure_compare</span></code> function to verify the HMACs on incoming requests,
+and test that the whole contraption works. Return a 500 if the MAC is invalid,
+and a 200 if it’s OK.</p>
+<p>Using the timing leak in this application, write a program that discovers the
+valid MAC for any file.</p>
+<dl class="function">
+<dt id="set4.c31_client.crack_next_byte">
+<code class="descclassname">set4.c31_client.</code><code class="descname">crack_next_byte</code><span class="sig-paren">(</span><em>known</em>, <em>file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c31_client.html#crack_next_byte"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c31_client.crack_next_byte" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the next byte of the HMAC.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>known</strong> – The known bytes so far</li>
+<li><strong>file</strong> – The name of the file</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The next byte of the HMAC</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c31_client.time_request">
+<code class="descclassname">set4.c31_client.</code><code class="descname">time_request</code><span class="sig-paren">(</span><em>file</em>, <em>mac</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c31_client.html#time_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c31_client.time_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates how long it takes for a request to go through.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>file</strong> – The file name</li>
+<li><strong>mac</strong> – The signature for the file name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The time it takes for a request to go through.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c31_client.timing_attack">
+<code class="descclassname">set4.c31_client.</code><code class="descname">timing_attack</code><span class="sig-paren">(</span><em>file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c31_client.html#timing_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c31_client.timing_attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes the timing attack.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file</strong> – The name of the file to attack</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The cracked HMAC value.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set4.c31_server">
+<span id="challenge-31-server"></span><span id="set4c31s"></span><h2>Challenge 31 (Server)<a class="headerlink" href="#module-set4.c31_server" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 31 - SERVER</strong></p>
+<p><em>Implement and Break HMAC-SHA1 with an Artificial Timing Leak</em></p>
+<p>The pseudocode on Wikipedia should be enough. HMAC is very easy.</p>
+<p>Using the web framework of your choosing, write a tiny application that
+has a URL that takes a “file” argument and a “signature” argument, like so:</p>
+<p><code class="docutils literal notranslate"><span class="pre">http://localhost:9000/test?file=foo&amp;signature=bar</span></code></p>
+<p>Have the server generate an HMAC key, and then verify that the signature on
+incoming requests is valid for ‘file’, using the ‘==’ operator to compare the
+valid MAC for a file with the signature parameter (in other words, verify the
+HMAC the way any normal programmer would verify it).</p>
+<p>Write a function, call it <code class="docutils literal notranslate"><span class="pre">insecure_compare</span></code>, that implements the == operation
+by doing byte-at-a-time comparisons with early exit (ie, return false at the
+first non-matching byte).</p>
+<p>In the loop for <code class="docutils literal notranslate"><span class="pre">insecure_compare</span></code>, add a 50ms sleep (sleep 50ms after each byte)</p>
+<p>Use your <code class="docutils literal notranslate"><span class="pre">insecure_compare</span></code> function to verify the HMACs on incoming requests,
+and test that the whole contraption works. Return a 500 if the MAC is invalid,
+and a 200 if it’s OK.</p>
+<p>Using the timing leak in this application, write a program that discovers the
+valid MAC for any file.</p>
+<dl class="function">
+<dt id="set4.c31_server.hmac_sha1">
+<code class="descclassname">set4.c31_server.</code><code class="descname">hmac_sha1</code><span class="sig-paren">(</span><em>key</em>, <em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c31_server.html#hmac_sha1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c31_server.hmac_sha1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an HMAC using SHA-1.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>key</strong> – The HMAC key.</li>
+<li><strong>message</strong> – The message to generate the MAC for.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The HMAC for the message under the given key</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="set4.c31_server.index">
+<em class="property">class </em><code class="descclassname">set4.c31_server.</code><code class="descname">index</code><a class="reference internal" href="_modules/set4/c31_server.html#index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c31_server.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="set4.c31_server.index.GET">
+<code class="descname">GET</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c31_server.html#index.GET"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c31_server.index.GET" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c31_server.insecure_compare">
+<code class="descclassname">set4.c31_server.</code><code class="descname">insecure_compare</code><span class="sig-paren">(</span><em>str1</em>, <em>str2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c31_server.html#insecure_compare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c31_server.insecure_compare" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compares two strings for equality with an artificial timing leak.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>str1</strong> – The first string</li>
+<li><strong>str2</strong> – The second string</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if the strings are equal.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set4.c32_client">
+<span id="challenge-32-client"></span><span id="set4c32c"></span><h2>Challenge 32 (Client)<a class="headerlink" href="#module-set4.c32_client" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 32- CLIENT</strong></p>
+<p><em>Implement and Break HMAC-SHA1 with an Artificial Timing Leak</em></p>
+<p>Reduce the sleep in your “insecure_compare” until your previous solution breaks.
+(Try 5ms to start)</p>
+<p>Now break it again.</p>
+<dl class="function">
+<dt id="set4.c32_client.crack_next_byte">
+<code class="descclassname">set4.c32_client.</code><code class="descname">crack_next_byte</code><span class="sig-paren">(</span><em>known</em>, <em>file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c32_client.html#crack_next_byte"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c32_client.crack_next_byte" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the next byte of the HMAC by sending every byte 5 times and taking
+an average.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>known</strong> – The known bytes so far</li>
+<li><strong>file</strong> – The name of the file</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The next byte of the HMAC</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c32_client.time_request">
+<code class="descclassname">set4.c32_client.</code><code class="descname">time_request</code><span class="sig-paren">(</span><em>file</em>, <em>mac</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c32_client.html#time_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c32_client.time_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates how long it takes for a request to go through.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>file</strong> – The file name</li>
+<li><strong>mac</strong> – The signature for the file name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The time it takes for a request to go through.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c32_client.timing_attack">
+<code class="descclassname">set4.c32_client.</code><code class="descname">timing_attack</code><span class="sig-paren">(</span><em>file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c32_client.html#timing_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c32_client.timing_attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes the timing attack.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file</strong> – The name of the file to attack</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The cracked HMAC value.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set4.c32_server">
+<span id="challenge-32-server"></span><span id="set4c32s"></span><h2>Challenge 32 (Server)<a class="headerlink" href="#module-set4.c32_server" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 32 - SERVER</strong></p>
+<p><em>Implement and Break HMAC-SHA1 with an Artificial Timing Leak</em></p>
+<p>Reduce the sleep in your “insecure_compare” until your previous solution breaks.
+(Try 5ms to start)</p>
+<p>Now break it again.</p>
+<dl class="function">
+<dt id="set4.c32_server.hmac_sha1">
+<code class="descclassname">set4.c32_server.</code><code class="descname">hmac_sha1</code><span class="sig-paren">(</span><em>key</em>, <em>message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c32_server.html#hmac_sha1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c32_server.hmac_sha1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an HMAC using SHA-1.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>key</strong> – The HMAC key.</li>
+<li><strong>message</strong> – The message to generate the MAC for.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The HMAC for the message under the given key</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="set4.c32_server.index">
+<em class="property">class </em><code class="descclassname">set4.c32_server.</code><code class="descname">index</code><a class="reference internal" href="_modules/set4/c32_server.html#index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c32_server.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="set4.c32_server.index.GET">
+<code class="descname">GET</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c32_server.html#index.GET"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c32_server.index.GET" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set4.c32_server.insecure_compare">
+<code class="descclassname">set4.c32_server.</code><code class="descname">insecure_compare</code><span class="sig-paren">(</span><em>str1</em>, <em>str2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set4/c32_server.html#insecure_compare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set4.c32_server.insecure_compare" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compares two strings for equality with an artificial timing leak.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>str1</strong> – The first string</li>
+<li><strong>str2</strong> – The second string</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">True if the strings are equal.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set4">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-set4" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Set 4</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-set4.MD4">MD4</a></li>
+<li><a class="reference internal" href="#module-set4.MYSHA1">SHA-1</a></li>
+<li><a class="reference internal" href="#module-set4.c25">Challenge 25</a></li>
+<li><a class="reference internal" href="#module-set4.c26">Challenge 26</a></li>
+<li><a class="reference internal" href="#module-set4.c27">Challenge 27</a></li>
+<li><a class="reference internal" href="#module-set4.c28">Challenge 28</a></li>
+<li><a class="reference internal" href="#module-set4.c29">Challenge 29</a></li>
+<li><a class="reference internal" href="#module-set4.c30">Challenge 30</a></li>
+<li><a class="reference internal" href="#module-set4.c31_client">Challenge 31 (Client)</a></li>
+<li><a class="reference internal" href="#module-set4.c31_server">Challenge 31 (Server)</a></li>
+<li><a class="reference internal" href="#module-set4.c32_client">Challenge 32 (Client)</a></li>
+<li><a class="reference internal" href="#module-set4.c32_server">Challenge 32 (Server)</a></li>
+<li><a class="reference internal" href="#module-set4">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/set4.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cryptopals-py 0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

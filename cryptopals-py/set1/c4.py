@@ -1,9 +1,10 @@
 """
-Challenge 4
-Detect single-character XOR
+**Challenge 4**
 
-One of the 60-character strings in this file has been encrypted
-by single-character XOR. Find it.
+*Detect single-character XOR*
+
+One of the 60-character strings in this file has been encrypted by
+single-character XOR. Find it.
 """
 import c1, c2, c3
 import unittest

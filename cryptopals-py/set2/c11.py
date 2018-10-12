@@ -1,6 +1,7 @@
 """
-Challenge 11
-An ECB/CBC detection oracle
+**Challenge 11**
+
+*An ECB/CBC Detection Oracle*
 
 Now that you have ECB and CBC working:
 
@@ -12,7 +13,8 @@ that is, a function that generates a random key and encrypts
 under it.
 
 The function should look like
-   encryption_oracle(your-input) => [MEANINGLESS JIBBER JABBER]
+
+``encryption_oracle(your-input) => [MEANINGLESS JIBBER JABBER]``
 
 Under the hood, have the function append 5-10 bytes before the
 plaintext and 5-10 bytes after the plaintext.

@@ -1,5 +1,5 @@
 """
-My SHA1 implementation
+**SHA1**
 
 For challenge 28, I decided to implement SHA-1 myself, rather than use
 someone else's implementation.

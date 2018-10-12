@@ -1,11 +1,13 @@
 """
-Challenge 28
-Implement a SHA-1 keyed MAC
+**Challenge 28**
+
+*Implement a SHA-1 Keyed MAC*
 
 Find a SHA-1 implementation in the language you code in.
 
 Write a function to authenticate a message under a secret key by using a
-secret-prefix MAC, which is simply:
+secret-prefix MAC, which is simply::
+
     SHA1(key || message)
 
 Verify that you cannot tamper with the message without breaking the MAC you've

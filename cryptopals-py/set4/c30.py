@@ -1,6 +1,7 @@
 """
-Challenge 30
-Break an MD4 Keyed MAC Using Length Extension
+**Challenge 30**
+
+*Break an MD4 Keyed MAC Using Length Extension*
 
 Second verse, same as the first, but use MD4 instead of SHA-1. Having done this
 attack once against SHA-1, the MD4 variant should take much less time; mostly

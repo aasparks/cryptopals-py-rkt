@@ -1,25 +1,28 @@
 """
-Challenge 31 - SERVER
-Implement and Break HMAC-SHA1 with an Artificial Timing Leak
+
+**Challenge 31 - SERVER**
+
+*Implement and Break HMAC-SHA1 with an Artificial Timing Leak*
 
 The pseudocode on Wikipedia should be enough. HMAC is very easy.
 
 Using the web framework of your choosing, write a tiny application that
 has a URL that takes a "file" argument and a "signature" argument, like so:
-    http://localhost:9000/test?file=foo&signature=bar
+
+``http://localhost:9000/test?file=foo&signature=bar``
 
 Have the server generate an HMAC key, and then verify that the signature on
 incoming requests is valid for 'file', using the '==' operator to compare the
 valid MAC for a file with the signature parameter (in other words, verify the
 HMAC the way any normal programmer would verify it).
 
-Write a function, call it 'insecure_compare', that implements the == operation
+Write a function, call it ``insecure_compare``, that implements the == operation
 by doing byte-at-a-time comparisons with early exit (ie, return false at the
 first non-matching byte).
 
-In the loop for 'insecure_compare', add a 50ms sleep (sleep 50ms after each byte)
+In the loop for ``insecure_compare``, add a 50ms sleep (sleep 50ms after each byte)
 
-Use your 'insecure_compare' function to verify the HMACs on incoming requests,
+Use your ``insecure_compare`` function to verify the HMACs on incoming requests,
 and test that the whole contraption works. Return a 500 if the MAC is invalid,
 and a 200 if it's OK.
 
@@ -72,8 +75,9 @@ def insecure_compare(str1, str2):
     Returns:
         True if the strings are equal.
     """
-    print(c1.asciitohex(str1))
-    print(c1.asciitohex(str2))
+    if DEBUG:
+        print(c1.asciitohex(str1))
+        print(c1.asciitohex(str2))
     result = True
     if len(str1) != len(str2):
         return False
@@ -102,29 +106,6 @@ class index:
         else:
             return 500
 
-class TestHMAC(unittest.TestCase):
-    def test_hmac(self):
-        expected = b"b617318655057264e28bc0b6fb378c8ef146be00".upper()
-        actual   = c1.asciitohex(hmac_sha1(b'\x0b'*20, b'Hi There'))
-        self.assertEqual(actual, expected)
-
-def run_server(file):
-    """
-    Runs the web server and returns the HMAC for the file requested for testing
-    purposes.
-
-    Args:
-        file: The name of the file you've requested.
-
-    Returns:
-        The HMAC for the requested file and the thread descriptor for the server
-        thread.
-    """
-    app = web.application(urls, globals())
-    threading.Thread(target=app.run).start()
-    return c1.asciitohex(hmac_sha1(key, file))
-
 if __name__ == "__main__":
-    #unittest.main()
     app = web.application(urls, globals())
     app.run()

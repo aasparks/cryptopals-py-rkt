@@ -1,12 +1,13 @@
 """
-Challenge 17
-The CBC Padding Oracle
+**Challenge 17**
+
+*The CBC Padding Oracle*
 
 This is the best-known attack on modern block-cipher cryptography.
 
 Combine your padding code and your CBC code to write two functions.
 
-The first function should select at random one of the following 10 strings:
+The first function should select at random one of the following 10 strings::
 
     MDAwMDAwTm93IHRoYXQgdGhlIHBhcnR5IGlzIGp1bXBpbmc=
     MDAwMDAxV2l0aCB0aGUgYmFzcyBraWNrZWQgaW4gYW5kIHRoZSBWZWdhJ3MgYXJlIHB1bXBpbic=
@@ -36,17 +37,17 @@ The leak is the error message that the padding is valid or not.
 You can find 100 web pages on how this attack works, so I won't re-explain it.
 What I'll say is this:
 
-The fundamental insight behind this attack is that the byte \x01 is valid
+The fundamental insight behind this attack is that the byte ``\\x01`` is valid
 padding, and occurs in 1/256 trials of "randomized" plaintexts produced by
 decrypting a tampered ciphertext.
 
-\x02 in isolation is not valid padding.
+``\\x02`` in isolation is not valid padding.
 
-\x02\x02 is valid padding, but is much less likely to occur randomly than \x01.
+``\\x02\\x02`` is valid padding, but is much less likely to occur randomly than ``\\x01``.
 
-\x03\x03\x03 is even less likely.
+``\\x03\\x03\\x03`` is even less likely.
 
-So you can assume that if you corrup a decryption AND it had valid padding, you
+So you can assume that if you corrupt a decryption AND it had valid padding, you
 know what that padding byte is.
 
 It is easy to get tripped up on the fact that CBC plaintexts are "padded".

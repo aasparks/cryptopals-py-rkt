@@ -1,25 +1,28 @@
 """
-Challenge 31 - CLIENT
-Implement and Break HMAC-SHA1 with an Artificial Timing Leak
+
+**Challenge 31 - CLIENT**
+
+*Implement and Break HMAC-SHA1 with an Artificial Timing Leak*
 
 The pseudocode on Wikipedia should be enough. HMAC is very easy.
 
 Using the web framework of your choosing, write a tiny application that
 has a URL that takes a "file" argument and a "signature" argument, like so:
-    http://localhost:9000/test?file=foo&signature=bar
+
+``http://localhost:9000/test?file=foo&signature=bar``
 
 Have the server generate an HMAC key, and then verify that the signature on
 incoming requests is valid for 'file', using the '==' operator to compare the
 valid MAC for a file with the signature parameter (in other words, verify the
 HMAC the way any normal programmer would verify it).
 
-Write a function, call it 'insecure_compare', that implements the == operation
+Write a function, call it ``insecure_compare``, that implements the == operation
 by doing byte-at-a-time comparisons with early exit (ie, return false at the
 first non-matching byte).
 
-In the loop for 'insecure_compare', add a 50ms sleep (sleep 50ms after each byte)
+In the loop for ``insecure_compare``, add a 50ms sleep (sleep 50ms after each byte)
 
-Use your 'insecure_compare' function to verify the HMACs on incoming requests,
+Use your ``insecure_compare`` function to verify the HMACs on incoming requests,
 and test that the whole contraption works. Return a 500 if the MAC is invalid,
 and a 200 if it's OK.
 
@@ -31,7 +34,7 @@ sys.path.insert(0, '../set1')
 import c1, c31_server
 
 DELAY = 0.03
-DEBUG = True
+DEBUG = False
 
 def time_request(file, mac):
     """
@@ -84,7 +87,7 @@ def crack_next_byte(known, file):
         file: The name of the file
 
     Returns:
-        The next of the HMAC
+        The next byte of the HMAC
     """
     expected_delay = DELAY * len(known)
     expected_delay += DELAY * 0.75
@@ -104,14 +107,6 @@ def crack_next_byte(known, file):
 
     raise Exception('unexpected')
 
-class Test31(unittest.TestCase):
-    def test_challenge_31(self):
-        file = b'secret.txt'
-        #expected = c31_server.run_server(file)
-        #time.sleep(5)
-        actual = timing_attack(file)
-        #self.assertEqual(c1.asciitohex(actual), expected)
-
 if __name__ ==  '__main__':
-    unittest.main()
+    print(timing_attack(b'secret.txt'))
 

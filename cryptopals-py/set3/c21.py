@@ -1,6 +1,7 @@
 """
-Challenge 21
-Implement the MT19937 Mersenne Twister RNG
+**Challenge 21**
+
+*Implement the MT19937 Mersenne Twister RNG*
 
 You can get the pseudocode for this from Wikipedia.
 

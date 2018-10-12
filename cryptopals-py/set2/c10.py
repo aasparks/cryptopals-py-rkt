@@ -1,6 +1,7 @@
 """
-Challenge 10
-Implement CBC Mode
+**Challenge 10**
+
+*Implement CBC Mode*
 
 CBC mode is a block cipher mode that allows us to encrypt irregularly-sized
 messages, despite the fact that a block cipher natively only transforms
@@ -8,6 +9,7 @@ individual blocks.
 
 In CBC mode, each ciphertext block is added to the next plaintext block
 before the next call to the cipher core.
+
 The first plaintext block, which has no associated previous ciphertext block,
 is added to a "fake 0th ciphertext block" called the initialization vector,
 or IV.

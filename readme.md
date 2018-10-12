@@ -168,6 +168,10 @@ the web api because the messages would have random lag about every 5-10 requests
 I can't figure out why this happens or how to fix it, so for now, it uses simple
 function calls to simulate web requests, which is admittedly a bad solution.
 
+The solution does not work on a slower machine (like my old laptop), but it works
+very well on my main pc (gaming). I guess this is to be expected. This solution
+is also the only one (so far) that is not unit tested.
+
 #### 32. Break HMAC-SHA1 with a Slightly Less Artificial Timing Leak - :ballot_box_with_check:
 
 The Python solution worked for a delay as low as 15ms. The Racket solution only

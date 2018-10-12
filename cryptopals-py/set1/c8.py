@@ -1,6 +1,7 @@
 """
-Challenge 8
-Detect AES in ECB mode
+**Challenge 8**
+
+*Detect AES in ECB Mode*
 
 In this file are a bunch of hex-encoded ciphertexts. One of them
 has been encrypted with ECB.

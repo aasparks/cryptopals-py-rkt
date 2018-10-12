@@ -1,0 +1,221 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>set3.c23 &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for set3.c23</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**Challenge 23**</span>
+
+<span class="sd">*Clone an MT19937 RNG from its Output*</span>
+
+<span class="sd">The internal state of MT19937 consists of 624 32-bit integers.</span>
+
+<span class="sd">For each batch of 624 outputs, MT permutes that internal state. By permuting</span>
+<span class="sd">the state regularly, MT199337 achieves a period of 2**19937, which is BIG.</span>
+
+<span class="sd">Each time MT19937 is tapped, an element of its internal state is subjected to</span>
+<span class="sd">a tempering function that diffuses bits through the result.</span>
+
+<span class="sd">The tempering function is invertible; you can write  an &#39;untemper&#39; function</span>
+<span class="sd">that takes an MT19937 output and transforms it back into the corresponding</span>
+<span class="sd">element of the MT19937 state array.</span>
+
+<span class="sd">To invert the temper transform, apply the inverse of each of the operations in</span>
+<span class="sd">the temper transform in reverse order. There are two kinds of operations in the</span>
+<span class="sd">temper transform each applied twice; one is an XOR against a right-shifted</span>
+<span class="sd">value, and the other is an XOR against a left-shifted value AND&#39;d with a magic</span>
+<span class="sd">number. So you&#39;ll need code to invert the &#39;right&#39; and &#39;left&#39; operation.</span>
+
+<span class="sd">Once you have &#39;untemper&#39; working, create a new MT19937 generator, tap it for</span>
+<span class="sd">624 outputs, untemper each of them to recreate the state of the generator, and</span>
+<span class="sd">splice that state into a new instance of the MT19937 generator.</span>
+
+<span class="sd">The new &#39;spliced&#39; generator should predict the values of the original.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">c21</span><span class="o">,</span> <span class="nn">unittest</span>
+
+<span class="n">b</span> <span class="o">=</span> <span class="mh">0x9D2C5680</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mh">0xEFC60000</span>
+<span class="n">s</span> <span class="o">=</span> <span class="mi">7</span>
+<span class="n">t</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">u</span> <span class="o">=</span> <span class="mi">11</span>
+<span class="n">l</span> <span class="o">=</span> <span class="mi">18</span>
+
+<span class="c1"># Here&#39;s where the magic happens</span>
+<span class="c1"># I need to undo the above function</span>
+<div class="viewcode-block" id="untwist"><a class="viewcode-back" href="../../set3.html#set3.c23.untwist">[docs]</a><span class="k">def</span> <span class="nf">untwist</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Untwists a number to recreate the state of MT19937.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        num: The number to untwist.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The value of the state that generated that number.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">num</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">unbitshift_right</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">unbitshift_left</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">unbitshift_left</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">unbitshift_right</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">value</span></div>
+
+<span class="c1"># Unbitshift functions taken from</span>
+<span class="c1"># https://jazzy.id.au/2010/09/22/cracking_random_number_generators_part_3.html</span>
+<div class="viewcode-block" id="unbitshift_right"><a class="viewcode-back" href="../../set3.html#set3.c23.unbitshift_right">[docs]</a><span class="k">def</span> <span class="nf">unbitshift_right</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">shift</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reverses the right bitshift operation of MT19937.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        value: The value after being shifted.</span>
+<span class="sd">        shift: The amount the original value was shifted by.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The value before the right bitshift happened.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">i</span>      <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">while</span> <span class="n">i</span> <span class="o">*</span> <span class="n">shift</span> <span class="o">&lt;</span> <span class="mi">32</span><span class="p">:</span>
+        <span class="n">part_mask</span> <span class="o">=</span> <span class="n">rlshift</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">32</span> <span class="o">-</span> <span class="n">shift</span><span class="p">)),</span> <span class="p">(</span><span class="n">shift</span> <span class="o">*</span> <span class="n">i</span><span class="p">))</span>
+        <span class="n">part</span>      <span class="o">=</span> <span class="n">value</span> <span class="o">&amp;</span> <span class="n">part_mask</span>
+        <span class="n">value</span>     <span class="o">^=</span> <span class="n">rlshift</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">shift</span><span class="p">)</span>
+        <span class="n">result</span>    <span class="o">|=</span> <span class="n">part</span>
+        <span class="n">i</span>         <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="unbitshift_left"><a class="viewcode-back" href="../../set3.html#set3.c23.unbitshift_left">[docs]</a><span class="k">def</span> <span class="nf">unbitshift_left</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reverses the left bitshift operation of MT19937.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        value: The value after being shifted.</span>
+<span class="sd">        shift: The amount the original value was shifted by.</span>
+<span class="sd">        mask: The mask used to shift.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The value before the left bitshift happened.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">i</span>      <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">while</span> <span class="n">i</span> <span class="o">*</span> <span class="n">shift</span> <span class="o">&lt;</span> <span class="mi">32</span><span class="p">:</span>
+        <span class="n">part_mask</span> <span class="o">=</span> <span class="n">rlshift</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">32</span> <span class="o">-</span> <span class="n">shift</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">shift</span> <span class="o">*</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">part</span>      <span class="o">=</span> <span class="n">value</span> <span class="o">&amp;</span> <span class="n">part_mask</span>
+        <span class="n">value</span>     <span class="o">^=</span> <span class="p">(</span><span class="n">part</span> <span class="o">&lt;&lt;</span> <span class="n">shift</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">mask</span>
+        <span class="n">result</span>    <span class="o">|=</span> <span class="n">part</span>
+        <span class="n">i</span>         <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+<span class="c1"># Python does not have a logical right shift built in</span>
+<span class="c1"># so that&#39;s what this does.</span>
+<div class="viewcode-block" id="rlshift"><a class="viewcode-back" href="../../set3.html#set3.c23.rlshift">[docs]</a><span class="k">def</span> <span class="nf">rlshift</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs a logical right shift.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        value: The value to be shifted</span>
+<span class="sd">        n: The amount to shift by</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        The logical right shift (value &gt;&gt;&gt; n)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">value</span> <span class="o">%</span> <span class="mh">0x100000000</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="n">n</span></div>
+
+<div class="viewcode-block" id="TestMTClone"><a class="viewcode-back" href="../../set3.html#set3.c23.TestMTClone">[docs]</a><span class="k">class</span> <span class="nc">TestMTClone</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestMTClone.test_challenge_23"><a class="viewcode-back" href="../../set3.html#set3.c23.TestMTClone.test_challenge_23">[docs]</a>    <span class="k">def</span> <span class="nf">test_challenge_23</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">mt</span> <span class="o">=</span> <span class="n">c21</span><span class="o">.</span><span class="n">MT19937</span><span class="p">(</span><span class="mi">234</span><span class="p">)</span>
+        <span class="n">cracked_state</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">624</span>
+        <span class="c1"># Untwist 624 numbers to get the state of the twister</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">624</span><span class="p">):</span>
+            <span class="n">cracked_state</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">untwist</span><span class="p">(</span><span class="n">mt</span><span class="o">.</span><span class="n">generate_number</span><span class="p">())</span>
+        <span class="c1"># Create a new twister and insert the state</span>
+        <span class="n">new_mt</span>    <span class="o">=</span> <span class="n">c21</span><span class="o">.</span><span class="n">MT19937</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">new_mt</span><span class="o">.</span><span class="n">mt</span> <span class="o">=</span> <span class="n">cracked_state</span>
+
+        <span class="c1"># Check that the next 50 generated numbers are the same</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">):</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">mt</span><span class="o">.</span><span class="n">generate_number</span><span class="p">()</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="n">new_mt</span><span class="o">.</span><span class="n">generate_number</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span> <span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

@@ -1,6 +1,7 @@
 """
-Challenge 20
-Break Fixed-Nonce CTR Statistically
+**Challenge 20**
+
+*Break Fixed-Nonce CTR Statistically*
 
 In this file find a similar set of base64'd plaintext. Do with them exactly what
 you did with the first, but solve the problem differently.

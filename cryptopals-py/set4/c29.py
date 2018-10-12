@@ -1,6 +1,7 @@
 """
-Challenge 29
-Break a SHA-1 keyed MAC using length extension.
+**Challenge 29**
+
+*Break a SHA-1 Keyed MAC Using Length Extension.*
 
 Secret-prefix SHA-1 MACs are trivially breakable. The attack on secret-prefix
 SHA1 relies on the fact that you can take the output of SHA-1 and use it as
@@ -14,8 +15,10 @@ key.
 To carry out the attack, you'll need to account for the fact that SHA-1 is
 'padded' with the bit-length of the message; your forged message will need to
 include that padding. We call this the 'glue padding'. The final message you
-actually forge will be:
+actually forge will be::
+
     SHA1(key || original-message || glue-padding || new-message)
+
 (where the final padding on the whole constructed message is implied)
 
 Note that to generate the glue padding, you'll need to know the original bit
@@ -36,9 +39,10 @@ registers. With the registers 'fixated', hash the additional data you want to
 forge.
 
 Using this attack, generate a secret-prefix MAC under a secret key of the string
-    "comment1=cooking%20MCs;userdata=foo;comment2=%20like%20a%20pound%20of%20bacon"
 
-Forge a variant of this message that ends with ";admin=true".
+``"comment1=cooking%20MCs;userdata=foo;comment2=%20like%20a%20pound%20of%20bacon"``
+
+Forge a variant of this message that ends with ``";admin=true"``.
 """
 import os, sys, math, struct, unittest
 sys.path.insert(0, '../set1')

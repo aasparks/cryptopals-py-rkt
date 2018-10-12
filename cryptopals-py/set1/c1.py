@@ -1,14 +1,19 @@
 """
-Challenge 1
-Convert hex to base64
+**Challenge 1**
+
+*Convert hex to base64*
 
 The string:
- 49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d
+
+``49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d``
+
 Should produce:
- SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t
+
+``SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t``
 
 So go ahead and make that happen. You'll need to use this code
 for the rest of the exercises.
+
 """
 import base64, unittest
 
@@ -85,6 +90,9 @@ def base64toascii(b64bstr):
     return base64.b64decode(b64bstr)
 
 class TestConversions(unittest.TestCase):
+    __pdoc__ = dict()
+    for field in unittest.TestCase.__dict__.keys():
+        __pdoc__['TestConversions.%s' % field] = None
     def setUp(self):
         self.asc = b'Who lives in a pineapple under the sea?'
         self.hx  = b'57686f206c6976657320696e20612070696e656170706c6520756e64657220746865207365613f'

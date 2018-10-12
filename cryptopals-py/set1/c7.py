@@ -1,11 +1,15 @@
 """
-Challenge 7
-AES in ECB mode
+**Challenge 7**
+
+*AES in ECB mode*
 
 The base64-encoded content in this file has been encrypted via
 AES-128 in ECB mode under the key
-  "YELLOW SUBMARINE"
+
+``"YELLOW SUBMARINE"``
+
 (case-sensitive, without the quotes; exactly 16 characters).
+
 Decrypt it. You know the key, after all.
 """
 from Crypto.Cipher import AES
