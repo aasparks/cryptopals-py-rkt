@@ -19,8 +19,8 @@ For Python, the tool is Sphinx to parse the docstrings in the source. </span>
 DrRacket.</span> I've used DrRacket tools before, so it was very easy. Sphinx
 has quite the learning curve but is a very powerful tool.
 
-[Python](https://aasparks.github.io/cryptopals-py-rkt/docs/py/html/index.html)
-[~~Racket~~](https://aasparks.github.io/cryptopals-py-rkt/docs/rkt/html/index.html)
+[Python](py/html/index.html)
+[~~Racket~~](rkt/html/index.html)
 
 
 ## Midterm Retrospective
