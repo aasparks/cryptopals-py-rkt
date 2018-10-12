@@ -10,6 +10,19 @@ writing the documentation, following the Google coding standard, and writing
 good unit tests for each challenge.
 Let's see how the solutions vary.
 
+# Documentation
+
+To view the documentation for each language, try the links below. I created the
+documentation using the official tools for each language. <span style="color:green">
+For Python, the tool is Sphinx to parse the docstrings in the source. </span>
+<span style="color:red">For Racket, the tool is Scribl, which is all built into
+DrRacket.</span> I've used DrRacket tools before, so it was very easy. Sphinx
+has quite the learning curve but is a very powerful tool.
+
+[Python](https://aasparks.github.io/cryptopals-py-rkt/docs/py/html/index.html)
+[~~Racket~~](https://aasparks.github.io/cryptopals-py-rkt/docs/rkt/html/index.html)
+
+
 ## Midterm Retrospective
 
 At the half-way point, I have decided to go back through the challenges and
@@ -21,12 +34,9 @@ back and work on official documentation for both languages. I've compiled a
 to-do list below of issues I found by skimming the code for all the challenges
 so far.
 
-## TODO:
+### TODO:
 * Compile most-used functions into 'util' files and use that way.
-* Convert Python solutions to Python3.
-* Write proper documentation for all files
-* Rewrite ugly functions to be more elegant.
-* Try to optimize the challenges are slow in Racket
+* Try to optimize the challenges that are slow in Racket
   * Challenge 4 (possibly 3 as well)
   * Challenge 12 (possibly the AES implementation as well)
   * Challenge 14
@@ -34,6 +44,10 @@ so far.
 * See if the AES implementation can be improved
 * Rewrite Racket solutions to be less imperative
   * Challenge 21
+
+### Completed Tasks
+* Convert Python solutions to Python3.
+* Write proper documentation for all files
 
 ## Challenges
 
@@ -63,8 +77,8 @@ is getting a good scoring function.
 #### 4. Detect Single-character XOR - :ballot_box_with_check:
 
 Running challenge 3 on every line of the file gets you to the solution
-and the plaintext very quickly. However, the Racket solution is much, much
-slower.
+and the plaintext very quickly. <span style="color:red">However, the Racket solution is much, much
+slower.</span>
 
 #### 5. Implement Repeating-key XOR - :ballot_box_with_check:
 
@@ -72,10 +86,10 @@ slower.
 
 #### 7. AES in ECB Mode - :ballot_box_with_check:
 
-Python (obviously) had a library function for AES-128.
+<span style="color:green">Python (obviously) had a library function for AES-128.</span>
 
-Racket did not have a library function so I implemented it
-myself. I may go back and implement it in Python just for fun.
+<span style="color:red">Racket did not have a library function so I implemented it
+myself. I may go back and implement it in Python just for fun.</span>
 
 #### 8. Detect AES in ECB Mode - :ballot_box_with_check:
 
@@ -91,16 +105,16 @@ myself. I may go back and implement it in Python just for fun.
 
 The first really interesting challenge in the set.
 
-The Racket solution is incredibly slow while the  Python solution is almost
+The Racket solution is incredibly slow while the Python solution is almost
 immediate. Not sure why.
 
 #### 13. ECB Cut-and-paste - :ballot_box_with_check:
 
 #### 14. Byte-at-a-time ECB Decryption (Harder) - :ballot_box_with_check:
 
-The python solution to this one is much cleaner and way, way faster. Not much
+<span style="color:green">The Python solution to this one is much cleaner and way, way faster. Not much
 different from the first one other than needing to discover the size of the
-secret prefix.
+secret prefix.</span>
 
 #### 15. PKCS#7 Padding Validation - :ballot_box_with_check:
 
@@ -114,7 +128,7 @@ the two functions when ```unpad``` is needed in previous exercises.
 #### 17. The CBC Padding Oracle - :ballot_box_with_check:
 
 This problem was a little difficult to grasp at first. My best resource for it
-was [http://www.exploresecurity.com/padding-oracle-decryption-attack/].
+was http://www.exploresecurity.com/padding-oracle-decryption-attack/
 
 #### 18. Implement CTR, The Stream Cipher Mode - :ballot_box_with_check:
 
@@ -130,8 +144,8 @@ Skipping this one as well, even though it can be automated just because I should
 
 This was fun to implement. I was shocked to see the execution time on this because the test generates 700 numbers, and finished in 9ms on my crappy laptop.
 
-This is the first time I've used a class in Racket. I wanted to avoid using the class
-but I didn't really see a way around it.
+<span style="color:red">This is the first time I've used a class in Racket. I wanted to avoid using the class
+but I didn't really see a way around it.</span>
 
 #### 22. Crack an MT19937 Seed - :ballot_box_with_check:
 
@@ -151,22 +165,27 @@ but I didn't really see a way around it.
 
 I implemented SHA-1 myself because I'm an overachiever :smirk:
 
-I was able to implement SHA-1 in Racket as a function, rather than
-a class (unlike the Mersenne Twister), but the Python solution was still
-a class.
+<span style="color:red">I was able to implement SHA-1 in Racket as a function, rather than
+a class (unlike the Mersenne Twister),</span> <span style="color:green">but the Python solution was still
+a class.</span>
 
 #### 29. Break a SHA-1 Keyed MAC Using Length Extension - :ballot_box_with_check:
 
 #### 30. Break an MD4 Keyed MAC Using Length Extension - :ballot_box_with_check:
 
-This one took a while because I implemented MD4 myself as well (at this point, why not?). The solution itself was almost identical to the previous one.
+This one took a while because I implemented MD4 myself as well (at this point,
+why not?). The solution itself was almost identical to the previous one.
 
 #### 31. Implement and Break HMAC-SHA1 with an Artificial Timing Leak - :ballot_box_with_check:
 
-The Python solution works very well. In Racket, I couldn't get it to work using
+<span style="color:green">The Python solution works very well.</span>
+
+<span style="color:red">
+In Racket, I couldn't get it to work using
 the web api because the messages would have random lag about every 5-10 requests.
 I can't figure out why this happens or how to fix it, so for now, it uses simple
 function calls to simulate web requests, which is admittedly a bad solution.
+</span>
 
 The solution does not work on a slower machine (like my old laptop), but it works
 very well on my main pc (gaming). I guess this is to be expected. This solution
@@ -174,8 +193,12 @@ is also the only one (so far) that is not unit tested.
 
 #### 32. Break HMAC-SHA1 with a Slightly Less Artificial Timing Leak - :ballot_box_with_check:
 
-The Python solution worked for a delay as low as 15ms. The Racket solution only
-worked for a delay down to 30ms, which seems weird considering that solution isn't using the web framework. The improved solutions are also very different.
+<span style="color:green">The Python solution worked for a delay as low as 15ms. </span>
+
+<span style="color:red">The Racket solution only worked for a delay down to 30ms, which seems weird
+considering that solution isn't using the web framework. </span>
+
+The improved solutions are also very different.
 Python made it all the way to 1ms (to my amazement), but the Racket solution
 works for 20ms. I need to spend a lot more time on this one. Shelving for now...
 
@@ -194,9 +217,11 @@ This seemed like it would be challenging at first and I was very tempted to Goog
 to the Diffie-Hellman math, but (when you write it down) the answer is staring you in the face. The
 exploit here is so incredibly simple.
 
+<span style="color:green">
 This is my first time using Python threads. It's a lot more like C threads
 than I would have expected. I was also surprised to find that ```Queue```
 was the best replacement for Racket's ```channel```.
+</span>
 
 
 #### 35. Implement DH with Negotiated Groups, and Break with Malicious 'g' Parameters :ballot_box_with_check:
