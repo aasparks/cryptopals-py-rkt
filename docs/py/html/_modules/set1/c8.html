@@ -1,0 +1,156 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>set1.c8 &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for set1.c8</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**Challenge 8**</span>
+
+<span class="sd">*Detect AES in ECB Mode*</span>
+
+<span class="sd">In this file are a bunch of hex-encoded ciphertexts. One of them</span>
+<span class="sd">has been encrypted with ECB.</span>
+
+<span class="sd">Detect it.</span>
+
+<span class="sd">Remember that the problem with ECB is that it is stateless and</span>
+<span class="sd">deterministic; the same 16-byte plaintext block will always produce</span>
+<span class="sd">the same 16-byte ciphertext.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">c1</span><span class="o">,</span> <span class="nn">c6</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="c1">## Well the easiest solution here is to</span>
+<span class="c1">## see if any of the ciphertexts have repeated blocks.</span>
+<span class="c1">## Turns out quite a few have repeated blocks, so the</span>
+<span class="c1">## next best option is take the one with the most</span>
+<span class="c1">## repeated blocks</span>
+
+<span class="c1"># Determines if a given txt is encrypted</span>
+<span class="c1"># with ECB. Takes an argument for the max number</span>
+<span class="c1"># of repeated blocks to be considered too many.</span>
+<div class="viewcode-block" id="is_ecb"><a class="viewcode-back" href="../../set1.html#set1.c8.is_ecb">[docs]</a><span class="k">def</span> <span class="nf">is_ecb</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">maxBlocks</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determines if a given ciphertext was encrypted in ECB mode looking for</span>
+<span class="sd">    repeated blocks.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        txt: The ciphertext in question</span>
+<span class="sd">        maxBlocks: The maximum number of repeated blocks allowed before it is</span>
+<span class="sd">        considered to be ECB.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if the txt was encrypted with ECB</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">num_blocks</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span> <span class="o">//</span> <span class="mi">16</span>
+    <span class="n">maxCount</span>   <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_blocks</span><span class="p">):</span>
+        <span class="n">block</span> <span class="o">=</span> <span class="n">c6</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="n">txt</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="n">maxCount</span><span class="p">:</span>
+            <span class="n">maxCount</span> <span class="o">=</span> <span class="n">count</span>
+    <span class="k">return</span> <span class="n">maxCount</span> <span class="o">&gt;</span> <span class="n">maxBlocks</span></div>
+
+<div class="viewcode-block" id="TestIsECB"><a class="viewcode-back" href="../../set1.html#set1.c8.TestIsECB">[docs]</a><span class="k">class</span> <span class="nc">TestIsECB</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestIsECB.setUp"><a class="viewcode-back" href="../../set1.html#set1.c8.TestIsECB.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;../../testdata/8.txt&#39;</span><span class="p">)</span></div>
+<div class="viewcode-block" id="TestIsECB.tearDown"><a class="viewcode-back" href="../../set1.html#set1.c8.TestIsECB.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+<div class="viewcode-block" id="TestIsECB.test_challenge_8"><a class="viewcode-back" href="../../set1.html#set1.c8.TestIsECB.test_challenge_8">[docs]</a>    <span class="k">def</span> <span class="nf">test_challenge_8</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">linenum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">result</span>  <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="s1">&#39;d880619740a8a19b7840a8a31c810a3d08649af70dc06f4fd5d2d69c74&#39;</span>
+        <span class="n">expected</span> <span class="o">+=</span> <span class="s1">&#39;4cd283e2dd052f6b641dbf9d11b0348542bb5708649af70dc06f4fd5d&#39;</span>
+        <span class="n">expected</span> <span class="o">+=</span> <span class="s1">&#39;2d69c744cd2839475c9dfdbc1d46597949d9c7e82bf5a08649af70dc0&#39;</span>
+        <span class="n">expected</span> <span class="o">+=</span> <span class="s1">&#39;6f4fd5d2d69c744cd28397a93eab8d6aecd566489154789a6b0308649&#39;</span>
+        <span class="n">expected</span> <span class="o">+=</span> <span class="s1">&#39;af70dc06f4fd5d2d69c744cd283d403180c98c8f6db1f2a3f9c4040de&#39;</span>
+        <span class="n">expected</span> <span class="o">+=</span> <span class="s1">&#39;b0ab51b29933f2c123c58386b06fba186a&#39;</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">is_ecb</span><span class="p">(</span><span class="n">c1</span><span class="o">.</span><span class="n">hextoascii</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()),</span> <span class="mi">3</span><span class="p">):</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">break</span>
+            <span class="n">linenum</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">linenum</span><span class="p">,</span> <span class="mi">132</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span> <span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

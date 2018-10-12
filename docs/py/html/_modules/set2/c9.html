@@ -1,0 +1,169 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>set2.c9 &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for set2.c9</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**Challenge 9**</span>
+
+<span class="sd">*Implement PKCS7 padding*</span>
+
+<span class="sd">A block cipher transforms a fixed-sized block of plaintext into</span>
+<span class="sd">ciphertext. But we almost never want to transform a single block; we</span>
+<span class="sd">encrypt irregularly-sized messages.</span>
+
+<span class="sd">One way we account for irregularly-sized messages is by padding,</span>
+<span class="sd">creating a plaintext that is an even multiple of the blocksize. The most</span>
+<span class="sd">popular padding scheme is called PKCS#7.</span>
+
+<span class="sd">So; pad any block to a specific block length, by appending the number</span>
+<span class="sd">of bytes of padding to the end of the block. For instance,</span>
+
+<span class="sd">``&quot;YELLOW SUBMARINE&quot;``</span>
+
+<span class="sd">... padded to 20 bytes would be</span>
+
+<span class="sd">``&quot;YELLOW SUBMARINE\\x04\\x04\\x04\\x04&quot;``</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+
+<div class="viewcode-block" id="pkcs7_pad"><a class="viewcode-back" href="../../set2.html#set2.c9.pkcs7_pad">[docs]</a><span class="k">def</span> <span class="nf">pkcs7_pad</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">16</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Adds padding according to the PKCS#7 standard.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        txt: The text to be padded</span>
+<span class="sd">        n (optional): The blocksize. Defaults to 16 bytes</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The bytestring padded out to a multiple of blocksize</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">num</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span> <span class="o">%</span> <span class="n">n</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">txt</span> <span class="o">+</span> <span class="nb">bytes</span><span class="p">([</span><span class="n">num</span><span class="p">]</span> <span class="o">*</span> <span class="n">num</span><span class="p">)</span></div>
+
+<span class="c1"># Unpads and checks that padding is valid</span>
+<div class="viewcode-block" id="pkcs7_unpad"><a class="viewcode-back" href="../../set2.html#set2.c9.pkcs7_unpad">[docs]</a><span class="k">def</span> <span class="nf">pkcs7_unpad</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">16</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Unpads according to PKCS#7 with padding validation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        txt: The text to unpad.</span>
+<span class="sd">        n (optional): The blocksize</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">idx</span>      <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">num_pads</span> <span class="o">=</span> <span class="n">txt</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">num_pads</span> <span class="o">&gt;</span> <span class="n">n</span> <span class="ow">or</span> <span class="n">num_pads</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">PaddingError</span><span class="p">(</span><span class="s1">&#39;Last padding byte is invalid&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_pads</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">txt</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">!=</span> <span class="n">num_pads</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PaddingError</span><span class="p">(</span><span class="s1">&#39;Invalid padding byte &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">txt</span><span class="p">[</span><span class="n">idx</span><span class="p">]))</span>
+        <span class="n">idx</span> <span class="o">-=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">txt</span><span class="p">[:</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="PaddingError"><a class="viewcode-back" href="../../set2.html#set2.c9.PaddingError">[docs]</a><span class="k">class</span> <span class="nc">PaddingError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="TestPKCS7"><a class="viewcode-back" href="../../set2.html#set2.c9.TestPKCS7">[docs]</a><span class="k">class</span> <span class="nc">TestPKCS7</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestPKCS7.test_pad"><a class="viewcode-back" href="../../set2.html#set2.c9.TestPKCS7.test_pad">[docs]</a>    <span class="k">def</span> <span class="nf">test_pad</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">str1</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;Spongebob Squarepants&#39;</span>
+        <span class="n">str2</span> <span class="o">=</span> <span class="n">pkcs7_pad</span><span class="p">(</span><span class="n">str1</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+        <span class="n">str3</span> <span class="o">=</span> <span class="n">pkcs7_pad</span><span class="p">(</span><span class="n">str1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">str2</span><span class="p">,</span> <span class="n">str1</span> <span class="o">+</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x0b</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="mi">11</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">str3</span><span class="p">,</span> <span class="n">str1</span> <span class="o">+</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x03</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="mi">3</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestPKCS7.test_unpad"><a class="viewcode-back" href="../../set2.html#set2.c9.TestPKCS7.test_unpad">[docs]</a>    <span class="k">def</span> <span class="nf">test_unpad</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">str1</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;Spongebob Squarepants&#39;</span>
+        <span class="n">str2</span> <span class="o">=</span> <span class="n">pkcs7_unpad</span><span class="p">(</span><span class="n">str1</span> <span class="o">+</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x0b</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="mi">11</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">str1</span><span class="p">,</span> <span class="n">str2</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">PaddingError</span><span class="p">):</span>
+            <span class="n">pkcs7_unpad</span><span class="p">(</span><span class="n">str1</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">PaddingError</span><span class="p">):</span>
+            <span class="n">pkcs7_unpad</span><span class="p">(</span><span class="n">str2</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="TestPKCS7.test_challenge_9"><a class="viewcode-back" href="../../set2.html#set2.c9.TestPKCS7.test_challenge_9">[docs]</a>    <span class="k">def</span> <span class="nf">test_challenge_9</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">str1</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;YELLOW SUBMARINE&#39;</span>
+        <span class="n">str2</span> <span class="o">=</span> <span class="n">pkcs7_pad</span><span class="p">(</span><span class="n">str1</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">str2</span><span class="p">,</span> <span class="n">str1</span> <span class="o">+</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x04\x04\x04\x04</span><span class="s1">&#39;</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span> <span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

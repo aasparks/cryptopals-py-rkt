@@ -1,0 +1,303 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>set4.MYSHA1 &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for set4.MYSHA1</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**SHA1**</span>
+
+<span class="sd">For challenge 28, I decided to implement SHA-1 myself, rather than use</span>
+<span class="sd">someone else&#39;s implementation.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">unittest</span><span class="o">,</span> <span class="nn">struct</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">math</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;../set1&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">c1</span>
+
+<span class="c1"># DEBUG</span>
+<span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># rotl</span>
+<span class="c1">## Circular left rotate function from FIPS 180-4</span>
+<div class="viewcode-block" id="rotl"><a class="viewcode-back" href="../../set4.html#set4.MYSHA1.rotl">[docs]</a><span class="k">def</span> <span class="nf">rotl</span><span class="p">(</span><span class="n">x</span> <span class="p">,</span><span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs the circular left rotate function from FIPS 180-4.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x: The number to rotate.</span>
+<span class="sd">        n: The amount to rotate by.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        x left rotated by n.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">((</span><span class="n">x</span> <span class="o">&lt;&lt;</span> <span class="n">n</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;&gt;</span> <span class="p">(</span><span class="mi">32</span> <span class="o">-</span> <span class="n">n</span><span class="p">)))</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span></div>
+
+<span class="c1"># sum32</span>
+<span class="c1"># add two numbers, mod 32-bits</span>
+<div class="viewcode-block" id="sum32"><a class="viewcode-back" href="../../set4.html#set4.MYSHA1.sum32">[docs]</a><span class="k">def</span> <span class="nf">sum32</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span></div>
+
+<div class="viewcode-block" id="MYSHA1"><a class="viewcode-back" href="../../set4.html#set4.MYSHA1.MYSHA1">[docs]</a><span class="k">class</span> <span class="nc">MYSHA1</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    My byte-oriented implementation of SHA-1 as described in FIPS 180-4</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        l: Length of the message (in bytes)</span>
+<span class="sd">        h: Initial hash value</span>
+<span class="sd">        message: The message to be hashed</span>
+<span class="sd">        n: The number of blocks</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Initialize variables</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">n_l</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_h</span><span class="o">=</span><span class="p">[</span><span class="mh">0x67452301</span><span class="p">,</span> <span class="mh">0xEFCDAB89</span><span class="p">,</span> <span class="mh">0x98BADCFE</span><span class="p">,</span>
+                  <span class="mh">0x10325476</span><span class="p">,</span> <span class="mh">0xC3D2E1F0</span><span class="p">]):</span>
+        <span class="c1">## Before computation begins for each of the secure hash</span>
+        <span class="c1">## algorithms, the initial hash value, must be set. For</span>
+        <span class="c1">## SHA-1, the inital hash value consists of the following</span>
+        <span class="c1">## five 32-bit words.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h</span>       <span class="o">=</span> <span class="n">n_h</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l</span>       <span class="o">=</span> <span class="n">n_l</span> <span class="k">if</span> <span class="n">n_l</span> <span class="o">!=</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">len</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pre_process</span><span class="p">()</span>
+
+    <span class="c1"># Preprocessing.</span>
+    <span class="c1">## Preprocessing shall take place before hash computation</span>
+    <span class="c1">## begins. This consists of three steps: padding the message,</span>
+    <span class="c1">## M, parsing the padded message into message blocks, and</span>
+    <span class="c1">## setting the initial hash value, H(0)</span>
+<div class="viewcode-block" id="MYSHA1.pre_process"><a class="viewcode-back" href="../../set4.html#set4.MYSHA1.MYSHA1.pre_process">[docs]</a>    <span class="k">def</span> <span class="nf">pre_process</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Preproccesses the messages by padding appropriately.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">## The message, M, shall be padded before hash computation</span>
+        <span class="c1">## begins. The purpose of this padding is to ensure that</span>
+        <span class="c1">## the padded message is a multiple of 512 bits.</span>
+        <span class="c1">## Append a 1 bit to the end of the message, followed by k</span>
+        <span class="c1">## zero bits, where k is the smallest, non-negative solution</span>
+        <span class="c1">## to the equation</span>
+        <span class="c1">##   l + 1 + k === 448 mod 512</span>
+        <span class="n">message_bit_len</span>          <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span> <span class="o">*</span> <span class="mi">8</span>
+        <span class="c1"># NOTE: it took me FOREVER to realize that the l passed in</span>
+        <span class="c1"># for c29 is used only as a the postfix, and the rest uses</span>
+        <span class="c1"># len(message)</span>
+        <span class="n">message_len</span>              <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+        <span class="c1"># Instead of calculating the number of zeros, we&#39;ll create</span>
+        <span class="c1"># a buffer of zeros and fill it at the start and end</span>
+        <span class="n">num_blocks</span>               <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">((</span><span class="n">message_len</span> <span class="o">+</span> <span class="mi">9</span><span class="p">)</span> <span class="o">/</span> <span class="mi">64</span><span class="p">)</span>
+        <span class="n">new_len</span>                  <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">num_blocks</span> <span class="o">*</span> <span class="mi">64</span><span class="p">)</span>
+        <span class="n">new_msg</span>                  <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">new_len</span><span class="p">)</span>
+        <span class="n">new_msg</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">message_len</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="nb">bytes</span><span class="p">([</span><span class="mh">0x80</span><span class="p">])</span>
+        <span class="n">postfix</span>                  <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;&gt;Q&#39;</span><span class="p">,</span> <span class="n">message_bit_len</span><span class="p">)</span>
+        <span class="n">new_msg</span><span class="p">[</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">postfix</span><span class="p">):]</span>  <span class="o">=</span> <span class="n">postfix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l</span>                   <span class="o">=</span> <span class="n">new_len</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span>             <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">new_msg</span><span class="p">)</span>
+        <span class="c1">## After the message has been padded, it must be parsed into N</span>
+        <span class="c1">## m-bit blocks before the hash computation can begin.</span>
+        <span class="c1">## For SHA-1, the padded message is parsed into N 512-bit blocks.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span>                   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">l</span> <span class="o">//</span> <span class="mi">64</span>
+        <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;State after preprocessing:&#39;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;MSG: &#39;</span> <span class="o">+</span> <span class="n">c1</span><span class="o">.</span><span class="n">asciitohex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;LEN: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">l</span><span class="p">))</span></div>
+
+    <span class="c1">## SHA-1 may be used to hash a message, M, having a length of l bits.</span>
+    <span class="c1">## The algorithm uses</span>
+    <span class="c1">##  1) a message schedule of 80 32-bit words</span>
+    <span class="c1">##  2) five working variable of 32 bits each</span>
+    <span class="c1">##  3) a hash value of 5 32-bit words</span>
+    <span class="c1">## The final result of SHA-1 is a 160-bit message digest.</span>
+<div class="viewcode-block" id="MYSHA1.digest"><a class="viewcode-back" href="../../set4.html#set4.MYSHA1.MYSHA1.digest">[docs]</a>    <span class="k">def</span> <span class="nf">digest</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Produces the message digest.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A bytestring containing the message digest.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">chunk</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">64</span> <span class="p">:</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">64</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Chunk &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;: &#39;</span> <span class="o">+</span> <span class="n">chunk</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;hex&#39;</span><span class="p">))</span>
+            <span class="c1">## 1. Prepare the message schedule</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">80</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">16</span><span class="p">):</span>
+                <span class="n">w</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;&gt;I&#39;</span><span class="p">,</span> <span class="n">chunk</span><span class="p">[</span><span class="n">j</span><span class="o">*</span><span class="mi">4</span> <span class="p">:</span> <span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">4</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">80</span><span class="p">):</span>
+                <span class="n">w</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">rotl</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">^</span> <span class="n">w</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">8</span><span class="p">]</span> <span class="o">^</span> <span class="n">w</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">14</span><span class="p">]</span> <span class="o">^</span> <span class="n">w</span><span class="p">[</span><span class="n">j</span><span class="o">-</span><span class="mi">16</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">80</span><span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;w[&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;]= &#39;</span> <span class="o">+</span> <span class="nb">format</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="s1">&#39;02x&#39;</span><span class="p">))</span>
+
+            <span class="c1">## 2. Initialize the five working variables</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+
+            <span class="c1">## 3. For t=0 to 79</span>
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">80</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="p">:</span>
+                    <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__ch</span>
+                    <span class="n">k</span> <span class="o">=</span> <span class="mh">0x5a827999</span>
+                <span class="k">elif</span> <span class="mi">20</span> <span class="o">&lt;=</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="mi">40</span><span class="p">:</span>
+                    <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parity</span>
+                    <span class="n">k</span> <span class="o">=</span> <span class="mh">0x6ed9eba1</span>
+                <span class="k">elif</span> <span class="mi">40</span> <span class="o">&lt;=</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="mi">60</span><span class="p">:</span>
+                    <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__maj</span>
+                    <span class="n">k</span> <span class="o">=</span> <span class="mh">0x8f1bbcdc</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parity</span>
+                    <span class="n">k</span> <span class="o">=</span> <span class="mh">0xca62c1d6</span>
+
+                <span class="n">temp</span> <span class="o">=</span> <span class="n">rotl</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="o">+</span> <span class="n">f</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span> <span class="o">+</span> <span class="n">e</span> <span class="o">+</span> <span class="n">k</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+                <span class="n">e</span>    <span class="o">=</span> <span class="n">d</span>
+                <span class="n">d</span>    <span class="o">=</span> <span class="n">c</span>
+                <span class="n">c</span>    <span class="o">=</span> <span class="n">rotl</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+                <span class="n">b</span>    <span class="o">=</span> <span class="n">a</span>
+                <span class="n">a</span> <span class="o">=</span> <span class="n">temp</span> <span class="o">&amp;</span> <span class="mh">0xffffffff</span>
+
+                <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+                    <span class="n">print_line</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">e</span><span class="p">)</span>
+
+            <span class="c1">## 4. Computer the i&#39;th intermediate hash value</span>
+            <span class="c1"># just a wee bit functional since python allows it</span>
+            <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">e</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">sum32</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">,</span> <span class="n">vals</span><span class="p">)))</span>
+
+        <span class="c1"># Return the final hash value as bytes</span>
+        <span class="k">return</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&gt;I&quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="p">)))</span></div>
+
+    <span class="c1"># The following functions define f as a function of t</span>
+    <span class="c1"># during digest, as given in FIPS 180-4</span>
+    <span class="k">def</span> <span class="nf">__ch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">&amp;</span> <span class="n">y</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="o">~</span><span class="n">x</span> <span class="o">&amp;</span> <span class="n">z</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__parity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">^</span> <span class="n">y</span> <span class="o">^</span> <span class="n">z</span>
+
+    <span class="k">def</span> <span class="nf">__maj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">&amp;</span> <span class="n">y</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="n">x</span> <span class="o">&amp;</span> <span class="n">z</span><span class="p">)</span> <span class="o">^</span> <span class="p">(</span><span class="n">y</span> <span class="o">&amp;</span> <span class="n">z</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="print_line"><a class="viewcode-back" href="../../set4.html#set4.MYSHA1.print_line">[docs]</a><span class="k">def</span> <span class="nf">print_line</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">e</span><span class="p">):</span>
+    <span class="n">output_string</span> <span class="o">=</span> <span class="s1">&#39;t=&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;   &#39;</span>
+    <span class="n">output_string</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">format</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s1">&#39;08x&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;  &#39;</span>
+    <span class="n">output_string</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">format</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="s1">&#39;08x&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;  &#39;</span>
+    <span class="n">output_string</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">format</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s1">&#39;08x&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;  &#39;</span>
+    <span class="n">output_string</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">format</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s1">&#39;08x&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;  &#39;</span>
+    <span class="n">output_string</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">format</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s1">&#39;08x&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">output_string</span><span class="p">)</span></div>
+
+<span class="c1">## Now for testing</span>
+<span class="c1"># As indicated in the Racket solution as well, I have</span>
+<span class="c1"># some good test vectors and feel this is a good chance</span>
+<span class="c1"># to time the tests. So that&#39;s what&#39;s happening.</span>
+<div class="viewcode-block" id="TestSHA1"><a class="viewcode-back" href="../../set4.html#set4.MYSHA1.TestSHA1">[docs]</a><span class="k">class</span> <span class="nc">TestSHA1</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="c1"># &#39;abc&#39;</span>
+<div class="viewcode-block" id="TestSHA1.test1"><a class="viewcode-back" href="../../set4.html#set4.MYSHA1.TestSHA1.test1">[docs]</a>    <span class="k">def</span> <span class="nf">test1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">result</span>   <span class="o">=</span> <span class="n">c1</span><span class="o">.</span><span class="n">asciitohex</span><span class="p">(</span><span class="n">MYSHA1</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;abc&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">())</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;a9993e364706816aba3e25717850c26c9cd0d89d&#39;</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span></div>
+
+    <span class="c1"># 2 blocks</span>
+<div class="viewcode-block" id="TestSHA1.test2"><a class="viewcode-back" href="../../set4.html#set4.MYSHA1.TestSHA1.test2">[docs]</a>    <span class="k">def</span> <span class="nf">test2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq&quot;</span>
+        <span class="n">result</span>   <span class="o">=</span> <span class="n">MYSHA1</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+        <span class="n">result</span>   <span class="o">=</span> <span class="n">c1</span><span class="o">.</span><span class="n">asciitohex</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;84983E441C3BD26EBAAE4AA1F95129E5E54670F1&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span></div>
+
+    <span class="c1"># 4 blocks</span>
+<div class="viewcode-block" id="TestSHA1.test3"><a class="viewcode-back" href="../../set4.html#set4.MYSHA1.TestSHA1.test3">[docs]</a>    <span class="k">def</span> <span class="nf">test3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu&quot;</span>
+        <span class="n">result</span>   <span class="o">=</span> <span class="n">MYSHA1</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+        <span class="n">result</span>   <span class="o">=</span> <span class="n">c1</span><span class="o">.</span><span class="n">asciitohex</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;A49B2446A02C645BF419F995B67091253A04A259&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span></div>
+
+    <span class="c1"># 1 million A&#39;s</span>
+<div class="viewcode-block" id="TestSHA1.test4"><a class="viewcode-back" href="../../set4.html#set4.MYSHA1.TestSHA1.test4">[docs]</a>    <span class="k">def</span> <span class="nf">test4</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">result</span>   <span class="o">=</span> <span class="n">MYSHA1</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;a&#39;</span> <span class="o">*</span> <span class="mi">1000000</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+        <span class="n">result</span>   <span class="o">=</span> <span class="n">c1</span><span class="o">.</span><span class="n">asciitohex</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;34AA973CD4C4DAA4F61EEB2BDBAD27316534016F&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span> <span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

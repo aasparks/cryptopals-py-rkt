@@ -1,0 +1,161 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>set3.c22 &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for set3.c22</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**Challenge 22**</span>
+
+<span class="sd">*Crack an MT199337 seed*</span>
+
+<span class="sd">Make sure your MT19937 accepts an integer seed value. Test it.</span>
+
+<span class="sd">Write a routine that performs the following operations:</span>
+
+<span class="sd">* Wait a random number of seconds between 40 and 1000</span>
+<span class="sd">* Seed the RNG with the current Unix timestamp</span>
+<span class="sd">* Wait a random number of seconds again</span>
+<span class="sd">* Return the first number from the RNG</span>
+
+<span class="sd">You get the idea. Go get coffee while it runs. Or just simulate the passage</span>
+<span class="sd">of time, although you&#39;re missing some of the fun of this exercise if you do</span>
+<span class="sd">that.</span>
+
+<span class="sd">From the 32-bit RNG output, discover the seed.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">unittest</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">randint</span>
+<span class="kn">import</span> <span class="nn">c21</span>
+
+<div class="viewcode-block" id="bad_seed_mt"><a class="viewcode-back" href="../../set3.html#set3.c22.bad_seed_mt">[docs]</a><span class="k">def</span> <span class="nf">bad_seed_mt</span><span class="p">(</span><span class="n">testing</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Waits a random amount of time, creates a seed using the current time,</span>
+<span class="sd">    waits a little longer, then returns the generator.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        testing: If testing is true, the function will not sleep, but simulate</span>
+<span class="sd">        passage of time by subtracting a random number from the current time.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The MT19937 generator, seeded with the time</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">seed</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">if</span> <span class="n">testing</span><span class="p">:</span>
+        <span class="n">seed</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span> <span class="o">-</span> <span class="n">randint</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
+        <span class="n">seed</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">c21</span><span class="o">.</span><span class="n">MT19937</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span></div>
+
+<span class="c1">## From the 32-bit output, discover the seed</span>
+<div class="viewcode-block" id="find_seed"><a class="viewcode-back" href="../../set3.html#set3.c22.find_seed">[docs]</a><span class="k">def</span> <span class="nf">find_seed</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Discovers the seed used by MT199937 to get the number by trying seed values</span>
+<span class="sd">    from the current time, down to the actual seed.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        num: The first num the MT19937 generated.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The seed value used by the MT19937.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">curr_time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">mt</span> <span class="o">=</span> <span class="n">c21</span><span class="o">.</span><span class="n">MT19937</span><span class="p">(</span><span class="n">curr_time</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mt</span><span class="o">.</span><span class="n">generate_number</span><span class="p">()</span> <span class="o">==</span> <span class="n">num</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">curr_time</span>
+        <span class="n">curr_time</span> <span class="o">-=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="TestMT19937"><a class="viewcode-back" href="../../set3.html#set3.c22.TestMT19937">[docs]</a><span class="k">class</span> <span class="nc">TestMT19937</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestMT19937.test_challenge_22"><a class="viewcode-back" href="../../set3.html#set3.c22.TestMT19937.test_challenge_22">[docs]</a>    <span class="k">def</span> <span class="nf">test_challenge_22</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">mt</span>    <span class="o">=</span> <span class="n">bad_seed_mt</span><span class="p">(</span><span class="n">testing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">num</span>   <span class="o">=</span> <span class="n">mt</span><span class="o">.</span><span class="n">generate_number</span><span class="p">()</span>
+        <span class="n">seed</span>  <span class="o">=</span> <span class="n">find_seed</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+        <span class="n">my_mt</span> <span class="o">=</span> <span class="n">c21</span><span class="o">.</span><span class="n">MT19937</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">my_mt</span><span class="o">.</span><span class="n">generate_number</span><span class="p">(),</span> <span class="n">num</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">my_mt</span><span class="o">.</span><span class="n">generate_number</span><span class="p">(),</span> <span class="n">mt</span><span class="o">.</span><span class="n">generate_number</span><span class="p">())</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span> <span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

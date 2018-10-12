@@ -1,0 +1,224 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>set1.c3 &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for set1.c3</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**Challenge 3**</span>
+
+<span class="sd">*Single-byte XOR cipher*</span>
+
+<span class="sd">The hex encoded string:</span>
+
+<span class="sd">``1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736``</span>
+
+<span class="sd">...has been XOR&#39;d against a single character. Find the key,</span>
+<span class="sd">decrypt the message.</span>
+
+<span class="sd">You can do this by hand. But don&#39;t: write code to do it for you.</span>
+<span class="sd">How? Devise some method for &#39;scoring&#39; a piece of English plaintext.</span>
+<span class="sd">Character frequency is a good metric. Evaluate each output and choose</span>
+<span class="sd">the one with the best score.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">c1</span><span class="o">,</span> <span class="nn">c2</span>
+<span class="kn">import</span> <span class="nn">string</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">unittest</span>
+
+<span class="c1">## I need to write a function to score a piece of plaintext as</span>
+<span class="c1">## English or not. A simple frequency analysis should work.</span>
+<span class="c1">## First let&#39;s get a dictionary of the relative character frequency for English.</span>
+<span class="n">knownfreq</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span> <span class="p">:</span> <span class="mf">0.082</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span> <span class="p">:</span> <span class="mf">0.015</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span> <span class="p">:</span> <span class="mf">0.028</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span> <span class="p">:</span> <span class="mf">0.043</span><span class="p">,</span> <span class="s1">&#39;e&#39;</span> <span class="p">:</span> <span class="mf">0.0127</span><span class="p">,</span>
+             <span class="s1">&#39;f&#39;</span> <span class="p">:</span> <span class="mf">0.022</span><span class="p">,</span> <span class="s1">&#39;g&#39;</span> <span class="p">:</span> <span class="mf">0.020</span><span class="p">,</span> <span class="s1">&#39;h&#39;</span> <span class="p">:</span> <span class="mf">0.061</span><span class="p">,</span> <span class="s1">&#39;i&#39;</span> <span class="p">:</span> <span class="mf">0.069</span><span class="p">,</span> <span class="s1">&#39;j&#39;</span> <span class="p">:</span> <span class="mf">0.002</span><span class="p">,</span>
+             <span class="s1">&#39;k&#39;</span> <span class="p">:</span> <span class="mf">0.008</span><span class="p">,</span> <span class="s1">&#39;l&#39;</span> <span class="p">:</span> <span class="mf">0.040</span><span class="p">,</span> <span class="s1">&#39;m&#39;</span> <span class="p">:</span> <span class="mf">0.024</span><span class="p">,</span> <span class="s1">&#39;n&#39;</span> <span class="p">:</span> <span class="mf">0.067</span><span class="p">,</span> <span class="s1">&#39;o&#39;</span> <span class="p">:</span> <span class="mf">0.075</span><span class="p">,</span>
+             <span class="s1">&#39;p&#39;</span> <span class="p">:</span> <span class="mf">0.019</span><span class="p">,</span> <span class="s1">&#39;q&#39;</span> <span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span> <span class="p">:</span> <span class="mf">0.059</span><span class="p">,</span> <span class="s1">&#39;s&#39;</span> <span class="p">:</span> <span class="mf">0.063</span><span class="p">,</span> <span class="s1">&#39;t&#39;</span> <span class="p">:</span> <span class="mf">0.091</span><span class="p">,</span>
+             <span class="s1">&#39;u&#39;</span> <span class="p">:</span> <span class="mf">0.028</span><span class="p">,</span> <span class="s2">&quot;v&quot;</span> <span class="p">:</span> <span class="mf">0.009</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span> <span class="p">:</span> <span class="mf">0.024</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span> <span class="p">:</span> <span class="mf">0.002</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span> <span class="p">:</span> <span class="mf">0.019</span><span class="p">,</span>
+             <span class="s1">&#39;z&#39;</span> <span class="p">:</span> <span class="mf">0.001</span><span class="p">}</span>
+<span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># Score a string. High score is more likely English</span>
+<div class="viewcode-block" id="score"><a class="viewcode-back" href="../../set1.html#set1.c3.score">[docs]</a><span class="k">def</span> <span class="nf">score</span><span class="p">(</span><span class="n">txt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scores a piece of text on how likely it is to be English, using</span>
+<span class="sd">    frequency analysis.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        txt: The bytestring to be analyzed for frequency of English characters</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A score in the range of 0 to 26 for the likelihood of being English</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># First we can assume strings in English only contain</span>
+    <span class="c1"># the alphabet, numbers, and some symbols. This let&#39;s us</span>
+    <span class="c1"># throw out bad strings immediately</span>
+    <span class="n">bad_chars</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;~@#$%^&amp;*=+|\/&lt;&gt;&#39;</span><span class="p">)</span>
+    <span class="c1"># Go through the string and check each character for disqualification</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">txt</span><span class="p">:</span>
+        <span class="c1"># If it&#39;s less than ascii 32 (except for &#39;\n&#39;)</span>
+        <span class="c1"># we can assume it is definitely not English.</span>
+        <span class="n">is_bad_char</span> <span class="o">=</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="mi">32</span> <span class="ow">and</span> <span class="n">c</span> <span class="o">!=</span> <span class="nb">ord</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="c1"># If it&#39;s greater than 127, it is also invalid</span>
+        <span class="n">is_bad_char</span> <span class="o">|=</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="mi">127</span>
+        <span class="n">is_bad_char</span> <span class="o">|=</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">bad_chars</span>
+        <span class="k">if</span> <span class="n">is_bad_char</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;got bad char &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">c</span><span class="p">))</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="c1"># Get the frequency of each [a-z] character in the string</span>
+    <span class="n">freq</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">ntxt</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;[^a-z]+&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">txt</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
+    <span class="c1"># If there are no [a-z] chars, it isn&#39;t English</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ntxt</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+    <span class="c1"># Now get the frequency of each character</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">ntxt</span><span class="p">:</span>
+        <span class="n">freq</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span><span class="p">:</span>
+        <span class="n">freq</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">freq</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">__score_freqs</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span></div>
+
+<span class="c1"># Assign a score based on relative frequency</span>
+<span class="k">def</span> <span class="nf">__score_freqs</span><span class="p">(</span><span class="n">freq</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Assigns a score given the relative frequency of each character.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        freq: A dictionary containing each character [a-z] and the associated</span>
+<span class="sd">        relative frequency for that character.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The value that determines how close to the English language a piece</span>
+<span class="sd">        of text is.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">scr</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># Go through the alphabet in order of most frequent</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="s1">&#39;etaionshrdlcumvfgypbvkjxqz&#39;</span><span class="p">:</span>
+        <span class="c1"># This part here is totally arbitrary. I played around with numbers</span>
+        <span class="c1"># and found this to be most effective. Basically, if the freq is</span>
+        <span class="c1"># within half the known, it is considered good</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">knownfreq</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">-</span> <span class="n">freq</span><span class="p">[</span><span class="n">key</span><span class="p">])</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">knownfreq</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">scr</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">scr</span>
+
+
+<span class="c1"># Now that I can score, I have to find out what the key is</span>
+<div class="viewcode-block" id="single_byte_xor"><a class="viewcode-back" href="../../set1.html#set1.c3.single_byte_xor">[docs]</a><span class="k">def</span> <span class="nf">single_byte_xor</span><span class="p">(</span><span class="n">txt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Solves the single byte XOR cipher by trying every possible key value</span>
+<span class="sd">    and scoring the resulting plaintext for its similarity to the English</span>
+<span class="sd">    language.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        txt: The ciphertext to be deciphered.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The key with the highest score.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">maxScore</span>  <span class="o">=</span> <span class="o">-</span><span class="mi">3</span>
+    <span class="n">bestKey</span>   <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">256</span><span class="p">):</span>
+        <span class="c1"># Score every attempt and take the highest score</span>
+        <span class="n">attempt</span> <span class="o">=</span> <span class="n">c2</span><span class="o">.</span><span class="n">xorstrs</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">([</span><span class="n">x</span><span class="p">])</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">txt</span><span class="p">))</span>
+        <span class="n">scr</span>     <span class="o">=</span> <span class="n">score</span><span class="p">(</span><span class="n">attempt</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">scr</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">scr</span> <span class="o">&gt;</span> <span class="n">maxScore</span><span class="p">:</span>
+            <span class="n">maxScore</span>  <span class="o">=</span> <span class="n">scr</span>
+            <span class="n">bestKey</span>   <span class="o">=</span> <span class="n">x</span>
+    <span class="k">return</span> <span class="n">bestKey</span></div>
+
+<div class="viewcode-block" id="TestSingleXOR"><a class="viewcode-back" href="../../set1.html#set1.c3.TestSingleXOR">[docs]</a><span class="k">class</span> <span class="nc">TestSingleXOR</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestSingleXOR.setUp"><a class="viewcode-back" href="../../set1.html#set1.c3.TestSingleXOR.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctxt</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctxt</span> <span class="o">=</span> <span class="n">c1</span><span class="o">.</span><span class="n">hextoascii</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctxt</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestSingleXOR.test_challenge_3"><a class="viewcode-back" href="../../set1.html#set1.c3.TestSingleXOR.test_challenge_3">[docs]</a>    <span class="k">def</span> <span class="nf">test_challenge_3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">actual_key</span>   <span class="o">=</span> <span class="n">single_byte_xor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctxt</span><span class="p">)</span>
+        <span class="n">expected_key</span> <span class="o">=</span> <span class="mi">88</span>
+        <span class="n">actual_txt</span>   <span class="o">=</span> <span class="n">c2</span><span class="o">.</span><span class="n">xorstrs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctxt</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">([</span><span class="n">actual_key</span><span class="p">])</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctxt</span><span class="p">))</span>
+        <span class="n">expected_txt</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;Cooking MC</span><span class="se">\&#39;</span><span class="s1">s like a pound of bacon&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">actual_key</span><span class="p">,</span> <span class="n">expected_key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">actual_txt</span><span class="p">,</span> <span class="n">expected_txt</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span>  <span class="s2">&quot;__main__&quot;</span> <span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

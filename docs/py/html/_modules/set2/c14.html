@@ -1,0 +1,267 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>set2.c14 &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for set2.c14</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**Challenge 14**</span>
+
+<span class="sd">*Byte-at-a-time ECB Decryption (Harder)*</span>
+
+
+<span class="sd">Take your oracle function from #12. Now generate a random count</span>
+<span class="sd">of random bytes and prepend this string to every plaintext.</span>
+
+<span class="sd">You are now doing::</span>
+
+<span class="sd">    AES-128-ECB(random-prefix || attacker-controlled || target-bytes, random-key)</span>
+
+<span class="sd">Same goal: decrypt the target bytes</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">random</span><span class="o">,</span> <span class="nn">unittest</span>
+<span class="kn">from</span> <span class="nn">Crypto.Cipher</span> <span class="k">import</span> <span class="n">AES</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;../set1&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">c1</span><span class="o">,</span> <span class="nn">c6</span><span class="o">,</span> <span class="nn">c9</span>
+
+<span class="n">key</span>     <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">rando</span>   <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+<span class="n">unknown</span> <span class="o">=</span> <span class="s1">&#39;Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkg&#39;</span>
+<span class="n">unknown</span> <span class="o">+=</span> <span class="s1">&#39;aGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBq&#39;</span>
+<span class="n">unknown</span> <span class="o">+=</span> <span class="s1">&#39;dXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK&#39;</span>
+<span class="n">unknown</span> <span class="o">=</span> <span class="n">c1</span><span class="o">.</span><span class="n">base64toascii</span><span class="p">(</span><span class="n">unknown</span><span class="p">)</span>
+
+<span class="c1"># Encryption oracle</span>
+<div class="viewcode-block" id="encryption_oracle"><a class="viewcode-back" href="../../set2.html#set2.c14.encryption_oracle">[docs]</a><span class="k">def</span> <span class="nf">encryption_oracle</span><span class="p">(</span><span class="n">txt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Encrypts the given text under a secret key with a secret, random prefix, and</span>
+<span class="sd">    and unknown suffix.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        txt: The (attacker-controlled) text to be encrypted</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        AES-128-ECB(random-prefix || txt || unknown-string, random-key)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">AES</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">AES</span><span class="o">.</span><span class="n">MODE_ECB</span><span class="p">)</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">c9</span><span class="o">.</span><span class="n">pkcs7_pad</span><span class="p">(</span><span class="n">rando</span> <span class="o">+</span> <span class="n">txt</span> <span class="o">+</span> <span class="n">unknown</span><span class="p">))</span></div>
+
+<span class="c1"># Since the prefix is constant, this is pretty much</span>
+<span class="c1"># the same as the last one, but we need to find the</span>
+<span class="c1"># prefix first. Since it isn&#39;t forcing me to verify</span>
+<span class="c1"># the block size and ECB encoding, I&#39;m going to skip</span>
+<span class="c1"># that. This is going to have lots of copied code.</span>
+
+<span class="c1">## How do I determine the prefix size?</span>
+<span class="c1">## Sending with &#39;&#39; : XXXX XXTH ESEC RET1</span>
+<span class="c1">## Sending with &#39;A&#39; : XXXX XXAT HESE CRET</span>
+<span class="c1">## From this we know it&#39;s in the second block.</span>
+<span class="c1">## How do we figure out which byte it is?</span>
+<span class="c1">## Sending with &#39;AA&#39; : XXXX XXAA THES ECRE T333</span>
+<span class="c1">## Sending with &#39;AAA : XXXX XXAA ATHE SECR ET22</span>
+<span class="c1">## Ok now we see that we reached the end of the block.</span>
+<span class="c1">## So the last byte of prefix is where we are minus how much we put in</span>
+<span class="c1">## --- size = start_len + (blocksize - (len(controlled_bytes)-1))</span>
+<span class="c1">## --- size = 4 + 4 - 3 + 1 = 6</span>
+<span class="c1"># Determines the size of the prefix the oracle is using</span>
+<div class="viewcode-block" id="get_prefix_size"><a class="viewcode-back" href="../../set2.html#set2.c14.get_prefix_size">[docs]</a><span class="k">def</span> <span class="nf">get_prefix_size</span><span class="p">(</span><span class="n">oracle</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determines the size of the prefix for the encryption oracle.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        oracle: The encryption oracle</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The size of the prefix and the length of the secret</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">controlled_bytes</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
+    <span class="n">original</span>         <span class="o">=</span> <span class="n">oracle</span><span class="p">(</span><span class="n">controlled_bytes</span><span class="p">)</span>
+    <span class="n">controlled_bytes</span> <span class="o">+=</span> <span class="sa">b</span><span class="s1">&#39;A&#39;</span>
+    <span class="n">test</span>             <span class="o">=</span> <span class="n">oracle</span><span class="p">(</span><span class="n">controlled_bytes</span><span class="p">)</span>
+    <span class="c1"># Find the block where the prefix ends</span>
+    <span class="n">prefix_block</span> <span class="o">=</span> <span class="n">find_prefix_block</span><span class="p">(</span><span class="n">original</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span>
+    <span class="n">start_len</span>    <span class="o">=</span> <span class="p">(</span><span class="n">prefix_block</span> <span class="o">*</span> <span class="mi">16</span><span class="p">);</span>
+    <span class="c1"># Loop through the block, looking for the end</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">15</span><span class="p">):</span>
+        <span class="n">controlled_bytes</span> <span class="o">+=</span> <span class="sa">b</span><span class="s1">&#39;A&#39;</span>
+        <span class="n">new_test</span>         <span class="o">=</span> <span class="n">oracle</span><span class="p">(</span><span class="n">controlled_bytes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">c6</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">new_test</span><span class="p">,</span> <span class="n">prefix_block</span><span class="p">)</span> <span class="o">==</span> <span class="n">c6</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">prefix_block</span><span class="p">):</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="n">new_test</span>
+    <span class="c1"># BUG: when prefix size mod block size is 0, this is off by one. I don&#39;t care.</span>
+    <span class="k">return</span> <span class="n">start_len</span> <span class="o">+</span> <span class="mi">16</span> <span class="o">-</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">controlled_bytes</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">controlled_bytes</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">16</span></div>
+
+<span class="c1"># Finds the block where the prefix ends</span>
+<div class="viewcode-block" id="find_prefix_block"><a class="viewcode-back" href="../../set2.html#set2.c14.find_prefix_block">[docs]</a><span class="k">def</span> <span class="nf">find_prefix_block</span><span class="p">(</span><span class="n">oracle</span><span class="p">,</span> <span class="n">test</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Finds the block that contains the prefix</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        original: The result of encryption_oracle(b&#39;&#39;)</span>
+<span class="sd">        test: The result of encryption_oracle(b&#39;A&#39;)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The block number where the prefix ends</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        RuntimeError if the block is not found</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">oracle</span><span class="p">)</span> <span class="o">//</span> <span class="mi">16</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">c6</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">oracle</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="o">!=</span> <span class="n">c6</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">i</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;could not find prefix block&#39;</span><span class="p">)</span></div>
+
+
+<span class="c1"># Now that I know the prefix size, I can do what</span>
+<span class="c1"># I did last time.</span>
+<span class="c1"># Knowing the prefix size, we need to have our own,</span>
+<span class="c1"># permanent prefix size to keep it block aligned.</span>
+<div class="viewcode-block" id="decode_secret"><a class="viewcode-back" href="../../set2.html#set2.c14.decode_secret">[docs]</a><span class="k">def</span> <span class="nf">decode_secret</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decodes the secret bytes from the encryption oracle</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The secret bytes that it found</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">prefix_size</span><span class="p">,</span> <span class="n">needed_size</span> <span class="o">=</span> <span class="n">get_prefix_size</span><span class="p">(</span><span class="n">encryption_oracle</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="p">(</span><span class="n">prefix_size</span> <span class="o">+</span> <span class="n">needed_size</span><span class="p">)</span> <span class="o">%</span> <span class="mi">16</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="c1"># We can&#39;t send the encryption oracle with nothing this time.</span>
+    <span class="c1"># get_prefix_size() does this for you so now it returns that value.</span>
+    <span class="c1">## We send encryption_oracle &#39;A&#39; * needed_size so that the blocks</span>
+    <span class="c1">## match up to the end of the block that the prefix is in.</span>
+    <span class="c1">## XXXX XXAA THES ECRE T</span>
+    <span class="n">oracle</span> <span class="o">=</span> <span class="n">encryption_oracle</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;A&#39;</span> <span class="o">*</span> <span class="n">needed_size</span><span class="p">)</span>
+    <span class="c1"># The number of bytes we have to decode is going to be</span>
+    <span class="c1">#   len(oracle) - prefix_size - needed_size</span>
+    <span class="c1"># This should be self-explanatory. If it isn&#39;t,</span>
+    <span class="c1"># you don&#39;t understand what&#39;s happening.</span>
+    <span class="n">num_bytes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">oracle</span><span class="p">)</span> <span class="o">-</span> <span class="n">prefix_size</span> <span class="o">-</span> <span class="n">needed_size</span>
+    <span class="n">secret</span>    <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
+    <span class="n">c</span>         <span class="o">=</span> <span class="n">decode_byte</span><span class="p">(</span><span class="n">secret</span><span class="p">,</span> <span class="n">num_bytes</span><span class="p">,</span> <span class="n">prefix_size</span><span class="p">,</span> <span class="n">needed_size</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">secret</span> <span class="o">+=</span> <span class="n">c</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">decode_byte</span><span class="p">(</span><span class="n">secret</span><span class="p">,</span> <span class="n">num_bytes</span><span class="p">,</span> <span class="n">prefix_size</span><span class="p">,</span> <span class="n">needed_size</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">secret</span></div>
+
+<span class="c1"># How does this function differ?</span>
+<span class="c1"># Let&#39;s think about what we send.</span>
+<span class="c1">#   XXXX XXAA</span>
+<span class="c1"># Is sent every time no matter what.</span>
+<span class="c1">#   XXXX XXAA THES ECRE T</span>
+<span class="c1">#   XXXX XXAA AAAA AAAA AAAT HESE CRET</span>
+<div class="viewcode-block" id="decode_byte"><a class="viewcode-back" href="../../set2.html#set2.c14.decode_byte">[docs]</a><span class="k">def</span> <span class="nf">decode_byte</span><span class="p">(</span><span class="n">known</span><span class="p">,</span> <span class="n">num_bytes</span><span class="p">,</span> <span class="n">prefix_size</span><span class="p">,</span> <span class="n">needed_extra</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decodes the next byte of the unknown string.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        known: Bytestring containing the bytes from unknown-string that we</span>
+<span class="sd">        know so far.</span>
+<span class="sd">        num_bytes: The length of the ciphertext</span>
+<span class="sd">        prefix_size: The length of the secret prefix</span>
+<span class="sd">        needed_extra: The length of bytes we still need</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">prefix</span>   <span class="o">=</span> <span class="n">craft_block</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">known</span><span class="p">),</span> <span class="n">num_bytes</span> <span class="o">+</span> <span class="n">needed_extra</span><span class="p">)</span>
+    <span class="n">original</span> <span class="o">=</span> <span class="n">encryption_oracle</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+    <span class="n">length</span>   <span class="o">=</span> <span class="n">prefix_size</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">known</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">256</span><span class="p">):</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="n">encryption_oracle</span><span class="p">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">known</span> <span class="o">+</span> <span class="nb">bytes</span><span class="p">([</span><span class="n">i</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ct</span><span class="p">[:</span><span class="n">length</span><span class="p">]</span> <span class="o">==</span> <span class="n">original</span><span class="p">[:</span><span class="n">length</span><span class="p">]):</span>
+            <span class="k">return</span> <span class="nb">bytes</span><span class="p">([</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="craft_block"><a class="viewcode-back" href="../../set2.html#set2.c14.craft_block">[docs]</a><span class="k">def</span> <span class="nf">craft_block</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">num_bytes</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Crafts a block that is one byte short of the num_bytes - offset</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        offset: The number of bytes already known, that don&#39;t need to be crafted</span>
+<span class="sd">        num_bytes: The number of bytes that need to be found in total</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A bytestring of all A&#39;s that is of length num_bytes - offset - 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">b</span><span class="s1">&#39;A&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="n">num_bytes</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">offset</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestECBByteAtATimeHarder"><a class="viewcode-back" href="../../set2.html#set2.c14.TestECBByteAtATimeHarder">[docs]</a><span class="k">class</span> <span class="nc">TestECBByteAtATimeHarder</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestECBByteAtATimeHarder.test_challenge_14"><a class="viewcode-back" href="../../set2.html#set2.c14.TestECBByteAtATimeHarder.test_challenge_14">[docs]</a>    <span class="k">def</span> <span class="nf">test_challenge_14</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">c9</span><span class="o">.</span><span class="n">pkcs7_unpad</span><span class="p">(</span><span class="n">decode_secret</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">unknown</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span> <span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

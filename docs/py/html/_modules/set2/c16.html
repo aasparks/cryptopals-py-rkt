@@ -1,0 +1,205 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>set2.c16 &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for set2.c16</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**Challenge 16**</span>
+
+<span class="sd">*CBC Bitflipping Attacks*</span>
+
+<span class="sd">Combine your padding code and CBC code to write two functions.</span>
+
+<span class="sd">The first function should take an arbitrary input string, prepend</span>
+<span class="sd">the string:</span>
+
+<span class="sd">``&#39;comment1=cooking%20MCs;userdata=&#39;``</span>
+
+<span class="sd">...and append the string:</span>
+
+<span class="sd">``&#39;;comment2=%20like%20a%20pound%20of%20bacon&#39;``</span>
+
+<span class="sd">The function should quote out the &#39;;&#39; and &#39;=&#39; characters.</span>
+
+<span class="sd">The function should then pad out the input to the 16-byte AES block length</span>
+<span class="sd">and encrypt it under the random AES key.</span>
+
+<span class="sd">The second function should decrypt the string and look for the characters</span>
+<span class="sd">&quot;;admin=true;&quot;.</span>
+
+<span class="sd">Return true or false based on whether the string exists.</span>
+
+<span class="sd">If you&#39;ve written the first function properly, it should not be possible to</span>
+<span class="sd">provide user input to it that will generate the string the second function is</span>
+<span class="sd">looking for. We&#39;ll have to break the crypto to do that.</span>
+
+<span class="sd">Instead modify the ciphertext (without knowledge of the AES key) to accomplish</span>
+<span class="sd">this.</span>
+
+<span class="sd">You&#39;re relying on the fact that in CBC mode, a 1-bit error in a ciphertext</span>
+<span class="sd">block:</span>
+<span class="sd">* Completely scrambles the block the error occurs in</span>
+<span class="sd">* Produces the identical 1-bit error in the next ciphertext block</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">unittest</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;../set1&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">c10</span><span class="o">,</span> <span class="nn">c9</span><span class="o">,</span> <span class="nn">c6</span>
+
+<span class="n">key</span>    <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">prefix</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;comment1=cooking%20MCs;userdata=&#39;</span>
+<span class="n">suffix</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;;comment2=</span><span class="si">%20li</span><span class="s1">ke%20a%20pound</span><span class="si">%20o</span><span class="s1">f%20bacon&#39;</span>
+
+<div class="viewcode-block" id="encrypt_userdata"><a class="viewcode-back" href="../../set2.html#set2.c16.encrypt_userdata">[docs]</a><span class="k">def</span> <span class="nf">encrypt_userdata</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Encrypts the given data under AES-128-CBC with a secret key, after</span>
+<span class="sd">    appending and prepending data and quoting out metacharacters.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data: The user data to be encrypted</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        AES-128-CBC(prefix || user-data || suffix, random-key)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">new_c</span>  <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">data</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="n">suffix</span>
+    <span class="n">new_c</span> <span class="o">=</span> <span class="n">c9</span><span class="o">.</span><span class="n">pkcs7_pad</span><span class="p">(</span><span class="n">new_c</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">c10</span><span class="o">.</span><span class="n">aes_128_cbc_encrypt</span><span class="p">(</span><span class="n">new_c</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="is_admin"><a class="viewcode-back" href="../../set2.html#set2.c16.is_admin">[docs]</a><span class="k">def</span> <span class="nf">is_admin</span><span class="p">(</span><span class="n">cookie</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decryption oracle. Decrypts the cookie and searches for the admin token.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cookie: The encrypted cookie containing the user data</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if the cookie contains &#39;;admin=true;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">c10</span><span class="o">.</span><span class="n">aes_128_cbc_decrypt</span><span class="p">(</span><span class="n">cookie</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">c9</span><span class="o">.</span><span class="n">pkcs7_unpad</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="sa">b</span><span class="s1">&#39;;admin=true;&#39;</span> <span class="ow">in</span> <span class="n">data</span></div>
+
+
+<span class="c1">### 0123456789ABCDEF 0123456789ABCDEF 0123456789ABCDEF</span>
+<span class="c1">### comment1=cooking %20MCs;userdata= XadminXtrueX</span>
+
+<span class="c1">## So I should be able to send the above as my data</span>
+<span class="c1">## and then send it in with the right bit flips to</span>
+<span class="c1">## make the X&#39;s the characters I want.</span>
+<div class="viewcode-block" id="cbc_attack"><a class="viewcode-back" href="../../set2.html#set2.c16.cbc_attack">[docs]</a><span class="k">def</span> <span class="nf">cbc_attack</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs the CBC bitflipping attack on the oracle</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if the attack is successful</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data</span>     <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;XadminXtrueX&#39;</span>
+    <span class="n">original</span> <span class="o">=</span> <span class="n">encrypt_userdata</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">cracked</span>  <span class="o">=</span> <span class="n">original</span><span class="p">[:</span><span class="mi">16</span><span class="p">]</span>
+    <span class="n">cracked</span>  <span class="o">+=</span> <span class="n">convert_char</span><span class="p">(</span><span class="n">original</span><span class="p">[</span><span class="mi">16</span><span class="p">],</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;;&#39;</span><span class="p">)</span>
+    <span class="n">cracked</span>  <span class="o">+=</span> <span class="n">original</span><span class="p">[</span><span class="mi">17</span><span class="p">:</span><span class="mi">22</span><span class="p">]</span>
+    <span class="n">cracked</span>  <span class="o">+=</span> <span class="n">convert_char</span><span class="p">(</span><span class="n">original</span><span class="p">[</span><span class="mi">22</span><span class="p">],</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;=&#39;</span><span class="p">)</span>
+    <span class="n">cracked</span>  <span class="o">+=</span> <span class="n">original</span><span class="p">[</span><span class="mi">23</span><span class="p">:</span><span class="mi">27</span><span class="p">]</span>
+    <span class="n">cracked</span>  <span class="o">+=</span> <span class="n">convert_char</span><span class="p">(</span><span class="n">original</span><span class="p">[</span><span class="mi">27</span><span class="p">],</span> <span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;;&#39;</span><span class="p">)</span>
+    <span class="n">cracked</span>  <span class="o">+=</span> <span class="n">original</span><span class="p">[</span><span class="mi">28</span><span class="p">:]</span>
+    <span class="k">return</span> <span class="n">is_admin</span><span class="p">(</span><span class="n">cracked</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="convert_char"><a class="viewcode-back" href="../../set2.html#set2.c16.convert_char">[docs]</a><span class="k">def</span> <span class="nf">convert_char</span><span class="p">(</span><span class="n">orig</span><span class="p">,</span> <span class="n">now</span><span class="p">,</span> <span class="n">later</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    XORs all the characters together so that the decryption will result</span>
+<span class="sd">    in the character I want.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        orig: Character from the ciphertext</span>
+<span class="sd">        now: Character that the decryption would currently be (X)</span>
+<span class="sd">        later: Character that we want to get</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The byte value that is the result of XORing all the given arguments,</span>
+<span class="sd">        which will make the decryption result in the value needed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">bytes</span><span class="p">([</span><span class="n">orig</span> <span class="o">^</span> <span class="nb">ord</span><span class="p">(</span><span class="n">now</span><span class="p">)</span> <span class="o">^</span> <span class="nb">ord</span><span class="p">(</span><span class="n">later</span><span class="p">)])</span></div>
+
+<div class="viewcode-block" id="TestCBCBitflip"><a class="viewcode-back" href="../../set2.html#set2.c16.TestCBCBitflip">[docs]</a><span class="k">class</span> <span class="nc">TestCBCBitflip</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestCBCBitflip.test_challenge_16"><a class="viewcode-back" href="../../set2.html#set2.c16.TestCBCBitflip.test_challenge_16">[docs]</a>    <span class="k">def</span> <span class="nf">test_challenge_16</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">cbc_attack</span><span class="p">())</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span> <span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

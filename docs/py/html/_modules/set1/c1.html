@@ -1,0 +1,202 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>set1.c1 &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for set1.c1</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**Challenge 1**</span>
+
+<span class="sd">*Convert hex to base64*</span>
+
+<span class="sd">The string:</span>
+
+<span class="sd">``49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d``</span>
+
+<span class="sd">Should produce:</span>
+
+<span class="sd">``SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t``</span>
+
+<span class="sd">So go ahead and make that happen. You&#39;ll need to use this code</span>
+<span class="sd">for the rest of the exercises.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">base64</span><span class="o">,</span> <span class="nn">unittest</span>
+
+<div class="viewcode-block" id="hextoascii"><a class="viewcode-back" href="../../set1.html#set1.c1.hextoascii">[docs]</a><span class="k">def</span> <span class="nf">hextoascii</span><span class="p">(</span><span class="n">hexbstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a bytestring in hex representation to ASCII.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        hexbstr: a bytestring encoded in hex.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The bytestring decoded into ASCII.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b16decode</span><span class="p">(</span><span class="n">hexbstr</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="asciitohex"><a class="viewcode-back" href="../../set1.html#set1.c1.asciitohex">[docs]</a><span class="k">def</span> <span class="nf">asciitohex</span><span class="p">(</span><span class="n">abstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Encodes an ASCII bytestring into hex representation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        abstr: ASCII bytestring to encode.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The bytestring encoded in hex.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b16encode</span><span class="p">(</span><span class="n">abstr</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="hextobase64"><a class="viewcode-back" href="../../set1.html#set1.c1.hextobase64">[docs]</a><span class="k">def</span> <span class="nf">hextobase64</span><span class="p">(</span><span class="n">hexbstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Encodes a hex-encoded string into base64.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        hexbstr: A bytestring in hex representation.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The bytestring encoded in base64 representation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">hextoascii</span><span class="p">(</span><span class="n">hexbstr</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="base64tohex"><a class="viewcode-back" href="../../set1.html#set1.c1.base64tohex">[docs]</a><span class="k">def</span> <span class="nf">base64tohex</span><span class="p">(</span><span class="n">b64bstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Encodes a base64 bytestring into a hex-encoded bytestring.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        b64bstr: A bytestring encoded in base64.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The bytestring encoded in hex.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">asciitohex</span><span class="p">(</span><span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">b64bstr</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="asciitobase64"><a class="viewcode-back" href="../../set1.html#set1.c1.asciitobase64">[docs]</a><span class="k">def</span> <span class="nf">asciitobase64</span><span class="p">(</span><span class="n">abstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Encodes an ASCII bytestring into base64.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        abstr: An ASCII bytestring.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The bytestring encoded in base64.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64encode</span><span class="p">(</span><span class="n">abstr</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="base64toascii"><a class="viewcode-back" href="../../set1.html#set1.c1.base64toascii">[docs]</a><span class="k">def</span> <span class="nf">base64toascii</span><span class="p">(</span><span class="n">b64bstr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decodes a base64 bytestring into ASCII.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        b64bstr: A bytestring in base64</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The bytestring decoded into ASCII</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">b64bstr</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestConversions"><a class="viewcode-back" href="../../set1.html#set1.c1.TestConversions">[docs]</a><span class="k">class</span> <span class="nc">TestConversions</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+    <span class="n">__pdoc__</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">__pdoc__</span><span class="p">[</span><span class="s1">&#39;TestConversions.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">field</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<div class="viewcode-block" id="TestConversions.setUp"><a class="viewcode-back" href="../../set1.html#set1.c1.TestConversions.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">asc</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;Who lives in a pineapple under the sea?&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hx</span>  <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;57686f206c6976657320696e20612070696e656170706c6520756e64657220746865207365613f&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">b64</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;V2hvIGxpdmVzIGluIGEgcGluZWFwcGxlIHVuZGVyIHRoZSBzZWE/&#39;</span></div>
+
+<div class="viewcode-block" id="TestConversions.test_hex_ascii"><a class="viewcode-back" href="../../set1.html#set1.c1.TestConversions.test_hex_ascii">[docs]</a>    <span class="k">def</span> <span class="nf">test_hex_ascii</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">hextoascii</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hx</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">asc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">asciitohex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">asc</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">hx</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="TestConversions.test_hex_base64"><a class="viewcode-back" href="../../set1.html#set1.c1.TestConversions.test_hex_base64">[docs]</a>    <span class="k">def</span> <span class="nf">test_hex_base64</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">hextobase64</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">hx</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">b64</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">base64tohex</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b64</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">hx</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="TestConversions.test_base64_ascii"><a class="viewcode-back" href="../../set1.html#set1.c1.TestConversions.test_base64_ascii">[docs]</a>    <span class="k">def</span> <span class="nf">test_base64_ascii</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">asciitobase64</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">asc</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">b64</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">base64toascii</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">b64</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">asc</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestConversions.test_challenge_1"><a class="viewcode-back" href="../../set1.html#set1.c1.TestConversions.test_challenge_1">[docs]</a>    <span class="k">def</span> <span class="nf">test_challenge_1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">hxstr</span>  <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d&#39;</span>
+        <span class="n">b64str</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">hextobase64</span><span class="p">(</span><span class="n">hxstr</span><span class="p">),</span> <span class="n">b64str</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span> <span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

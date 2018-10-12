@@ -1,0 +1,182 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>set2.c11 &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for set2.c11</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**Challenge 11**</span>
+
+<span class="sd">*An ECB/CBC Detection Oracle*</span>
+
+<span class="sd">Now that you have ECB and CBC working:</span>
+
+<span class="sd">Write a function to generate a random AES key; that&#39;s just</span>
+<span class="sd">16 random bytes.</span>
+
+<span class="sd">Write a function that encrypts data under an unknown key ---</span>
+<span class="sd">that is, a function that generates a random key and encrypts</span>
+<span class="sd">under it.</span>
+
+<span class="sd">The function should look like</span>
+
+<span class="sd">``encryption_oracle(your-input) =&gt; [MEANINGLESS JIBBER JABBER]``</span>
+
+<span class="sd">Under the hood, have the function append 5-10 bytes before the</span>
+<span class="sd">plaintext and 5-10 bytes after the plaintext.</span>
+
+<span class="sd">Now have the function choose to encrypt under ECB 1/2 the time,</span>
+<span class="sd">and under CBC the other half (just use random IV&#39;s each time</span>
+<span class="sd">for CBC). Use rand(2) to decide which to use.</span>
+
+<span class="sd">Detect the block cipher mode the function is using each time. You</span>
+<span class="sd">should end up with a piece of code that, pointed at a black box</span>
+<span class="sd">that might be encrypting ECB or CBC, tells which one is happening.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">Crypto.Cipher</span> <span class="k">import</span> <span class="n">AES</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">random</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">unittest</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;../set1/&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">c1</span><span class="o">,</span> <span class="nn">c8</span><span class="o">,</span> <span class="nn">c9</span><span class="o">,</span> <span class="nn">c7</span><span class="o">,</span> <span class="nn">c10</span>
+
+<span class="c1"># For testing, let&#39;s save which mode was used each time.</span>
+<span class="c1"># ECB = True</span>
+<span class="c1"># CBC = False</span>
+<span class="n">expected</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># ENCRYPT using an unknown mode with random data inserted</span>
+<div class="viewcode-block" id="encryption_oracle"><a class="viewcode-back" href="../../set2.html#set2.c11.encryption_oracle">[docs]</a><span class="k">def</span> <span class="nf">encryption_oracle</span><span class="p">(</span><span class="n">txt</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">expected</span>
+    <span class="c1"># GENERATE random key</span>
+    <span class="n">key</span>    <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+    <span class="c1"># GENERATE random number for ECB or CBC</span>
+    <span class="n">ecb</span>    <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">getrandbits</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">expected</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ecb</span><span class="p">)</span>
+    <span class="c1"># APPEND random bytes before and after</span>
+    <span class="n">before</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">after</span>  <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">txt</span>    <span class="o">=</span> <span class="n">before</span> <span class="o">+</span> <span class="n">txt</span> <span class="o">+</span> <span class="n">after</span>
+    <span class="n">txt</span>    <span class="o">=</span> <span class="n">c9</span><span class="o">.</span><span class="n">pkcs7_pad</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+    <span class="n">ct</span>     <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
+    <span class="c1"># IF CBC</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ecb</span><span class="p">:</span>
+        <span class="c1"># GENERATE random IV</span>
+        <span class="n">iv</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="n">c10</span><span class="o">.</span><span class="n">aes_128_cbc_encrypt</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">iv</span><span class="p">)</span>
+    <span class="c1"># ENCRYPT</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ct</span> <span class="o">=</span> <span class="n">AES</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">AES</span><span class="o">.</span><span class="n">MODE_ECB</span><span class="p">)</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ct</span></div>
+
+<span class="c1"># Determines if the encryption is ECB or CBC</span>
+<span class="c1"># There&#39;s a few questions here. Can we detect CBC mode</span>
+<span class="c1"># easily like we can with ECB? Not really. But it is safe</span>
+<span class="c1"># to assume that ECB and CBC are the only ones being used</span>
+<span class="c1"># (because they are). Assuming the plaintext is large enough</span>
+<span class="c1"># and, more importantly, includes repeated blocks of 16-bytes,</span>
+<span class="c1"># we can safely detect ECB. Of couse this would probably not</span>
+<span class="c1"># work for a small plaintext.</span>
+<div class="viewcode-block" id="ecb_or_cbc"><a class="viewcode-back" href="../../set2.html#set2.c11.ecb_or_cbc">[docs]</a><span class="k">def</span> <span class="nf">ecb_or_cbc</span><span class="p">(</span><span class="n">txt</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determines if the given ciphertext was encrypted with ECB or CBC.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        txt: The ciphertext in question</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if using ECB, False if using CBC.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">c8</span><span class="o">.</span><span class="n">is_ecb</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestECBOrCBC"><a class="viewcode-back" href="../../set2.html#set2.c11.TestECBOrCBC">[docs]</a><span class="k">class</span> <span class="nc">TestECBOrCBC</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestECBOrCBC.setUp"><a class="viewcode-back" href="../../set2.html#set2.c11.TestECBOrCBC.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;../../testdata/10.txt&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctxt</span> <span class="o">=</span> <span class="n">c1</span><span class="o">.</span><span class="n">base64toascii</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span>  <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;YELLOW SUBMARINE&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pt</span>   <span class="o">=</span> <span class="n">c10</span><span class="o">.</span><span class="n">aes_128_cbc_decrypt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctxt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+<div class="viewcode-block" id="TestECBOrCBC.test_challenge_11"><a class="viewcode-back" href="../../set2.html#set2.c11.TestECBOrCBC.test_challenge_11">[docs]</a>    <span class="k">def</span> <span class="nf">test_challenge_11</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">50</span><span class="p">):</span>
+            <span class="n">ct</span> <span class="o">=</span> <span class="n">encryption_oracle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pt</span><span class="p">)</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ecb_or_cbc</span><span class="p">(</span><span class="n">ct</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

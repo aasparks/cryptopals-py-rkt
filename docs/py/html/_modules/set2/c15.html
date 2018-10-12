@@ -1,0 +1,132 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>set2.c15 &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for set2.c15</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**Challenge 15**</span>
+
+<span class="sd">*PKCS7 Padding Validation*</span>
+
+<span class="sd">Write a function that takes a plaintext, determines if it has valid</span>
+<span class="sd">PKCS#7 padding, and strips the padding off.</span>
+
+<span class="sd">The string:</span>
+
+<span class="sd">``&quot;ICE ICE BABY\\x04\\x04\\x04\\x04&quot;``</span>
+
+<span class="sd">...has valid padding, and produces the result</span>
+
+<span class="sd">``&quot;ICE ICE BABY&quot;``</span>
+
+<span class="sd">The string:</span>
+
+<span class="sd">``&quot;ICE ICE BABY\\x05\\x05\\x05\\x05&quot;``</span>
+
+<span class="sd">...does not have valid padding, nor does:</span>
+
+<span class="sd">``&quot;ICE ICE BABY\\x01\\x02\\x03\\x04&quot;``</span>
+
+<span class="sd">If you are writing in a language with exceptions, like Python or Ruby, make</span>
+<span class="sd">your function throw an exception on bad padding.</span>
+
+<span class="sd">Crypto nerds know where we&#39;re going with this. Bear with us.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">c9</span><span class="o">,</span> <span class="nn">unittest</span>
+
+<span class="c1"># I already did this for c9. I don&#39;t know why they break it up</span>
+<span class="c1"># like this when you need unpad in the previous exercises.</span>
+
+<div class="viewcode-block" id="TestPKCS7Unpad"><a class="viewcode-back" href="../../set2.html#set2.c15.TestPKCS7Unpad">[docs]</a><span class="k">class</span> <span class="nc">TestPKCS7Unpad</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestPKCS7Unpad.test_challenge_15"><a class="viewcode-back" href="../../set2.html#set2.c15.TestPKCS7Unpad.test_challenge_15">[docs]</a>    <span class="k">def</span> <span class="nf">test_challenge_15</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;ICE ICE BABY&#39;</span>
+        <span class="n">t1</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;ICE ICE BABY</span><span class="se">\x04\x04\x04\x04</span><span class="s1">&#39;</span>
+        <span class="n">t2</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;ICE ICE BABY</span><span class="se">\x05\x05\x05\x05</span><span class="s1">&#39;</span>
+        <span class="n">t3</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;ICE ICE BABY</span><span class="se">\x01\x02\x03\x04</span><span class="s1">&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">c9</span><span class="o">.</span><span class="n">pkcs7_unpad</span><span class="p">(</span><span class="n">t1</span><span class="p">),</span> <span class="n">expected</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">c9</span><span class="o">.</span><span class="n">PaddingError</span><span class="p">):</span>
+            <span class="n">c9</span><span class="o">.</span><span class="n">pkcs7_unpad</span><span class="p">(</span><span class="n">t2</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaises</span><span class="p">(</span><span class="n">c9</span><span class="o">.</span><span class="n">PaddingError</span><span class="p">):</span>
+            <span class="n">c9</span><span class="o">.</span><span class="n">pkcs7_unpad</span><span class="p">(</span><span class="n">t3</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,840 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Set 3 &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cryptopals-py 0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="set-3">
+<span id="set3ref"></span><h1>Set 3<a class="headerlink" href="#set-3" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-set3.c17">
+<span id="challenge-17"></span><span id="set3c17ref"></span><h2>Challenge 17<a class="headerlink" href="#module-set3.c17" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 17</strong></p>
+<p><em>The CBC Padding Oracle</em></p>
+<p>This is the best-known attack on modern block-cipher cryptography.</p>
+<p>Combine your padding code and your CBC code to write two functions.</p>
+<p>The first function should select at random one of the following 10 strings:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">MDAwMDAwTm93IHRoYXQgdGhlIHBhcnR5IGlzIGp1bXBpbmc</span><span class="o">=</span>
+<span class="n">MDAwMDAxV2l0aCB0aGUgYmFzcyBraWNrZWQgaW4gYW5kIHRoZSBWZWdhJ3MgYXJlIHB1bXBpbic</span><span class="o">=</span>
+<span class="n">MDAwMDAyUXVpY2sgdG8gdGhlIHBvaW50LCB0byB0aGUgcG9pbnQsIG5vIGZha2luZw</span><span class="o">==</span>
+<span class="n">MDAwMDAzQ29va2luZyBNQydzIGxpa2UgYSBwb3VuZCBvZiBiYWNvbg</span><span class="o">==</span>
+<span class="n">MDAwMDA0QnVybmluZyAnZW0sIGlmIHlvdSBhaW4ndCBxdWljayBhbmQgbmltYmxl</span>
+<span class="n">MDAwMDA1SSBnbyBjcmF6eSB3aGVuIEkgaGVhciBhIGN5bWJhbA</span><span class="o">==</span>
+<span class="n">MDAwMDA2QW5kIGEgaGlnaCBoYXQgd2l0aCBhIHNvdXBlZCB1cCB0ZW1wbw</span><span class="o">==</span>
+<span class="n">MDAwMDA3SSdtIG9uIGEgcm9sbCwgaXQncyB0aW1lIHRvIGdvIHNvbG8</span><span class="o">=</span>
+<span class="n">MDAwMDA4b2xsaW4nIGluIG15IGZpdmUgcG9pbnQgb2g</span><span class="o">=</span>
+<span class="n">MDAwMDA5aXRoIG15IHJhZy10b3AgZG93biBzbyBteSBoYWlyIGNhbiBibG93</span>
+</pre></div>
+</div>
+<p>…generate a random AES key (which it should save for all future encryptions),
+pad the string out to the 16-byte AES block size and CBC-encrypt it under that
+key, providing the caller the ciphertext and IV.</p>
+<p>The second function should consume the ciphertext produced by the first function,
+decrypt it, check its padding, and return true or false depending on whether the
+padding is valid.</p>
+<p>It turns out that it’s possible to decrypt the ciphertexts provided by the first
+function.</p>
+<p>The decryption here depends on a side-channel leak by the decryption function.
+The leak is the error message that the padding is valid or not.</p>
+<p>You can find 100 web pages on how this attack works, so I won’t re-explain it.
+What I’ll say is this:</p>
+<p>The fundamental insight behind this attack is that the byte <code class="docutils literal notranslate"><span class="pre">\x01</span></code> is valid
+padding, and occurs in 1/256 trials of “randomized” plaintexts produced by
+decrypting a tampered ciphertext.</p>
+<p><code class="docutils literal notranslate"><span class="pre">\x02</span></code> in isolation is not valid padding.</p>
+<p><code class="docutils literal notranslate"><span class="pre">\x02\x02</span></code> is valid padding, but is much less likely to occur randomly than <code class="docutils literal notranslate"><span class="pre">\x01</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">\x03\x03\x03</span></code> is even less likely.</p>
+<p>So you can assume that if you corrupt a decryption AND it had valid padding, you
+know what that padding byte is.</p>
+<p>It is easy to get tripped up on the fact that CBC plaintexts are “padded”.
+Padding oracles have nothing to do with the actual padding on a CBC plaintext.
+It’s an attack that targets a specific bit of code that handles decryption. You
+can mount a padding oracle on any CBC block, whether it’s padded or not.</p>
+<dl class="class">
+<dt id="set3.c17.TestPaddingAttack">
+<em class="property">class </em><code class="descclassname">set3.c17.</code><code class="descname">TestPaddingAttack</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c17.html#TestPaddingAttack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c17.TestPaddingAttack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set3.c17.TestPaddingAttack.test_challenge_17">
+<code class="descname">test_challenge_17</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c17.html#TestPaddingAttack.test_challenge_17"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c17.TestPaddingAttack.test_challenge_17" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set3.c17.attack_block">
+<code class="descclassname">set3.c17.</code><code class="descname">attack_block</code><span class="sig-paren">(</span><em>txt</em>, <em>block_num</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c17.html#attack_block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c17.attack_block" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attacks a single block of the ciphertext.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>txt</strong> – The full ciphertext</li>
+<li><strong>block_num</strong> – The block number to attack</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The plaintext of this block.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set3.c17.attack_byte">
+<code class="descclassname">set3.c17.</code><code class="descname">attack_byte</code><span class="sig-paren">(</span><em>block</em>, <em>prev_block</em>, <em>byte_num</em>, <em>plaintext</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c17.html#attack_byte"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c17.attack_byte" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attacks a single byte using the padding oracle attack. This function
+contains the real magic for the attack.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>block</strong> – The block of ciphertext that is being attacked.</li>
+<li><strong>prev_block</strong> – The previous block of ciphertext used to attack the current one.</li>
+<li><strong>byte_num</strong> – The byte number of the block that we are getting.</li>
+<li><strong>plaintext</strong> – The known plaintext so far.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The byte of decoded byte of plaintext</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">RuntimeException if no byte can be found</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set3.c17.cbc_padding_attack">
+<code class="descclassname">set3.c17.</code><code class="descname">cbc_padding_attack</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c17.html#cbc_padding_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c17.cbc_padding_attack" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs the CBC padding attack on the encryption oracle.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The decrypted secret string.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set3.c17.decryption_oracle">
+<code class="descclassname">set3.c17.</code><code class="descname">decryption_oracle</code><span class="sig-paren">(</span><em>txt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c17.html#decryption_oracle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c17.decryption_oracle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrypts the given ciphertext and determines if the padding is valid
+for it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>txt</strong> – The encrypted ciphertext</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if the padding is valid.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set3.c17.encryption_oracle">
+<code class="descclassname">set3.c17.</code><code class="descname">encryption_oracle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c17.html#encryption_oracle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c17.encryption_oracle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypts a random string under AES-128-CBC</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A random, encrypted bytestring</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set3.c18">
+<span id="challenge-18"></span><span id="set3c18ref"></span><h2>Challenge 18<a class="headerlink" href="#module-set3.c18" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 18</strong></p>
+<p><em>Implement CTR, the Stream Cipher Mode</em></p>
+<p>The given string decrypts to something approximating English
+in CTR mode, which is an AES block cipher mode that turns AES into
+a stream cipher, with the following parameters:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">key</span><span class="o">=</span><span class="n">YELLOW</span> <span class="n">SUBMARINE</span>
+<span class="n">nonce</span><span class="o">=</span><span class="mi">0</span>
+<span class="nb">format</span><span class="o">=</span><span class="mi">64</span> <span class="n">bit</span> <span class="n">unsigned</span> <span class="n">little</span> <span class="n">endian</span> <span class="n">nonce</span>
+       <span class="mi">64</span> <span class="n">bit</span> <span class="n">little</span> <span class="n">endian</span> <span class="n">block</span> <span class="n">count</span>
+</pre></div>
+</div>
+<p>CTR mode is very simple.</p>
+<p>Instead of encrypting the plaintext, CTR mode encrypts a running
+counter, producing a 16-byte block of keystream, which is XOR’d
+against the plaintext.</p>
+<p>CTR mode does not require padding; when you run out of plaintext, you
+just stop XOR’ing keystream and stop generating keystream.</p>
+<p>Decryption is identical to encryption. Generate the same keystream, XOR,
+and recover the plaintext.</p>
+<p>Decrypt the string at the top of this function, then use your CTR
+function to encrypt and decrypt other things.</p>
+<dl class="class">
+<dt id="set3.c18.TestCTR">
+<em class="property">class </em><code class="descclassname">set3.c18.</code><code class="descname">TestCTR</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c18.html#TestCTR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c18.TestCTR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set3.c18.TestCTR.test_challenge_18">
+<code class="descname">test_challenge_18</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c18.html#TestCTR.test_challenge_18"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c18.TestCTR.test_challenge_18" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set3.c18.aes_128_ctr">
+<code class="descclassname">set3.c18.</code><code class="descname">aes_128_ctr</code><span class="sig-paren">(</span><em>txt</em>, <em>key</em>, <em>nonce=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c18.html#aes_128_ctr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c18.aes_128_ctr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypts the given txt under AES-128 in CTR mode with the given key and
+a nonce.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>txt</strong> – The text to encrypt</li>
+<li><strong>key</strong> – The key to encrypt under</li>
+<li><strong>nonce</strong> (<em>optional</em>) – The nonce for CTR mode</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The encrypted txt.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set3.c19">
+<span id="challenge-19"></span><span id="set3c19ref"></span><h2>Challenge 19<a class="headerlink" href="#module-set3.c19" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 19</strong></p>
+<p><em>Break fixed-nonce CTR mode using substitutions</em></p>
+<p>Take your CTR encrypt/decrypt function and fix its nonce value to 0. Generate a
+random AES key.</p>
+<p>In successive encryptions (not in one by running CTR stream), encrypt each line
+the base64 decodes of the following, producing multiple independent ciphertexts.</p>
+<p>(This should produce 40 short CTR-encrypted ciphertexts).</p>
+<p>Because the CTR nonce wasn’t randomized for each encryption, each ciphertext has
+been encrypted against the same keystream. This is very bad.</p>
+<p>Understanding that, like most stream ciphers (including RC4, and obviously any
+block cipher run in CTR mode), the actual “encryption” of a byte of data boils
+down to a single XOR operation, it should be plain that:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CTXT</span><span class="o">-</span><span class="n">BYTE</span> <span class="o">^</span> <span class="n">PTXT</span><span class="o">-</span><span class="n">BYTE</span> <span class="o">=</span> <span class="n">KEY</span><span class="o">-</span><span class="n">BYTE</span>
+</pre></div>
+</div>
+<p>And since the keystream is the same for every ciphertext:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CTXT</span><span class="o">-</span><span class="n">BYTE</span> <span class="o">^</span> <span class="n">KEY</span><span class="o">-</span><span class="n">BYTE</span> <span class="o">=</span> <span class="n">PTXT</span><span class="o">-</span><span class="n">BYTE</span>
+</pre></div>
+</div>
+<p>Attack this cryptosystem piecemeal; guess letters, use expected English language
+frequency to validate guesses, catch common English trigrams, and so on.</p>
+<p>Points for automating this, but part of the reason I’m having you do this is
+that I think this approach is suboptimal.</p>
+</div>
+<div class="section" id="module-set3.c20">
+<span id="challenge-20"></span><span id="set3c20ref"></span><h2>Challenge 20<a class="headerlink" href="#module-set3.c20" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 20</strong></p>
+<p><em>Break Fixed-Nonce CTR Statistically</em></p>
+<p>In this file find a similar set of base64’d plaintext. Do with them exactly what
+you did with the first, but solve the problem differently.</p>
+<p>Instead of making spot guesses as to known plaintext, treat the collection of
+ciphertexts the same way you would repeating-key XOR.</p>
+<p>Obviously, CTR encryption appears different from repeated-key XOR, but with a
+fixed nonce they are effectively the same thing.</p>
+<p>To exploit this: take your collection of ciphertexts and truncate them to a
+common length (the length of the smallest ciphertext will work).</p>
+<p>Solve the resulting concatenation of ciphertexts as if for repeating-key XOR,
+with a key size of the length of the ciphertext you XOR’d.</p>
+</div>
+<div class="section" id="module-set3.c21">
+<span id="challenge-21"></span><span id="set3c21ref"></span><h2>Challenge 21<a class="headerlink" href="#module-set3.c21" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 21</strong></p>
+<p><em>Implement the MT19937 Mersenne Twister RNG</em></p>
+<p>You can get the pseudocode for this from Wikipedia.</p>
+<p>If you’re writing in Python, Ruby, or (gah) PHP, your language is probably
+already giving you MT19937 as rand(); don’t use rand(). Write the RNG yourself.</p>
+<dl class="class">
+<dt id="set3.c21.MT19937">
+<em class="property">class </em><code class="descclassname">set3.c21.</code><code class="descname">MT19937</code><span class="sig-paren">(</span><em>seed</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c21.html#MT19937"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c21.MT19937" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>This class represents the Mersenne Twister RNG.</p>
+<dl class="attribute">
+<dt id="set3.c21.MT19937.index">
+<code class="descname">index</code><a class="headerlink" href="#set3.c21.MT19937.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of times a number has been generated. Once index reaches</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="set3.c21.MT19937.n">
+<code class="descname">n</code><a class="headerlink" href="#set3.c21.MT19937.n" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">624</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="set3.c21.MT19937.mt">
+<code class="descname">mt</code><a class="headerlink" href="#set3.c21.MT19937.mt" title="Permalink to this definition">¶</a></dt>
+<dd><p>The state of the generator.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="set3.c21.MT19937.a">
+<code class="descname">a</code><em class="property"> = 2567483615</em><a class="headerlink" href="#set3.c21.MT19937.a" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="set3.c21.MT19937.b">
+<code class="descname">b</code><em class="property"> = 2636928640</em><a class="headerlink" href="#set3.c21.MT19937.b" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="set3.c21.MT19937.c">
+<code class="descname">c</code><em class="property"> = 4022730752</em><a class="headerlink" href="#set3.c21.MT19937.c" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="set3.c21.MT19937.d">
+<code class="descname">d</code><em class="property"> = 4294967295</em><a class="headerlink" href="#set3.c21.MT19937.d" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="set3.c21.MT19937.f">
+<code class="descname">f</code><em class="property"> = 1812433253</em><a class="headerlink" href="#set3.c21.MT19937.f" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set3.c21.MT19937.generate_number">
+<code class="descname">generate_number</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c21.html#MT19937.generate_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c21.MT19937.generate_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the next number from the current state</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">32-bit random integer.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="set3.c21.MT19937.l">
+<code class="descname">l</code><em class="property"> = 18</em><a class="headerlink" href="#set3.c21.MT19937.l" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="set3.c21.MT19937.m">
+<code class="descname">m</code><em class="property"> = 397</em><a class="headerlink" href="#set3.c21.MT19937.m" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">n</code><em class="property"> = 624</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="set3.c21.MT19937.r">
+<code class="descname">r</code><em class="property"> = 31</em><a class="headerlink" href="#set3.c21.MT19937.r" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="set3.c21.MT19937.s">
+<code class="descname">s</code><em class="property"> = 7</em><a class="headerlink" href="#set3.c21.MT19937.s" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="set3.c21.MT19937.t">
+<code class="descname">t</code><em class="property"> = 15</em><a class="headerlink" href="#set3.c21.MT19937.t" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="set3.c21.MT19937.u">
+<code class="descname">u</code><em class="property"> = 11</em><a class="headerlink" href="#set3.c21.MT19937.u" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="set3.c21.MT19937.w">
+<code class="descname">w</code><em class="property"> = 32</em><a class="headerlink" href="#set3.c21.MT19937.w" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="set3.c21.TestMT19937">
+<em class="property">class </em><code class="descclassname">set3.c21.</code><code class="descname">TestMT19937</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c21.html#TestMT19937"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c21.TestMT19937" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set3.c21.TestMT19937.setUp">
+<code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c21.html#TestMT19937.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c21.TestMT19937.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="set3.c21.TestMT19937.tearDown">
+<code class="descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c21.html#TestMT19937.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c21.TestMT19937.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for deconstructing the test fixture after testing it.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="set3.c21.TestMT19937.test_challenge_21">
+<code class="descname">test_challenge_21</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c21.html#TestMT19937.test_challenge_21"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c21.TestMT19937.test_challenge_21" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set3.c21.int32">
+<code class="descclassname">set3.c21.</code><code class="descname">int32</code><span class="sig-paren">(</span><em>num</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c21.html#int32"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c21.int32" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-set3.c22">
+<span id="challenge-22"></span><span id="set3c22ref"></span><h2>Challenge 22<a class="headerlink" href="#module-set3.c22" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 22</strong></p>
+<p><em>Crack an MT199337 seed</em></p>
+<p>Make sure your MT19937 accepts an integer seed value. Test it.</p>
+<p>Write a routine that performs the following operations:</p>
+<ul class="simple">
+<li>Wait a random number of seconds between 40 and 1000</li>
+<li>Seed the RNG with the current Unix timestamp</li>
+<li>Wait a random number of seconds again</li>
+<li>Return the first number from the RNG</li>
+</ul>
+<p>You get the idea. Go get coffee while it runs. Or just simulate the passage
+of time, although you’re missing some of the fun of this exercise if you do
+that.</p>
+<p>From the 32-bit RNG output, discover the seed.</p>
+<dl class="class">
+<dt id="set3.c22.TestMT19937">
+<em class="property">class </em><code class="descclassname">set3.c22.</code><code class="descname">TestMT19937</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c22.html#TestMT19937"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c22.TestMT19937" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set3.c22.TestMT19937.test_challenge_22">
+<code class="descname">test_challenge_22</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c22.html#TestMT19937.test_challenge_22"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c22.TestMT19937.test_challenge_22" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set3.c22.bad_seed_mt">
+<code class="descclassname">set3.c22.</code><code class="descname">bad_seed_mt</code><span class="sig-paren">(</span><em>testing=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c22.html#bad_seed_mt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c22.bad_seed_mt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Waits a random amount of time, creates a seed using the current time,
+waits a little longer, then returns the generator.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>testing</strong> – If testing is true, the function will not sleep, but simulate</li>
+<li><strong>of time by subtracting a random number from the current time.</strong> (<em>passage</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The MT19937 generator, seeded with the time</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set3.c22.find_seed">
+<code class="descclassname">set3.c22.</code><code class="descname">find_seed</code><span class="sig-paren">(</span><em>num</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c22.html#find_seed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c22.find_seed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Discovers the seed used by MT199937 to get the number by trying seed values
+from the current time, down to the actual seed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>num</strong> – The first num the MT19937 generated.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The seed value used by the MT19937.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set3.c23">
+<span id="challenge-23"></span><span id="set3c23ref"></span><h2>Challenge 23<a class="headerlink" href="#module-set3.c23" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 23</strong></p>
+<p><em>Clone an MT19937 RNG from its Output</em></p>
+<p>The internal state of MT19937 consists of 624 32-bit integers.</p>
+<p>For each batch of 624 outputs, MT permutes that internal state. By permuting
+the state regularly, MT199337 achieves a period of 2**19937, which is BIG.</p>
+<p>Each time MT19937 is tapped, an element of its internal state is subjected to
+a tempering function that diffuses bits through the result.</p>
+<p>The tempering function is invertible; you can write  an ‘untemper’ function
+that takes an MT19937 output and transforms it back into the corresponding
+element of the MT19937 state array.</p>
+<p>To invert the temper transform, apply the inverse of each of the operations in
+the temper transform in reverse order. There are two kinds of operations in the
+temper transform each applied twice; one is an XOR against a right-shifted
+value, and the other is an XOR against a left-shifted value AND’d with a magic
+number. So you’ll need code to invert the ‘right’ and ‘left’ operation.</p>
+<p>Once you have ‘untemper’ working, create a new MT19937 generator, tap it for
+624 outputs, untemper each of them to recreate the state of the generator, and
+splice that state into a new instance of the MT19937 generator.</p>
+<p>The new ‘spliced’ generator should predict the values of the original.</p>
+<dl class="class">
+<dt id="set3.c23.TestMTClone">
+<em class="property">class </em><code class="descclassname">set3.c23.</code><code class="descname">TestMTClone</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c23.html#TestMTClone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c23.TestMTClone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set3.c23.TestMTClone.test_challenge_23">
+<code class="descname">test_challenge_23</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c23.html#TestMTClone.test_challenge_23"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c23.TestMTClone.test_challenge_23" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set3.c23.rlshift">
+<code class="descclassname">set3.c23.</code><code class="descname">rlshift</code><span class="sig-paren">(</span><em>value</em>, <em>n</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c23.html#rlshift"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c23.rlshift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs a logical right shift.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>value</strong> – The value to be shifted</li>
+<li><strong>n</strong> – The amount to shift by</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The logical right shift (value &gt;&gt;&gt; n)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set3.c23.unbitshift_left">
+<code class="descclassname">set3.c23.</code><code class="descname">unbitshift_left</code><span class="sig-paren">(</span><em>value</em>, <em>shift</em>, <em>mask</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c23.html#unbitshift_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c23.unbitshift_left" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reverses the left bitshift operation of MT19937.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>value</strong> – The value after being shifted.</li>
+<li><strong>shift</strong> – The amount the original value was shifted by.</li>
+<li><strong>mask</strong> – The mask used to shift.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The value before the left bitshift happened.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set3.c23.unbitshift_right">
+<code class="descclassname">set3.c23.</code><code class="descname">unbitshift_right</code><span class="sig-paren">(</span><em>value</em>, <em>shift</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c23.html#unbitshift_right"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c23.unbitshift_right" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reverses the right bitshift operation of MT19937.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>value</strong> – The value after being shifted.</li>
+<li><strong>shift</strong> – The amount the original value was shifted by.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The value before the right bitshift happened.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set3.c23.untwist">
+<code class="descclassname">set3.c23.</code><code class="descname">untwist</code><span class="sig-paren">(</span><em>num</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c23.html#untwist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c23.untwist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Untwists a number to recreate the state of MT19937.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>num</strong> – The number to untwist.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The value of the state that generated that number.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set3.c24">
+<span id="challenge-24"></span><span id="set3c24ref"></span><h2>Challenge 24<a class="headerlink" href="#module-set3.c24" title="Permalink to this headline">¶</a></h2>
+<p><strong>Challenge 24</strong></p>
+<p><em>Create the MT19937 Stream Cipher and Break It</em></p>
+<p>You can create a trivial stream cipher out of any PRNG; use it to generate a
+sequence of 8-bit outputs and call those outputs a keystream. XOR each byte of
+plaintext with each successive byte of keystream.</p>
+<p>Write the function that does this for MT19937 using a 16-bit seed. Verify that
+you can encrypt and decrypt properly. This code should look similar to your
+CTR code.</p>
+<p>Use your function to encrypt a known plaintext (say, 14 A’s prefixed by a
+random number of random characters)</p>
+<p>From the ciphertext, recover the ‘key’ (the seed).</p>
+<p>Use the same idea to generate a random “password reset token” using MT19937
+seeded from the current time.</p>
+<p>Write a function to check if any given password token is actually the product
+of an MT19937 PRNG seeded with the current time.</p>
+<dl class="class">
+<dt id="set3.c24.TestMTStreamCipher">
+<em class="property">class </em><code class="descclassname">set3.c24.</code><code class="descname">TestMTStreamCipher</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c24.html#TestMTStreamCipher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c24.TestMTStreamCipher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="set3.c24.TestMTStreamCipher.test_challenge_24">
+<code class="descname">test_challenge_24</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c24.html#TestMTStreamCipher.test_challenge_24"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c24.TestMTStreamCipher.test_challenge_24" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set3.c24.TestMTStreamCipher.test_cipher">
+<code class="descname">test_cipher</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c24.html#TestMTStreamCipher.test_cipher"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c24.TestMTStreamCipher.test_cipher" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="set3.c24.TestMTStreamCipher.test_get_seed">
+<code class="descname">test_get_seed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c24.html#TestMTStreamCipher.test_get_seed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c24.TestMTStreamCipher.test_get_seed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="set3.c24.decrypt">
+<code class="descclassname">set3.c24.</code><code class="descname">decrypt</code><span class="sig-paren">(</span><em>txt</em>, <em>seed</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c24.html#decrypt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c24.decrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decrypts the txt that was encrypted with the MT19937. It works the same
+as encrypt, so it just calls encrypt(txt, seed).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>txt</strong> – The text to be decrypted.</li>
+<li><strong>seed</strong> – The seed for MT19937.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The decrypted text.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set3.c24.encrypt">
+<code class="descclassname">set3.c24.</code><code class="descname">encrypt</code><span class="sig-paren">(</span><em>txt</em>, <em>seed</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c24.html#encrypt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c24.encrypt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypts the given text using MT19937 to create a stream cipher.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>txt</strong> – The text to be encrypted.</li>
+<li><strong>seed</strong> – The seed for the MT19937.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The encrypted text.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set3.c24.encryption_oracle">
+<code class="descclassname">set3.c24.</code><code class="descname">encryption_oracle</code><span class="sig-paren">(</span><em>txt</em>, <em>seed=123</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c24.html#encryption_oracle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c24.encryption_oracle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encrypts the given text with a random prefix, using MT19937 stream cipher.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>txt</strong> – The text to be encrypted.</li>
+<li><strong>seed</strong> (<em>optional</em>) – The seed to use for encryption</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The encryption of prefix + txt under MT19937 stream cipher.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set3.c24.get_seed">
+<code class="descclassname">set3.c24.</code><code class="descname">get_seed</code><span class="sig-paren">(</span><em>oracle</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c24.html#get_seed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c24.get_seed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the seed that is being used by the oracle.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>oracle</strong> – encryption oracle function</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The MT19937 stream cipher seed</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">RuntimeError if seed is not found</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set3.c24.is_valid_token">
+<code class="descclassname">set3.c24.</code><code class="descname">is_valid_token</code><span class="sig-paren">(</span><em>token</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c24.html#is_valid_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c24.is_valid_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines if the given token was created by seeding an MT19937 with
+the current time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>token</strong> – The password reset token in question</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if token was generated with MT19937.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="set3.c24.password_reset">
+<code class="descclassname">set3.c24.</code><code class="descname">password_reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/set3/c24.html#password_reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#set3.c24.password_reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a password reset token using the MT19937 seeded with the current
+time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A bytestring containing the password reset token.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-set3">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-set3" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Set 3</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-set3.c17">Challenge 17</a></li>
+<li><a class="reference internal" href="#module-set3.c18">Challenge 18</a></li>
+<li><a class="reference internal" href="#module-set3.c19">Challenge 19</a></li>
+<li><a class="reference internal" href="#module-set3.c20">Challenge 20</a></li>
+<li><a class="reference internal" href="#module-set3.c21">Challenge 21</a></li>
+<li><a class="reference internal" href="#module-set3.c22">Challenge 22</a></li>
+<li><a class="reference internal" href="#module-set3.c23">Challenge 23</a></li>
+<li><a class="reference internal" href="#module-set3.c24">Challenge 24</a></li>
+<li><a class="reference internal" href="#module-set3">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/set3.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cryptopals-py 0.4 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>

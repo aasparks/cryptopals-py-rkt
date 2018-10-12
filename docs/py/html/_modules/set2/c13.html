@@ -1,0 +1,256 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>set2.c13 &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for set2.c13</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**Challenge 13**</span>
+
+<span class="sd">*ECB cut-and-paste*</span>
+
+<span class="sd">Write a k=v parsing routine, as if for a structured cookie. The routine</span>
+<span class="sd">should take:</span>
+
+<span class="sd">``foo=bar&amp;baz=qux&amp;zap=zazzle``</span>
+
+<span class="sd">...and produce::</span>
+
+<span class="sd">    {</span>
+<span class="sd">        foo: &#39;bar&#39;,</span>
+<span class="sd">        baz: &#39;qux&#39;,</span>
+<span class="sd">        zap: &#39;zazzle&#39;</span>
+<span class="sd">    }</span>
+
+<span class="sd">(you know, the object; I don&#39;t care if you convert it to JSON).</span>
+
+<span class="sd">Now write a function that encodes a user profile in that format, given an email</span>
+<span class="sd">address. You should have something like::</span>
+
+<span class="sd">    profile_for(&quot;foo@bar.com&quot;)</span>
+
+<span class="sd">...and it should produce::</span>
+
+<span class="sd">    {</span>
+<span class="sd">        email: &#39;foo@bar.com&#39;,</span>
+<span class="sd">        uid: 10,</span>
+<span class="sd">        role: &#39;user&#39;</span>
+<span class="sd">    }</span>
+
+<span class="sd">...encoded as</span>
+
+<span class="sd">``email=foo@bar.com&amp;uid=10&amp;role=user``</span>
+
+<span class="sd">You &quot;profile_for&quot; function should not allow encoding metacharacters (&amp; and =).</span>
+<span class="sd">Eat them, quote them, whatever you want to do, but don&#39;t let people set their</span>
+<span class="sd">email address to</span>
+
+<span class="sd">``&quot;foo@bar.com&amp;role=admin&quot;``.</span>
+
+<span class="sd">Now, two more easy functions. Generate a random AES key, then:</span>
+<span class="sd">* A. Encrypt the encoded user profile under the key; &quot;provide&quot; that to the</span>
+<span class="sd">&quot;attacker&quot;.</span>
+<span class="sd">* B. Decrypt the encoded user profile and parse it.</span>
+
+<span class="sd">Using only the user input to ``profile_for()`` (an an oracle to generate &quot;valid&quot;</span>
+<span class="sd">ciphertexts) and the ciphertexts themselves, make a role=admin profile.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">unittest</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;../set1&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">c6</span><span class="o">,</span> <span class="nn">c9</span>
+<span class="kn">from</span> <span class="nn">Crypto.Cipher</span> <span class="k">import</span> <span class="n">AES</span>
+
+<span class="n">uid</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+
+<div class="viewcode-block" id="parse_cookie"><a class="viewcode-back" href="../../set2.html#set2.c13.parse_cookie">[docs]</a><span class="k">def</span> <span class="nf">parse_cookie</span><span class="p">(</span><span class="n">cookie</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parses a cookie as described above and produces a dictionary with the</span>
+<span class="sd">    values.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cookie: The cookie encoded as foo=bar&amp;baz=qux&amp;zap=zazzle</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        A dictionary containing the key,value pairs from the cookie as</span>
+<span class="sd">        described above.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># First split the string into entries</span>
+    <span class="n">entries</span> <span class="o">=</span> <span class="n">cookie</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">)</span>
+    <span class="c1"># For each each entry, find the = and</span>
+    <span class="c1"># save each side in the dictionary</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">entries</span><span class="p">:</span>
+        <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)</span>
+        <span class="n">result</span><span class="p">[</span><span class="n">left</span><span class="p">]</span> <span class="o">=</span> <span class="n">right</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="profile_for"><a class="viewcode-back" href="../../set2.html#set2.c13.profile_for">[docs]</a><span class="k">def</span> <span class="nf">profile_for</span><span class="p">(</span><span class="n">email</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a profile for the given email address with a user id and the</span>
+<span class="sd">    role set to user.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        email: The profile&#39;s email address</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A cookie for the user&#39;s profile encoded as email=foo&amp;uid=1&amp;role=user</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">uid</span>
+    <span class="n">uid</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">em</span>  <span class="o">=</span> <span class="s2">&quot;email=&quot;</span> <span class="o">+</span> <span class="n">email</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">maketrans</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;=&quot;</span><span class="p">))</span>
+    <span class="n">ud</span>  <span class="o">=</span> <span class="s2">&quot;&amp;uid=&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">uid</span><span class="p">)</span>
+    <span class="n">rl</span>  <span class="o">=</span> <span class="s2">&quot;&amp;role=user&quot;</span>
+    <span class="k">return</span> <span class="n">em</span> <span class="o">+</span> <span class="n">ud</span> <span class="o">+</span> <span class="n">rl</span></div>
+
+<span class="c1"># Encrypt the encoded user profile under a random key</span>
+<div class="viewcode-block" id="encode_profile"><a class="viewcode-back" href="../../set2.html#set2.c13.encode_profile">[docs]</a><span class="k">def</span> <span class="nf">encode_profile</span><span class="p">(</span><span class="n">email</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Encrypts the encoded profile cookie for the given email address.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        email: The user&#39;s email address</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        The encrypted cookie</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">prof</span> <span class="o">=</span> <span class="n">profile_for</span><span class="p">(</span><span class="n">email</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">AES</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">AES</span><span class="o">.</span><span class="n">MODE_ECB</span><span class="p">)</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">c9</span><span class="o">.</span><span class="n">pkcs7_pad</span><span class="p">(</span><span class="n">prof</span><span class="p">))</span></div>
+
+<span class="c1"># Decrypt the user profile and parse it</span>
+<div class="viewcode-block" id="decode_profile"><a class="viewcode-back" href="../../set2.html#set2.c13.decode_profile">[docs]</a><span class="k">def</span> <span class="nf">decode_profile</span><span class="p">(</span><span class="n">ct</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decodes the encrypted cookie and parses it into a dictionary.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ct: The encrypted cookie containing the profile information</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A dictionary containing the profile&#39;s information</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pt</span> <span class="o">=</span> <span class="n">AES</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">AES</span><span class="o">.</span><span class="n">MODE_ECB</span><span class="p">)</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">ct</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parse_cookie</span><span class="p">(</span><span class="n">c9</span><span class="o">.</span><span class="n">pkcs7_unpad</span><span class="p">(</span><span class="n">pt</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span></div>
+
+<span class="c1"># Using only the user input  to profile_for() and the ct themselves,</span>
+<span class="c1"># make a role=admin profile.</span>
+<div class="viewcode-block" id="fake_admin"><a class="viewcode-back" href="../../set2.html#set2.c13.fake_admin">[docs]</a><span class="k">def</span> <span class="nf">fake_admin</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a fake admin account using ECB cut-and-paste attack</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The decoded profile as a dictionary with dict[role] == admin</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># This attack involves block alignment.</span>
+    <span class="c1">#</span>
+    <span class="c1"># 0123456789ABCDEF 0123456789ABCDEF 0123456789ABCDEF</span>
+    <span class="c1"># email=sponge@bob .com&amp;uid=2&amp;role= user</span>
+    <span class="c1"># email=blahblahbl adminBBBBBBBBBBB &amp;uid=3&amp;role=user</span>
+    <span class="c1"># Cut and paste the blocks you want</span>
+    <span class="c1">#      email=spongebobsquar&amp;uid=2&amp;role=admin0000000000B</span>
+    <span class="n">first_entry</span>  <span class="o">=</span> <span class="n">encode_profile</span><span class="p">(</span><span class="s2">&quot;sponge@bob.com&quot;</span><span class="p">)</span>
+    <span class="n">second_entry</span> <span class="o">=</span> <span class="n">encode_profile</span><span class="p">(</span><span class="s2">&quot;blahblahbladmin&quot;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\x0B</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="mi">11</span><span class="p">)</span>
+    <span class="n">bad_cookie</span>   <span class="o">=</span> <span class="n">first_entry</span><span class="p">[:</span><span class="mi">32</span><span class="p">]</span> <span class="o">+</span> <span class="n">c6</span><span class="o">.</span><span class="n">get_block</span><span class="p">(</span><span class="n">second_entry</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">decode_profile</span><span class="p">(</span><span class="n">bad_cookie</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestECBCutAndPaste"><a class="viewcode-back" href="../../set2.html#set2.c13.TestECBCutAndPaste">[docs]</a><span class="k">class</span> <span class="nc">TestECBCutAndPaste</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestECBCutAndPaste.test_parse_cookie"><a class="viewcode-back" href="../../set2.html#set2.c13.TestECBCutAndPaste.test_parse_cookie">[docs]</a>    <span class="k">def</span> <span class="nf">test_parse_cookie</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">actual</span> <span class="o">=</span> <span class="n">parse_cookie</span><span class="p">(</span><span class="s2">&quot;foo=bar&amp;baz=qux&amp;zap=zazzle&quot;</span><span class="p">)</span>
+        <span class="n">expected</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span> <span class="p">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">,</span> <span class="s2">&quot;baz&quot;</span> <span class="p">:</span> <span class="s2">&quot;qux&quot;</span><span class="p">,</span> <span class="s2">&quot;zap&quot;</span> <span class="p">:</span> <span class="s2">&quot;zazzle&quot;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">actual</span><span class="p">,</span> <span class="n">expected</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestECBCutAndPaste.test_profile_for"><a class="viewcode-back" href="../../set2.html#set2.c13.TestECBCutAndPaste.test_profile_for">[docs]</a>    <span class="k">def</span> <span class="nf">test_profile_for</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">uid</span>
+        <span class="n">uid</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">email1</span> <span class="o">=</span> <span class="s2">&quot;foo@bar.com&quot;</span>
+        <span class="n">email2</span> <span class="o">=</span> <span class="s2">&quot;foo@bar.com&amp;role=admin&quot;</span>
+        <span class="n">expected1</span> <span class="o">=</span> <span class="s2">&quot;email=foo@bar.com&amp;uid=1&amp;role=user&quot;</span>
+        <span class="n">expected2</span> <span class="o">=</span> <span class="s2">&quot;email=foo@bar.comroleadmin&amp;uid=2&amp;role=user&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">profile_for</span><span class="p">(</span><span class="n">email1</span><span class="p">),</span> <span class="n">expected1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">profile_for</span><span class="p">(</span><span class="n">email2</span><span class="p">),</span> <span class="n">expected2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestECBCutAndPaste.test_challenge_13"><a class="viewcode-back" href="../../set2.html#set2.c13.TestECBCutAndPaste.test_challenge_13">[docs]</a>    <span class="k">def</span> <span class="nf">test_challenge_13</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">uid</span>
+        <span class="n">uid</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">fake_admin</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;email&quot;</span><span class="p">],</span> <span class="s2">&quot;sponge@bob.com&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">&quot;role&quot;</span><span class="p">],</span> <span class="s2">&quot;admin&quot;</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span> <span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>
