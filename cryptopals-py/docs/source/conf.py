@@ -19,6 +19,7 @@ sys.path.insert(0, os.path.abspath('../../set1'))
 sys.path.insert(0, os.path.abspath('../../set2'))
 sys.path.insert(0, os.path.abspath('../../set3'))
 sys.path.insert(0, os.path.abspath('../../set4'))
+sys.path.insert(0, os.path.abspath('../../set5'))
 
 
 # -- Project information -----------------------------------------------------

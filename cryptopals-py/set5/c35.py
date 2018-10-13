@@ -1,7 +1,32 @@
-# Challenge 35
-## Implement DH with Negotiated Groups, and Break with
-## Malicious 'g' Parameters
-import threading, os, random, sys, Queue
+"""
+**Challenge 35**
+
+*Implement DH with Negotiated Groups, and Break with Malicious 'g' Parameters*
+
+::
+
+    A->B
+        Send p,g
+    B->A
+        Send ACK
+    A->B
+        Send A
+    B->A
+        Send B
+    A->B
+        Send encrypted-message
+    B->A
+        Echo
+
+Do the MITM attack again, but play with 'g'.
+What happens with::
+
+    g = 1
+    g = p
+    g = p-1
+
+"""
+import threading, os, random, sys, queue, unittest
 sys.path.insert(0, "../set2")
 import c33, c10, c9
 
@@ -16,24 +41,7 @@ P     +=  "bb9ed529077096966d670c354e4abc9804f1746c08ca237327fff"
 P     +=  "fffffffffffff"
 P     = int(P, 16)
 G     = 2
-### A->B
-###   Send p,g
-### B->A
-###   Send ACK
-### A->B
-###   Send A
-### B->A
-###   Send B
-### A->B
-###   Send encrypted-message
-### B->A
-###   Echo
 
-### Do the MITM attack again, but play with 'g'.
-### What happens with:
-###  g = 1
-###  g = p
-###  g = p-1
 def alice(to_bob, from_bob, msgs):
     """
     Simulates Alice's communication to Bob with DH. Alice checks that
@@ -61,7 +69,7 @@ def alice(to_bob, from_bob, msgs):
 
     for msg in msgs:
         if DEBUG:
-            print 'Sending msg: ' + str(msg)
+            print('Sending msg: ' + str(msg))
         iv    = os.urandom(16)
         e_msg = iv + c10.aes_128_cbc_encrypt(c9.pkcs7_pad(msg), key, iv)
         # A->B Send AES-CBC(key,msg,iv) + iv
@@ -73,7 +81,7 @@ def alice(to_bob, from_bob, msgs):
         d_echo   = c10.aes_128_cbc_decrypt(echo_msg, key, echo_iv)
         d_echo   = c9.pkcs7_unpad(d_echo)
         if DEBUG:
-            print 'Alice got echo: ' + str(d_echo)
+            print('Alice got echo: ' + str(d_echo))
         assert d_echo == msg, d_echo
 
 def bob(to_alice, from_alice):
@@ -86,12 +94,12 @@ def bob(to_alice, from_alice):
         from_alice: a queue for receiving messages from alice
     """
     # A->B Send p,g
-    p,g       = from_alice.get()
+    p,g         = from_alice.get()
     b,B         = c33.diffie_hellman(p,g)
     # B->A Send ACK
     to_alice.put("ACK")
     # A->B Send A
-    A = from_alice.get()
+    A           = from_alice.get()
     # B->A Send B
     to_alice.put(B)
     session_key = c33.make_session_key(A,b,p)
@@ -109,7 +117,7 @@ def bob(to_alice, from_alice):
         echo   = iv + echo
         to_alice.put(echo)
         try:
-            msg    = from_alice.get(timeout=0.5)
+            msg = from_alice.get(timeout=0.5)
         except:
             msg = False
 
@@ -164,47 +172,41 @@ def mallory(to_alice, from_alice, to_bob, from_bob):
             msg = False
     return dec_msgs
 
-### M should be able to decrypt the messages. "A" and "B" in the protocol
-### --- the public keys, over the wire --- have been swapped out with "p".
-### Do the DH math on this quickly to see what that does to the predicability
-### of the key.
+class TestNegotiatedDH(unittest.TestCase):
+    def __run_test(self, new_g):
+        global G
+        G = new_g
+        msgs = [
+        b"Say, you're good.",
+        b"Thanks.",
+        b"Ha! Darn.",
+        b"Mary had a little lamb whose fleece was white as...PICKLED FISH LIPS!",
+        b"eep!",
+        b"Sea weavle.",
+        b"Gorgy smorgy.",
+        b"At least I'm safe inside my mind.",
+        b"Gahhh!"]
+        a_in     = queue.Queue()
+        b_in     = queue.Queue()
+        a_out    = queue.Queue()
+        b_out    = queue.Queue()
+        a_thread = threading.Thread(target=alice, args=(a_out,a_in,msgs))
+        b_thread = threading.Thread(target=bob, args=(b_out,b_in))
+        a_thread.start()
+        b_thread.start()
+        eve_msgs = mallory(a_in, a_out, b_in, b_out)
+        a_thread.join(2)
+        b_thread.join(2)
+        self.assertEqual(msgs, eve_msgs)
 
-### Decrypt the messages from M's vantage point as they go by.
+    def test_g1(self):
+        self.__run_test(1)
 
-### Note that you don't actually have to inject bogus parameters to make
-### this attack work; you could just generate Ma, MA, Mb, and MB as valid
-### DH parameters to do a generic MITM attack. But do the paramater injection
-### attack; it's going to come up again.
-def run_test(new_g):
-    global G
-    G = new_g
-    msgs = [
-    b"Say, you're good.",
-    b"Thanks.",
-    b"Ha! Darn.",
-    b"Mary had a little lamb whose fleece was white as...PICKLED FISH LIPS!",
-    b"eep!",
-    b"Sea weavle.",
-    b"Gorgy smorgy.",
-    b"At least I'm safe inside my mind.",
-    b"Gahhh!"]
-    a_in     = Queue.Queue()
-    b_in     = Queue.Queue()
-    a_out    = Queue.Queue()
-    b_out    = Queue.Queue()
-    a_thread = threading.Thread(target=alice, args=(a_out,a_in,msgs))
-    b_thread = threading.Thread(target=bob, args=(b_out,b_in))
-    a_thread.start()
-    b_thread.start()
-    eve_msgs = mallory(a_in, a_out, b_in, b_out)
-    a_thread.join(2)
-    b_thread.join(2)
-    assert msgs == eve_msgs, eve_msgs
+    def test_gp(self):
+        self.__run_test(P)
 
-def main():
-    run_test(1)
-    run_test(P)
-    run_test(P-1)
+    def test_gp_1(self):
+        self.__run_test(P-1)
 
 if __name__ == "__main__" :
-    main()
+    unittest.main()

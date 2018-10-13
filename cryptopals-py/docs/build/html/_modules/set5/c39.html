@@ -1,0 +1,205 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>set5.c39 &#8212; cryptopals-py 0.4 documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for set5.c39</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">**Challenge 39**</span>
+
+<span class="sd">*Implement RSA*</span>
+
+<span class="sd">There are two annoying things about implementing RSA. Both of them involve key</span>
+<span class="sd">generation; the actual encryption/decryption in RSA is trivial.</span>
+
+<span class="sd">First, you need to generate random primes. You can&#39;t just agree on a prime</span>
+<span class="sd">ahead of time, like you do in DH. You can write this algorithm yourself, but I</span>
+<span class="sd">just cheat and use OpenSSL&#39;s BN library to do the work.</span>
+
+<span class="sd">The second is that you need an &#39;invmod&#39; operation (the multiplicative inverse),</span>
+<span class="sd">which is not an operation that is wired into your language. The algorithm is</span>
+<span class="sd">just a couple lines, but I always lose an hour getting it to work.</span>
+
+<span class="sd">I recommend you not bother with primegen, but do take the time to get your own</span>
+<span class="sd">EGCD and invmod algorithm working.</span>
+
+<span class="sd">Now:</span>
+
+<span class="sd">* Generate 2 random primes. We&#39;ll use small numbers to start, so you can just</span>
+<span class="sd">  pick them out of a prime table. Call them &#39;p&#39; and &#39;q&#39;.</span>
+<span class="sd">* Let n be p * q. You RSA math is modulo n.</span>
+<span class="sd">* Let et be (p-1)*(q-1) (the &quot;totient&quot;). You need this value only for keygen.</span>
+<span class="sd">* Let e be 3.</span>
+<span class="sd">* Compute d=invmod(e, et). invmod(17, 3120) is 2753.</span>
+<span class="sd">* Your public key is [e,n]. Your private key is [d,n].</span>
+<span class="sd">* To encrypt: c = m**e % n. To decrypt: m = c**d % n</span>
+<span class="sd">* Test this out with a number, like &quot;42&quot;.</span>
+<span class="sd">* Repeat with bignum primes (keep e = 3)</span>
+
+<span class="sd">Finally, to encrypt a string, do something cheesy, like convert the string to</span>
+<span class="sd">hex and put &quot;0x&quot; on the front of it to turn it into a number. The math cares</span>
+<span class="sd">not how stupidly you feed it strings.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">Crypto.Util</span> <span class="k">import</span> <span class="n">number</span>
+<span class="kn">import</span> <span class="nn">unittest</span>
+<span class="kn">import</span> <span class="nn">c36</span>
+
+<div class="viewcode-block" id="primegen"><a class="viewcode-back" href="../../set5.html#set5.c39.primegen">[docs]</a><span class="k">def</span> <span class="nf">primegen</span><span class="p">(</span><span class="n">bit_len</span><span class="o">=</span><span class="mi">2048</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generates a large prime number.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bit_len (integer : 2048): The bit length of the number you want</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A prime number of size bit_len bits</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">number</span><span class="o">.</span><span class="n">getPrime</span><span class="p">(</span><span class="n">bit_len</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="invmod"><a class="viewcode-back" href="../../set5.html#set5.c39.invmod">[docs]</a><span class="k">def</span> <span class="nf">invmod</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">mod</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs the multiplicative inverse. I originally wrote invmod (along with)</span>
+<span class="sd">    xgcd myself, but it was just from Rosetta Code, so what&#39;s the point?</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        num: The number for invert</span>
+<span class="sd">        mod: The modulus</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Inverse mod of num.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">number</span><span class="o">.</span><span class="n">inverse</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">mod</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="rsa_keygen"><a class="viewcode-back" href="../../set5.html#set5.c39.rsa_keygen">[docs]</a><span class="k">def</span> <span class="nf">rsa_keygen</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs the RSA math and gives back the public and private keys.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The pair (pub-key, priv-key).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">primegen</span><span class="p">(),</span> <span class="n">primegen</span><span class="p">()</span>
+    <span class="n">n</span>    <span class="o">=</span> <span class="n">p</span> <span class="o">*</span> <span class="n">q</span>
+    <span class="n">et</span>   <span class="o">=</span> <span class="p">(</span><span class="n">p</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">q</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">e</span>    <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">d</span>    <span class="o">=</span> <span class="n">invmod</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">et</span><span class="p">)</span>
+    <span class="n">pub</span>  <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="p">,</span> <span class="n">n</span><span class="p">]</span>
+    <span class="n">priv</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">,</span> <span class="n">n</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">pub</span><span class="p">,</span> <span class="n">priv</span></div>
+
+<div class="viewcode-block" id="rsa_encrypt"><a class="viewcode-back" href="../../set5.html#set5.c39.rsa_encrypt">[docs]</a><span class="k">def</span> <span class="nf">rsa_encrypt</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs encryption using an RSA key.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        message (bytes): The message to encrypt</span>
+<span class="sd">        key (int,int): The RSA key as a pair</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The encrypted message</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s1">&#39;big&#39;</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="nb">pow</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">key</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">c36</span><span class="o">.</span><span class="n">int_to_bytes</span><span class="p">(</span><span class="n">c</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="rsa_decrypt"><a class="viewcode-back" href="../../set5.html#set5.c39.rsa_decrypt">[docs]</a><span class="k">def</span> <span class="nf">rsa_decrypt</span><span class="p">(</span><span class="n">ctxt</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs decryption using RSA.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ctxt (bytes): The encrypted message</span>
+<span class="sd">        key (int, int): The RSA key as a pair</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># It&#39;s the same math</span>
+    <span class="k">return</span> <span class="n">rsa_encrypt</span><span class="p">(</span><span class="n">ctxt</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestRSA"><a class="viewcode-back" href="../../set5.html#set5.c39.TestRSA">[docs]</a><span class="k">class</span> <span class="nc">TestRSA</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+<div class="viewcode-block" id="TestRSA.test_invmod"><a class="viewcode-back" href="../../set5.html#set5.c39.TestRSA.test_invmod">[docs]</a>    <span class="k">def</span> <span class="nf">test_invmod</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">invmod</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">3120</span><span class="p">),</span> <span class="mi">2753</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">invmod</span><span class="p">(</span><span class="mi">42</span><span class="p">,</span> <span class="mi">2017</span><span class="p">),</span> <span class="mi">1969</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestRSA.test_rsa_encrypt"><a class="viewcode-back" href="../../set5.html#set5.c39.TestRSA.test_rsa_encrypt">[docs]</a>    <span class="k">def</span> <span class="nf">test_rsa_encrypt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pub</span><span class="p">,</span> <span class="n">priv</span> <span class="o">=</span> <span class="n">rsa_keygen</span><span class="p">()</span>
+        <span class="n">message</span>   <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;Attack at dawn!&#39;</span>
+        <span class="n">e_msg</span>     <span class="o">=</span> <span class="n">rsa_encrypt</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">pub</span><span class="p">)</span>
+        <span class="n">d_msg</span>     <span class="o">=</span> <span class="n">rsa_decrypt</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">priv</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="n">d_msg</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span></div></div>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">cryptopals-py 0.4 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, aasparks.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.
+    </div>
+  </body>
+</html>
