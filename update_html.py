@@ -8,7 +8,7 @@ def update_stylesheets():
 
     # no regexp needed
     style = "=\"_static/"
-    newstyle = "=\"cryptopals-py-rkt/docs/py/html/_static/"
+    newstyle = "=\"cryptopals-py-rkt/py/html/_static/"
 
     for file in files:
         f = open(direc + file + ext, 'r')
