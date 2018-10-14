@@ -41,13 +41,18 @@ so far.
   * Challenge 12 (possibly the AES implementation as well)
   * Challenge 14
   * Challenge 31 & 32
-* See if the AES implementation can be improved
 * Rewrite Racket solutions to be less imperative
   * Challenge 21
 
 ### Completed Tasks
 * Convert Python solutions to Python3.
 * Write proper documentation for all files
+* Improve AES implementation
+    * I made this implementation when I first started these challenges. At the time,
+      I thought I was pretty good with Racket, but man oh man this implementation
+      was embarrassing. I made lots of changes to the code, removing some really
+      unnecessary code. I'm not sure what the performance increase is but I can
+      imagine it is pretty good.
 
 ## Challenges
 
