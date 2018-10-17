@@ -118,5 +118,11 @@ class TestRSA(unittest.TestCase):
         d_msg     = rsa_decrypt(message, priv)
         self.assertEqual(d_msg, message)
 
+    def test_keygen(self):
+        pub, priv = rsa_keygen()
+        pub1, priv1 = rsa_keygen()
+        self.assertNotEqual(pub, pub1)
+        self.assertNotEqual(priv, priv1)
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,8 +1,7 @@
 #lang racket
 
-(require
-  "c1.rkt"
-  "c7.rkt")
+(require "../util/conversions.rkt")
+
 (provide is-ecb?)
 
 ;; Challenge 8
@@ -10,8 +9,11 @@
 
 #|
    In this file are a bunch of hex-encoded ciphertexts.
+
    One of them has been encrypted with ECB.
+
    Detect it.
+
    Remember that the problem with ECB is that it is
    stateless and deterministic; the same 16-byte
    plaintext block will always produce the same
@@ -21,8 +23,8 @@
 ; is-ecb? : bytes [integer] -> boolean
 ;; determines if the txt is encrypted with ECB
 ;; by looking for any repeated blocks
-(define (is-ecb? txt [max-size 1])
-  (>= (count-repeated-blocks txt) max-size))
+(define (is-ecb? txt)
+  (>= (count-repeated-blocks txt) 2))
 
 ; count-repeated-blocks : bytes [integer] -> integer
 ;; Returns the number of repeated blocks
@@ -43,24 +45,26 @@
       (cons txt empty)
       (cons (subbytes txt 0 n)
             (bytes->list/blocks
-             (subbytes txt n (bytes-length txt))
-             n))))
+             (subbytes txt n) n))))
 
 ; find-ecb-line : string -> bytes
 ;; finds the line in the given file that is ECB encoded
 (define (find-ecb-line file)
   (define file-lines (file->bytes-lines file #:mode 'text))
   (filter (λ (bstr)
-            (is-ecb? (hex->ascii bstr) 2))
+            (is-ecb? (hex->ascii bstr)))
           file-lines))
 
 (module+ test
-  (require rackunit)
+  (require rackunit
+           "../util/test.rkt")
+  
   (define test-string #"abcdef01abcd")
   (check-equal? (bytes->list/blocks test-string 4)
                 (list #"abcd" #"ef01" #"abcd"))
   (check-equal? (count-repeated-blocks test-string 4)
                 1)
+  
   ; Challenge 8 Solution
   (define expected
     (bytes-append
@@ -72,6 +76,11 @@
      #"4789a6b0308649af70dc06f4fd5d2d69c744cd283d4"
      #"03180c98c8f6db1f2a3f9c4040deb0ab51b29933f2c"
      #"123c58386b06fba186a"))
-  
-  (check-equal? (find-ecb-line "../../testdata/8.txt")
-                (list expected)))
+
+  (define challenge8-test
+    (test-suite
+     "Challenge 8"
+     (check-equal? (find-ecb-line "../../testdata/8.txt")
+                   (list expected))))
+
+  (time-test challenge8-test))

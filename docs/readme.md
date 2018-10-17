@@ -20,7 +20,7 @@ DrRacket.</span> I've used DrRacket tools before, so it was very easy. Sphinx
 has quite the learning curve but is a very powerful tool.
 
 [Python](py/html/index.html)
-[~~Racket~~](rkt/html/index.html)
+[~~Racket~~](rkt/manual.html)
 
 
 ## Midterm Retrospective
@@ -37,17 +37,27 @@ so far.
 ### TODO:
 * Compile most-used functions into 'util' files and use that way.
 * Try to optimize the challenges that are slow in Racket
-  * Challenge 4 (possibly 3 as well)
-  * Challenge 12 (possibly the AES implementation as well)
+  * Challenge 12
   * Challenge 14
   * Challenge 31 & 32
-* See if the AES implementation can be improved
 * Rewrite Racket solutions to be less imperative
   * Challenge 21
 
 ### Completed Tasks
 * Convert Python solutions to Python3.
 * Write proper documentation for all files
+* Improve AES implementation
+    * I made this implementation when I first started these challenges. At the time,
+      I thought I was pretty good with Racket, but man oh man this implementation
+      was embarrassing. I made lots of changes to the code, removing some really
+      unnecessary code. I'm not sure what the performance increase is but I can
+      imagine it is pretty good.
+* Optimize slow Racket challenges
+    * AES
+      * Mostly just cleaner code with this one but there was a slight speed improvement.
+    * Challenges 3-6
+        * Saw MASSIVE speed improvement with this one. My original solutions were doing
+        all sorts of bad things. The new solutions are much cleaner and faster.
 
 ## Challenges
 
@@ -77,8 +87,7 @@ is getting a good scoring function.
 #### 4. Detect Single-character XOR - :ballot_box_with_check:
 
 Running challenge 3 on every line of the file gets you to the solution
-and the plaintext very quickly. <span style="color:red">However, the Racket solution is much, much
-slower.</span>
+and the plaintext very quickly. 
 
 #### 5. Implement Repeating-key XOR - :ballot_box_with_check:
 

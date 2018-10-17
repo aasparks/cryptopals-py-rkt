@@ -12,7 +12,7 @@
          racket/list
          racket/match
          racket/vector
-         "tables.rkt")
+         "aes/tables.rkt")
 
 (provide aes-128-encrypt
          aes-128-decrypt)
@@ -440,11 +440,11 @@
 ;; iv can be iv or nonce. there is no default iv for CBC mode. sorry.
 (define (aes-128-encrypt txt key [iv 0] #:mode [md 'ECB])
   (match md
-    ['ECB (aes-128-ecb-encrypt txt key)]
-    ['CBC (if (equal? iv 0)
-              (error 'aes-cbc "must supply an initialization vector")
+    [(or 'ECB 'ecb) (aes-128-ecb-encrypt txt key)]
+    [(or 'CBC 'cbc) (if (equal? iv 0)
+              (aes-128-cbc-encrypt txt key (make-bytes 16 0))
               (aes-128-cbc-encrypt txt key iv))]
-    ['CTR (aes-128-ctr txt key iv)]
+    [(or 'CTR 'ctr) (aes-128-ctr txt key iv)]
     [else (error 'aes-128-encrypt
                  "unknown mode ~v. valid modes are 'ECB 'CBC and 'CTR"
                  md)]))
@@ -452,9 +452,11 @@
 ;; same as encrypt. accepts a mod and runs the right function.
 (define (aes-128-decrypt txt key [iv 0] #:mode [md 'ECB])
   (match md
-    ['ECB (aes-128-ecb-decrypt txt key)]
-    ['CBC (aes-128-cbc-decrypt txt key iv)]
-    ['CTR (aes-128-ctr txt key iv)]
+    [(or 'ecb 'ECB) (aes-128-ecb-decrypt txt key)]
+    [(or 'cbc 'CBC )(if (equal? iv 0)
+              (aes-128-cbc-decrypt txt key (make-bytes 16 0))
+              (aes-128-cbc-decrypt txt key iv))]
+    [(or 'ctr 'CTR) (aes-128-ctr txt key iv)]
     [else (error 'aes-128-decrypt
                  "unknown mode ~v. valid modes are 'ECB 'CBC and 'CTR"
                  md)]))
@@ -462,6 +464,7 @@
 (module+ test
   (require rackunit
            rackunit/text-ui
+           "test.rkt"
            "../set1/c1.rkt")
 
   ; I wouldn't recommend reading through this. It got messy.
@@ -598,7 +601,7 @@
                        ctr-key (make-bytes 16 0) #:mode 'CBC)
       (make-bytes 64 65))
      (check-exn exn:fail?
-                (λ () (aes-128-encrypt (make-bytes 16 0) (make-bytes 16 0) #:mode 'ecb)))
+                (λ () (aes-128-encrypt (make-bytes 15 0) (make-bytes 16 0) #:mode 'ecb)))
      (check-exn exn:fail?
                 (λ () (aes-128-encrypt (make-bytes 16 0) (make-bytes 13 0) #:mode 'ecb)))))
   (define all-tests
@@ -610,4 +613,4 @@
                test-vector-1
                test-mode-option))
 
-  (run-tests all-tests))
+  (time-test all-tests))

@@ -1,32 +1,38 @@
 #lang racket
-(require "c1.rkt"
-         "c2.rkt"
-         "c3.rkt")
+(require "../util/conversions.rkt"
+         "c3-fast.rkt")
 ; Challenge 4
 ;; Detect single-character XOR
+
+(provide detect-single-char-xor)
 
 #|
    One of the 60-character strings in this file has been
    encrypted by single-character XOR. Find it.
 |#
 
-;;; As with the python approach, I will just run challenge3
-;;; on every line in the file
-(define (challenge4)
-  ;; functional enough? it runs much slower than python. Why?
-  (first
-   (sort
-    (map (λ (line)
-           (single-byte-xor (hex->ascii (string->bytes/utf-8 line))))
-         (file->lines "../../testdata/4.txt")) 
-    (λ (x y)
-      (> (car x) (car y))))))
+; detect-single-char-xor : string? -> bytes
+;; finds the line in the given file that is single-byte xor'd.
+;; Returns decrypted line
+(define (detect-single-char-xor file)
+  (define result
+    (argmax first
+            (map (λ (line)
+                   (list (single-byte-xor (hex->ascii line))
+                         (hex->ascii line)))
+                 (file->bytes-lines file))))
+  (xorstrs (second result)
+           (make-bytes (bytes-length (second result)) (first result))))
 
 (module+ test
-  (require rackunit)
-  (define sol (challenge4))
-  (display (ascii->hex (third sol)))
-  (check-equal? (xorstrs (third sol)
-                         (make-bytes (bytes-length (third sol))
-                                     (second sol)))
-                #"Now that the party is jumping\n"))
+  (require rackunit
+           "../util/test.rkt")
+  
+  (define challenge4
+    (test-suite
+     "Challenge 4"
+     (check-equal?
+      (detect-single-char-xor "../../testdata/4.txt")
+      #"Now that the party is jumping\n")))
+
+  (time-test challenge4))

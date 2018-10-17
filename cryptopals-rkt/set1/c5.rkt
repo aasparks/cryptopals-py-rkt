@@ -1,9 +1,9 @@
 #lang racket
 
-(require "c1.rkt"
-         "c2.rkt"
-         "c3.rkt"
-         "c4.rkt")
+; Challenge 5
+;; Implement repeating-key XOR
+
+(require "../util/conversions.rkt")
 (provide repeat-key
          repeating-key-xor)
 #|
@@ -27,18 +27,13 @@
    I promise, we aren't wasting your time with this.
 |#
 
-; Challenge 5
-;; Implement repeating-key XOR
-
 ; repeat-key : bytes integer -> bytes
 ;; extend the key, repeating to size n
 (define (repeat-key key n)
   (define diff (ceiling (/ n (bytes-length key))))
   (subbytes
-   (apply bytes-append
-          (build-list diff (λ (_) key)))
-   0
-   n))
+   (apply bytes-append (build-list diff (λ (_) key)))
+   0 n))
 
 ; repeating-key-xor : bytes bytes -> bytes
 ;; repeating key XOR
@@ -46,23 +41,38 @@
   (xorstrs txt (repeat-key key (bytes-length txt))))
 
 (module+ test
-  (require rackunit)
-  (check-equal? (repeat-key #"ICE" 6)
-                #"ICEICE")
-  (check-equal? (repeat-key #"ICE" 5)
-                #"ICEIC")
-  (check-equal? (repeat-key #"ICE" 15)
-                #"ICEICEICEICEICE")
+  (require rackunit
+           "../util/test.rkt")
+
+  (define repeat-key-tests
+    (test-case
+     "Repeat key tests"
+     (check-equal? (repeat-key #"ICE" 6)
+                   #"ICEICE")
+     (check-equal? (repeat-key #"ICE" 5)
+                   #"ICEIC")
+     (check-equal? (repeat-key #"ICE" 15)
+                   #"ICEICEICEICEICE")))
 
   ; Challenge 5 solution
   (define pt (bytes-append
               #"Burning 'em, if you ain't quick and nimble\n"
               #"I go crazy when I hear a cymbal"))
-  (define actual
-    (ascii->hex (repeating-key-xor pt #"ICE")))
   (define expected
     (bytes-append
      #"0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272"
      #"a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f"))
-  (check-equal? actual
-                expected))
+
+  (define challenge5-test
+    (test-suite
+     "Challenge 5"
+     (check-equal? (ascii->hex (repeating-key-xor pt #"ICE"))
+                   expected)))
+
+  (define all-tests
+    (test-suite
+     "All"
+     repeat-key-tests
+     challenge5-test))
+  
+  (time-test all-tests))

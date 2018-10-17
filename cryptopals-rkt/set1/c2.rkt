@@ -29,10 +29,17 @@
         (bytes->list bstr2))))
 
 (module+ test
-  (require rackunit)
+  (require rackunit
+           "../util/test.rkt")
 
   ; Challenge 2 solution
   (define bstr1 (hex->ascii #"1c0111001f010100061a024b53535009181c"))
   (define bstr2 (hex->ascii #"686974207468652062756c6c277320657965"))
-  (check-equal? (ascii->hex (xorstrs bstr1 bstr2))
-                #"746865206b696420646f6e277420706c6179"))
+
+  (define challenge-2
+    (test-suite
+     "Challenge 2"
+     (check-equal? (ascii->hex (xorstrs bstr1 bstr2))
+                #"746865206b696420646f6e277420706c6179")))
+
+  (time-test challenge-2))

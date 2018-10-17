@@ -4,7 +4,7 @@
 ;; Implement Secure Remote Password (SRP)
 (require racket/random
          math/number-theory
-         "../sha1/sha1.rkt"
+         sha
          "../set1/c1.rkt"
          "../set4/c31.rkt")
 

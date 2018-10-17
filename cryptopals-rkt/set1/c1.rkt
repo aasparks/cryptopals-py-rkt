@@ -57,7 +57,7 @@
 
 ;; Test all the functions
 (module+ test
-  (require "../test.rkt"
+  (require "../util/test.rkt"
            rackunit
            rackunit/text-ui)
   

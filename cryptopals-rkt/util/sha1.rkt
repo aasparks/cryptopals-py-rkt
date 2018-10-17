@@ -1,29 +1,31 @@
 #lang racket
 
+#|
+   SHA-1 implementation
+
+   Okay so, Racket does provide SHA1 through
+     (require file/sha1)
+   but they want me to implement it myself
+   and I want to as well.
+
+   So how do I want to do this?
+   SHA1 is quite imperative, so it may end
+   up being that way. I'm going to follow
+   the FIPS 180-4 spec for this, not pseudocode
+   or another implementation.
+
+   The first thing to think about here is
+   how to avoid using objects.
+   I think this can be avoided by using structs, because,
+   unlike the Mersenne Twister, it is only called once.
+   So let's save the state in a struct.
+|#
+
 (require "../set1/c1.rkt"
-         "sha1-math.rkt")
+         "sha1/sha1-math.rkt")
 (provide sha-1)
 
 (define DEBUG #false)
-
-; SHA-1 implementation
-
-;; Okay so, Racket does provide SHA1 through
-;;   (require file/sha1)
-;; but they want me to implement it myself
-;; and I want to as well.
-;;
-;; So how do I want to do this?
-;; SHA1 is quite imperative, so it may end
-;; up being that way. I'm going to follow
-;; the FIPS 180-4 spec for this, not pseudocode
-;; or another implementation.
-;;
-;; The first thing to think about here is
-;; how to avoid using objects.
-;; I think this can be avoided by using structs, because,
-;; unlike the Mersenne Twister, it is only called once.
-;; So let's save the state in a struct.
 
 ; a State is a
 ;  - hash - vector hash value
@@ -103,19 +105,19 @@ hash value.
 ; digest : state? -> bytes?
 ; digests each individual block and concatenates to a final result
 (define (digest state)
-  (define h (box (State-hash state)))
-  (for ([i (in-range (/ (State-length state) 64))])
-    ; 1. prepare the message schedule
-    (define w (prepare-message-sched (State-msg state) i))
-    ; digest the block, given w and h
-    (set-box! h (digest-block w (unbox h))))
-  (apply
-   bytes-append
-   (map
-    (λ (num)
-      (integer->integer-bytes
-       num 4 #f #t))
-    (vector->list (unbox h)))))
+  (define hash
+    (foldl
+     (λ (i h)
+       (define w(prepare-message-sched (State-msg state) i))
+       (digest-block w h))
+     (State-hash state)
+     (build-list (/ (State-length state) 64) values)))
+  (apply bytes-append
+         (map
+          (λ (num)
+            (integer->integer-bytes
+             num 4 #f #t))
+          (vector->list hash))))
 
 ; digest-block : (vector? bytes?) bytes? -> (vector? bytes?)
 ; digests an individual block, given the message schedule
@@ -137,20 +139,15 @@ hash value.
     ; i know this style is far from ideal in Racket
     ; but I'm not sure how else to do this. The algorithm
     ; calls for mutation...
-    (set! temp
-          (bitwise-and
-           (+
-            (rotl a 5)
-            (f b c d)
-            e
-            k
-            (vector-ref w i))
-           #xFFFFFFFF))
-    (set! e d)
-    (set! d c)
-    (set! c (rotl b 30))
-    (set! b a)
-    (set! a temp)
+    (set! temp (bitwise-and
+                (+ (rotl a 5)
+                   (f b c d)
+                   e
+                   k
+                   (vector-ref w i))
+                #xFFFFFFFF))
+    (set!-values (e d c b a)
+                 (values d c (rotl b 30) a temp))
     (when DEBUG
       (printf "END OF ROUND ~v: ~X ~X ~X ~X ~X ~X\n"
               i a b c d e k)))

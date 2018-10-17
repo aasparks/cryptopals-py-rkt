@@ -1,12 +1,17 @@
 #lang racket
 
+#|
+   MD4
+
+   My implementation of MD4, using the original
+   documentation from here
+   http://practicalcryptography.com/hashes/md4-hash/
+|#
+
 (require "../set1/c1.rkt"
-         "md4-math.rkt"
-         "md4-rounds.rkt")
-; MD4
-;; My implementation of MD4, using the original
-;; documentation from here
-;; http://practicalcryptography.com/hashes/md4-hash/
+         "md4/md4-math.rkt"
+         "md4/md4-rounds.rkt")
+
 (provide md4)
 
 (define DEBUG #false)

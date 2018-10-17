@@ -11,7 +11,7 @@
 ;; complete the challenges here.
 ;; It is probably much slower and less secure
 ;; but it was a fun challenge.
-(require "../aes/aes.rkt"
+(require "../util/aes.rkt"
          "c1.rkt")
 
 (define DEBUG #false)
@@ -26,7 +26,7 @@
 
 (module+ test
   (define result
-   (aes-128-ecb-decrypt
+   (aes-128-decrypt
     (base64->ascii (file->bytes "../../testdata/7.txt" #:mode 'text))
     #"YELLOW SUBMARINE"))
   (when DEBUG
