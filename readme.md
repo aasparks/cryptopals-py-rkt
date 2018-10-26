@@ -19,8 +19,8 @@ For Python, the tool is Sphinx to parse the docstrings in the source. </span>
 DrRacket.</span> I've used DrRacket tools before, so it was very easy. Sphinx
 has quite the learning curve but is a very powerful tool.
 
-[Python](https://aasparks.github.io/cryptopals-py-rkt/docs/py/html/index.html)
-[Racket](https://aasparks.github.io/cryptopals-py-rkt/docs/rkt/manual.html)
+[Python](https://aasparks.github.io/cryptopals-py-rkt/py/html/index.html)
+[Racket](https://aasparks.github.io/cryptopals-py-rkt/rkt/manual.html)
 
 
 ## Midterm Retrospective
@@ -91,7 +91,7 @@ is getting a good scoring function.
 #### 4. Detect Single-character XOR - :ballot_box_with_check:
 
 Running challenge 3 on every line of the file gets you to the solution
-and the plaintext very quickly. 
+and the plaintext very quickly.
 
 #### 5. Implement Repeating-key XOR - :ballot_box_with_check:
 
@@ -243,6 +243,14 @@ This one was a little harder just because of g=p-1 has two possible
 key values, but still pretty easy.
 
 #### 36. Implement Secure Remote Password (SRP) :black_square_button:
+
+This biggest question here was how to implement this. I think client/server
+classes is was the best way to go.
+
+For this challenge I needed to write my own ```integer-bytes->integer``` and
+```integer->integer-bytes``` functions in Racket that would take/make byte
+strings longer than 8 bytes. That turned out to be a really elegant solution
+using ```foldl``` and ```foldr```.
 
 #### 37. Break SRP with a Zero Key :black_square_button:
 

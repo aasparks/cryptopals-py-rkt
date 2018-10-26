@@ -1,6 +1,8 @@
 #lang scribble/doc
 
-@(require scribble/manual)
+@(require scribble/manual
+          "../set5/c36.rkt")
+@(require (for-label racket/class))
 
 @title{Set 5}
 
@@ -157,3 +159,99 @@ set. Don't wimp out here. You're almost done!
    }
    Nothing provided. Solves the problem.
 }
+
+@section{Challenge 36}
+
+@defmodule["set5/c36.rkt"]
+   @codeblock{
+   To understand SRP, look at how you generate an AES
+   key from DH; now, just observe you can do the
+   "opposite" operation and generate a numeric
+   parameter from a hash. Then:
+   Replace A and B with C and S (client and server)
+
+   C&S
+     Agree on N=[NIST Prime], g=2, k=3, I (email), P (password)
+
+   S
+     1. Generate salt as a random integer
+     2. Generate string xH=SHA256(salt || password)
+     3. Convert xH to integer x somehow (put 0x on hexdigest)
+     4. Generate v= g**x % N
+     5. Save everything but x, xH
+
+  C->S
+    Send I, A=g**a % N (a la Diffie-Hellman)
+  S->C
+    Send salt, B = kv + g**b % N
+  S,C
+    Compute string uH = SHA256(A || B), u = integer of uH
+  C
+    1. Generate string xH = SHA256(salt || password)
+    2. Convert xH to integer x somehow
+    3. Generate S = (B-k * g**x)**(a + u*x) % N
+    4. Generate K = SHA256(S)
+  S
+    1. Generate S = (A * v**u)**b % N
+    2. Generate K = SHA256(S)
+  C->S
+    Send HMAC-SHA256(K, salt)
+  S->C
+    Send "OK" if HMAC-SHA256(K, salt) validates
+
+   You're going to want to do this at a REPL of some sort;
+   it may take a couple of tries.
+
+   It doesn't matter how you go from integer to string or string
+   to integer (where things are going in or out of SHA256) as long
+   as you do it consistently. I tested by using the ASCII decimal
+   representation of integers as input to SHA256, and by converting
+   the hexdigest to an integer when processing its output.
+
+   This is basically Diffie-Hellman with a tweak of mixing the password
+   into the public keys. The server also takes an extra step to avoid
+   storing an easily crackable password-equivalent.
+   }
+ @defclass[SRPServer% object% ()]{
+
+  Represents an instance of a Server using SRP.
+
+  @defconstructor[([prime integer?]
+                   [email bytes?]
+                   [password bytes?])]{
+
+   Creates an instance of an SRP Server that uses the given
+   @racket[prime].
+
+   The server must initialized with an @racket[email] and
+   @racket[password] for login. It only accepts one valid login,
+   because I'm too lazy to implement more.
+  }
+
+  @defmethod[(authenticate [email bytes?] [A integer?] [in channel?] [out channel?]) void]{
+   Authenticates via SRP the given @racket[email] and @racket[A], SRP public
+   key from the @racket[SRPClient%].
+
+   Communicates with the client via the given @racket[in] and @racket[out]
+   channels. Sends @racket[true] to the @racket[out] channel if the
+   credentials authenticate.
+ }}
+
+ @defclass[SRPClient% object% ()]{
+
+  Represents an instance of a client using SRP.
+
+  @defconstructor[([prime integer?]
+                   [server (is-a SRPServer%)])]{
+
+   Creates an instance of an SRP Client that uses the given
+   @racket[prime].
+
+   The @racket[server] to communicate with must be given at
+   initialization time.
+  }
+
+  @defmethod[(login [email bytes?] [password bytes?]) boolean?]{
+   Attempts to log in to the @racket[SRPSever%] with the given
+   credentials. Returns true on success.
+ }}

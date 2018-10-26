@@ -19,8 +19,8 @@ For Python, the tool is Sphinx to parse the docstrings in the source. </span>
 DrRacket.</span> I've used DrRacket tools before, so it was very easy. Sphinx
 has quite the learning curve but is a very powerful tool.
 
-[Python](py/html/index.html)
-[~~Racket~~](rkt/manual.html)
+[Python](https://aasparks.github.io/cryptopals-py-rkt/py/html/index.html)
+[Racket](https://aasparks.github.io/cryptopals-py-rkt/rkt/manual.html)
 
 
 ## Midterm Retrospective
@@ -37,11 +37,7 @@ so far.
 ### TODO:
 * Compile most-used functions into 'util' files and use that way.
 * Try to optimize the challenges that are slow in Racket
-  * Challenge 12
-  * Challenge 14
   * Challenge 31 & 32
-* Rewrite Racket solutions to be less imperative
-  * Challenge 21
 
 ### Completed Tasks
 * Convert Python solutions to Python3.
@@ -58,6 +54,14 @@ so far.
     * Challenges 3-6
         * Saw MASSIVE speed improvement with this one. My original solutions were doing
         all sorts of bad things. The new solutions are much cleaner and faster.
+    * Challenge 12 & 14
+        * <span style="color:red">I still can't figure this one out. The speed difference is insane. 0.3s in Python to
+          about 90s in Racket. The only differences I see are that Racket uses recursion instead
+          of for loops (which shouldn't be a problem) and my own AES implementation is slower
+          (but not THAT much slower), so I'm at a loss.</span>
+* Rewrite Racket solutions to be less imperative
+  * Challenge 21
+    * Not sure about speed, but it does look nicer. No more unnecessary uses of ```set!```.
 
 ## Challenges
 
@@ -87,7 +91,7 @@ is getting a good scoring function.
 #### 4. Detect Single-character XOR - :ballot_box_with_check:
 
 Running challenge 3 on every line of the file gets you to the solution
-and the plaintext very quickly. 
+and the plaintext very quickly.
 
 #### 5. Implement Repeating-key XOR - :ballot_box_with_check:
 
@@ -239,6 +243,14 @@ This one was a little harder just because of g=p-1 has two possible
 key values, but still pretty easy.
 
 #### 36. Implement Secure Remote Password (SRP) :black_square_button:
+
+This biggest question here was how to implement this. I think client/server
+classes is was the best way to go.
+
+For this challenge I needed to write my own ```integer-bytes->integer``` and
+```integer->integer-bytes``` functions in Racket that would take/make byte
+strings longer than 8 bytes. That turned out to be a really elegant solution
+using ```foldl``` and ```foldr```.
 
 #### 37. Break SRP with a Zero Key :black_square_button:
 

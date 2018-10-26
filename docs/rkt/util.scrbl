@@ -36,7 +36,15 @@ every exercise.
    @defproc[(xorstrs [bstr1 bytes?] [bstr2 bytes?]) bytes?]{
    XOR's two byte strings together and returns the result.
    }
-}
+   @defproc[(integer->bytes [num integer?] [big-endian? boolean? #true]) bytes?]{
+   Converts the given integer to a byte string (a la integer->integer-bytes) but
+   can take any size integer. Accepts an optional argument for endianness.
+   }
+   @defproc[(bytes->integer [bstr bytes?] [big-endian? boolean? #true]) integer?]{
+   Converts a byte string to an integer (a la integer-bytes->integer) but
+   can take any length of bytestring. Accepts an optional argument for endianness.
+  }
+ }
 
 @section{Hashing}
 
