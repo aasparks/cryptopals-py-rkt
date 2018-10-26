@@ -1,11 +1,12 @@
-#lang racket
-
-(require "../util/conversions.rkt")
-
-(provide is-ecb?)
+#lang racket/base
 
 ;; Challenge 8
 ;; Detect AES in ECB mode
+
+(require "../util/conversions.rkt"
+         racket/list
+         racket/file)
+(provide is-ecb?)
 
 #|
    In this file are a bunch of hex-encoded ciphertexts.
@@ -24,7 +25,7 @@
 ;; determines if the txt is encrypted with ECB
 ;; by looking for any repeated blocks
 (define (is-ecb? txt)
-  (>= (count-repeated-blocks txt) 2))
+  (>= (count-repeated-blocks txt) 1))
 
 ; count-repeated-blocks : bytes [integer] -> integer
 ;; Returns the number of repeated blocks

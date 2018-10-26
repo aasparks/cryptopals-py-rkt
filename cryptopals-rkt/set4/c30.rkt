@@ -1,9 +1,10 @@
-#lang racket
+#lang racket/base
 
 ; Challenge 30
 ;; Break an MD4 Keyed MAC Using Length Extension
-(require "../md4/md4.rkt"
-         racket/random)
+(require "../util/md4.rkt"
+         racket/random
+         racket/list)
 
 #|
    Second verse, same as the first, but use MD4
@@ -24,7 +25,7 @@
 
 ; mac : bytes? -> bytes?
 ;; creates the mac from the message using a random key
-(define (mac msg)
+(define (md4-mac msg)
   (md4 (bytes-append KEY msg)))
 
 ; Now for the attack stuff
@@ -72,7 +73,7 @@
         (map list->bytes
              (split-list
               (bytes->list
-               (mac message)))))))
+               (md4-mac message)))))))
 
 ; split-list
 ;; takes a list and splits into a list of lists of size n
@@ -111,4 +112,4 @@
          (bytes->list #"BEEF")))
 
   (check-equal? (ascii->hex (forge-mac MESG SUFF))
-                (ascii->hex (mac (forge-message MESG SUFF)))))
+                (ascii->hex (md4-mac (forge-message MESG SUFF)))))

@@ -1,8 +1,9 @@
-#lang racket
+#lang racket/base
 
 ; Challenge 3
 ;; Single-byte XOR cipher
-(require "../util/conversions.rkt")
+(require "../util/conversions.rkt"
+         racket/list)
 (provide single-byte-xor
          score)
 

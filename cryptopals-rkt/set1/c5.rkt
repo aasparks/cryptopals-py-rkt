@@ -1,11 +1,8 @@
-#lang racket
+#lang racket/base
 
 ; Challenge 5
 ;; Implement repeating-key XOR
 
-(require "../util/conversions.rkt")
-(provide repeat-key
-         repeating-key-xor)
 #|
    Here is the opening stanza of an important work of the
    English language:
@@ -26,6 +23,9 @@
    your mail. Encrypt your password file. Your .sig file. Get a feel for it.
    I promise, we aren't wasting your time with this.
 |#
+(require "../util/conversions.rkt")
+(provide repeat-key
+         repeating-key-xor)
 
 ; repeat-key : bytes integer -> bytes
 ;; extend the key, repeating to size n

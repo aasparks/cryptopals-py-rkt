@@ -15,7 +15,8 @@
          "aes/tables.rkt")
 
 (provide aes-128-encrypt
-         aes-128-decrypt)
+         aes-128-decrypt
+         get-block)
 
 
 ;; number of columns for the state

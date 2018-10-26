@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 ;; Challenge 9
 ;; Implement PKCS7 padding
@@ -25,15 +25,15 @@
 
 ; pkcs7-pad : bytes [integer] -> bytes
 ;; pads according to the pkcs7 standard
-(define (pkcs7-pad txt [l 16])
-  (let ([n (- l (modulo (bytes-length txt) l))])
-    (bytes-append txt (make-bytes n n))))
+(define (pkcs7-pad txt [blocksize 16])
+  (define n (- blocksize (modulo (bytes-length txt) blocksize)))
+  (bytes-append txt (make-bytes n n)))
 
 ; pkcs7-unpad : bytes [integer] -> bytes
 ;; unpads to the pkcs7 standard, with validation checks
-(define (pkcs7-unpad txt [l 16])
+(define (pkcs7-unpad txt [blocksize 16])
   (define n (bytes-ref txt (sub1 (bytes-length txt))))
-  (if (or (> n l) (zero? n))
+  (if (or (> n blocksize) (zero? n))
       (error "padding error")
       (sub-last-byte txt n n)))
 
@@ -46,11 +46,18 @@
     [else (error "padding error")]))
 
 (module+ test
-  (require rackunit)
-  (check-equal? (pkcs7-pad #"YELLOW SUBMARINE" 20)
-                #"YELLOW SUBMARINE\x04\x04\x04\x04")
-  (check-equal? (pkcs7-unpad #"YELLOW SUBMARINE\x04\x04\x04\x04")
-                #"YELLOW SUBMARINE")
-  (check-exn exn:fail?
-             (λ ()
-               (pkcs7-unpad #"YELLOW SUBMARINE\x04\x03\x04\x04"))))
+  (require rackunit
+           "../util/test.rkt")
+
+  (define challenge9-test
+    (test-suite
+     "Challenge 9"
+     (check-equal? (pkcs7-pad #"YELLOW SUBMARINE" 20)
+                   #"YELLOW SUBMARINE\x04\x04\x04\x04")
+     (check-equal? (pkcs7-unpad #"YELLOW SUBMARINE\x04\x04\x04\x04")
+                   #"YELLOW SUBMARINE")
+     (check-exn exn:fail?
+                (λ ()
+                  (pkcs7-unpad #"YELLOW SUBMARINE\x04\x03\x04\x04")))))
+
+  (time-test challenge9-test))

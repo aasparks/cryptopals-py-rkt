@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 (require "md4-math.rkt")
 

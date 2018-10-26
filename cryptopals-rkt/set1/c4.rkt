@@ -1,15 +1,17 @@
-#lang racket
-(require "../util/conversions.rkt"
-         "c3-fast.rkt")
+#lang racket/base
+
 ; Challenge 4
 ;; Detect single-character XOR
-
-(provide detect-single-char-xor)
 
 #|
    One of the 60-character strings in this file has been
    encrypted by single-character XOR. Find it.
 |#
+(require "../util/conversions.rkt"
+         "c3.rkt"
+         racket/list
+         racket/file)
+(provide detect-single-char-xor)
 
 ; detect-single-char-xor : string? -> bytes
 ;; finds the line in the given file that is single-byte xor'd.

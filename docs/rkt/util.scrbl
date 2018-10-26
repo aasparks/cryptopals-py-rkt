@@ -1,6 +1,8 @@
 #lang scribble/doc
 
-@(require scribble/manual)
+@(require scribble/manual
+          "../util/mt19937.rkt")
+@(require (for-label racket/class))
 
 @title{Utilities}
 
@@ -79,5 +81,59 @@ every exercise.
     For @racket['CBC] and @racket['CTR] modes, the default @racket[iv] is @racket[(make-bytes 16 0)]
     and the default @racket[nonce] is @racket[0].
     }
+}
+
+@section{Randomness}
+
+@subsection{Mersenne Twister}
+
+@defmodule["util/mt19937.rkt"]
+
+@defclass[MT19937% object% ()]{
+
+Represents an instance of the Mersenne Twister PRNG.
+
+@defconstructor[([seed integer? random-number]
+                 [state vector? default-state])]{
+
+Creates an instance of MT19937 with the provided
+@racket[seed] or uses @racket[crypto-random-bytes]
+to generate a random seed.
+
+A malicious @racket[state] can be injected at the start
+to clone another instance of MT19937. Otherwise the
+@racket[default-state] is calculated from the seed.
+}
+
+@defmethod[(generate-number) integer?]{
+ Generates a random integer 
+}}
+
+@subsection{PKCS#7}
+
+@defmodule["util/pkcs7.rkt"]{
+   @defproc[(pkcs7-pad [bstr bytes?] [len integer? 16]) bytes?]{
+   Pads out the given byte string using PKCS#7 standard.
+   }
+   @defproc[(pkcs7-unpad [bstr bytes?] [len integer? 16]) bytes?]{
+   Unpads the given byte string that was padded with PKCS#7 and
+   performs validation.
+   }
+}
+
+@section{Public Key}
+
+@subsection{Diffie-Hellman}
+
+@defmodule["util/diffie-hellman.rkt"]{
+  @defproc[(diffie-hellman [p integer?] [g integer?]) (values integer? integer?)]{
+  Computes the Diffie-Hellman private, public (in that order) key pair from
+  the provided values for @racket[p] and @racket[g].
+ }
+
+  @defproc[(make-session-key [pub integer?] [priv integer?] [p integer?]) bytes?]{
+  Creates a session key from the public, private key pair from Diffie-Hellman.
+  (Note: the key pairs are B,a and A,b).
+ }
 }
 

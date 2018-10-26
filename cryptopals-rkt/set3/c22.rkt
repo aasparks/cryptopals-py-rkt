@@ -1,32 +1,44 @@
-#lang racket
-
-(require "c21.rkt")
+#lang racket/base
 
 ; Challenge 22
 ;; Crack an MT19937 seed
-
+(require racket/class
+         "../util/mt19937.rkt")
+(provide get-coffee
+         find-seed)
 (define DEBUG #false)
 
 #|
    Make sure your MT19937 accepts an integer seed value. Test it.
+
    Write a routine that performs the following operation:
     - Wait a random number of seconds betweeen 40 and 1000.
     - Seed the RNG with the current Unix timestamp
     - Wait a random number of seconds again.
     - Returns the first 32 bit output of the RNG.
-   You get the idea. From the 32 bit output, discover the seed.
+
+   You get the idea. Go get coffee while it runs. Or
+   just simulate the passage of time, although you're
+   missing some of the fun of this exercise if you do that.
+
+   From the 32 bit RNG output, discover the seed.
 |#
-; get-coffee : void -> (object . integer)
-;; waits a random amount of time then returns 
-(define (get-coffee)
+
+; get-coffee : boolean -> MT19937%
+;; waits a random amount of time then returns
+;; a PRNG seeded with the time. If test is true
+;; it just picks a random number and substracts that
+;; from the current time instead of sleeping
+(define (get-coffee [test #f])
   (printf "Getting coffee...\n")
-  (sleep (random 40 1000))
-  (define t (current-seconds))
-  (sleep (random 40 1000))
-  (define mt (new MT19937% [seed t]))
+  (unless test (sleep (random 40 1000)))
+  (define t (if test
+                (- (current-seconds) (random 40 1000))
+                (current-seconds)))
+  (unless test (sleep (random 40 1000)))
   (when DEBUG
     (printf "Using secret seed ~v\n" t))
-  (list mt (send mt generate-number)))
+  (new MT19937% [seed t]))
 
 ;; To find the seed, just take the current time and keep
 ;; trying backwards until there is a match.
@@ -39,12 +51,11 @@
 
 
 (module+ test
-  (require rackunit)
-
+  (require rackunit
+           "../util/test.rkt")
   ; get coffee
-  (define result (get-coffee))
-  (define actual-mt (first result))
-  (define first-num (second result))
+  (define actual-mt (get-coffee #true))
+  (define first-num (send actual-mt generate-number))
 
   ; find the seed
   (define found-seed (find-seed first-num))
@@ -57,6 +68,9 @@
 
   (check-equal? my-first first-num)
 
-  (for ([i (in-range 50)])
-    (check-equal? (send my-mt generate-number)
-                  (send actual-mt generate-number))))
+  (time-test
+   (test-suite
+    "Challenge 22"
+    (for ([i (in-range 50)])
+      (check-equal? (send my-mt generate-number)
+                    (send actual-mt generate-number))))))

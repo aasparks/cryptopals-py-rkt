@@ -1,8 +1,9 @@
-#lang racket
+#lang racket/base
 
 (require racket/random
-         "../sha1/sha1.rkt"
-         "../set1/c1.rkt"
+         racket/list
+         "../util/sha1.rkt"
+         "../util/conversions.rkt"
          "c28.rkt")
 ; Challenge 29
 ;; Break a SHA-1 Keyed MAC Using Length Extension
@@ -24,26 +25,42 @@
    forged message will need to include that padding. We call this
    "glue padding". The final message you actually forge will be:
      SHA1(key || original-message || glue-padding || new-message)
+
    (where the final padding on the whole constructed message is
    implied)
+
    Note that to generate the glue padding, you'll need to know the
    original bit length of the message; the message itself is known
    to the attacker, but the secret key isn't, so you'll need to guess
    at it.
-|#
 
-; this is known
-(define MESG #"comment1=cooking%20MCs;userdata=foo;comment2=%20like%20a%20pound%20of%20bacon")
-(define SUFF #";admin=true")
-
-#|
    This sounds more complicated than it is in practice.
 
    To implement the attack, first write the function that computes
    the MD padding of an arbitrary message and verify that you're
    generating the same padding that your SHA-1 implementation is using.
    This should take you 5-10 minutes.
+
+   Now take the SHA-1 secret-prefix MAC of the message you want to
+   forge --- this is just a SHA-1 hash --- and break it into 32-bit
+   SHA-1 registers.
+
+   Modify your SHA-1 implementation so that callers can pass in new
+   values for the registers (they normally start at magic numbers).
+   Whith the registers 'fixated', hash the additional data you want
+   to forge.
+     Note: this will be changed in "../../sha1/sha1.rkt"
+
+   Using this attack, generate a secret-prefix MAC under a secret
+   key (choose a random word) of the string
+    "comment1=cooking%20MCs;userdata=foo;comment2=%20like%20a%20pound%20of%20bacon"
+
+   Forge a variant of this message that ends with ";admin=true"
 |#
+
+; this is known
+(define MESG #"comment1=cooking%20MCs;userdata=foo;comment2=%20like%20a%20pound%20of%20bacon")
+(define SUFF #";admin=true")
 
 ; glue-padding
 ;; This works exactly like pre-process from my SHA-1 implementation.
@@ -70,11 +87,6 @@
   ; return the new message
   new-msg)
 
-#|
-   Now take the SHA-1 secret-prefix MAC of the message you want to
-   forge --- this is just a SHA-1 hash --- and break it into 32-bit
-   SHA-1 registers.
-|#
 ; forge-registers : bytes -> vector
 ;; convert the given message to SHA-1 registers vector
 (define (forge-registers message)
@@ -85,7 +97,7 @@
         (map list->bytes
              (split-list
               (bytes->list
-               (mac message)))))))
+               (sha1-mac message)))))))
 
 ; split-list : (listof bytes) integer -> (listof (listof bytes))
 ;; takes a list and splits into a list of lists of size n
@@ -94,18 +106,6 @@
     [(empty? lst) empty]
     [else (cons (take lst n)
                 (split-list (drop lst n) n))]))
-
-#|
-   Modify your SHA-1 implementation so that callers can pass in new
-   values for the registers (they normally start at magic numbers).
-   Whith the registers 'fixated', hash the additional data you want
-   to forge.
-     Note: this will be changed in "../../sha1/sha1.rkt"
-
-   Using this attack, generate a secret-prefix MAC under a secret
-   key (choose a random word) of the string
-    "comment1=cooking%20MCs;userdata=foo;comment2=%20like%20a%20pound%20of%20bacon"
-|#
 
 ; forge-mac : bytes bytes -> bytes
 ;; creates a valid mac for message || inject
@@ -126,9 +126,6 @@
     16)
    inject))
 
-#|
-   Forge a variant of this message that ends with ";admin=true"
-|#
 (module+ test
   (require rackunit)
 
@@ -138,4 +135,4 @@
          (bytes->list #"BEEF")))
 
   (check-equal? (ascii->hex (forge-mac MESG SUFF))
-                (ascii->hex (mac (forge-message MESG SUFF)))))
+                (ascii->hex (sha1-mac (forge-message MESG SUFF)))))

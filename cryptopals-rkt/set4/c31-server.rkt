@@ -4,9 +4,8 @@
          web-server/http
          web-server/http/bindings
          racket/random
-         "../set1/c1.rkt"
-         "../set1/c2.rkt"
-         "../sha1/sha1.rkt")
+         "../util/conversions.rkt"
+         "../util/sha1.rkt")
 
 ; This provides an http web server for the timing
 ; attack. However, every 5th or so packet, experiences
@@ -142,5 +141,5 @@
   (printf "~v\n" (ascii->hex (hmac KEY #"secret.txt"))))
  
 (serve/servlet start
-               #:port 4321
+               #:port 4444
                #:servlet-path "/filerequest")

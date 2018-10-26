@@ -1,10 +1,11 @@
-#lang racket
+#lang racket/base
 
 ; Challenge 33
 ;; Implement Diffie-Hellman
+
 (require racket/random
          math
-         "../sha1/sha1.rkt")
+         "../util/sha1.rkt")
 (provide diffie-hellman
          make-session-key)
 
@@ -18,21 +19,7 @@
    Generate "a", a random number mod 37. Now generate "A", which is
    "g" raised to the "a" power mod 37
        A = (g ** a) % p
-|#
 
-; diffie-hellman : integer integer -> integer integer
-;; does the diffie-hellman arithmetic and returns the two
-;; values created, a and A.
-(define (diffie-hellman [p 37] [g 5])
-  (define a (modulo
-             (integer-bytes->integer
-              (crypto-random-bytes 8)
-              #false)
-             p))
-  (define A (modular-expt g a p))
-  (values a A))
-
-#|
    Do the same for "b" and "B"
 
    "A" and "B" are public keys. Generate a session key with them;
@@ -43,16 +30,7 @@
 
    To turn "s" into a key, you can just hash it to create 128 bits
    of key material
-|#
-; make-session-key integer integer integer -> bytes
-;; generates a DH session key using the given numbers
-;; NOTE: this uses SHA-1, which may not be the best choice, but
-;; it's the only one I have implemented
-(define (make-session-key B a p)
-  (define s (modular-expt B a p))
-  (sha-1 (string->bytes/utf-8 (number->string s))))
 
-#|
    Ok, that was fun, now repeat the exercise with bignums like
    in the real world. Here are parameters NIST likes:
      p:
@@ -75,19 +53,41 @@
    power. You can find modexp routines on Rosetta Code for most
    languages.
 |#
+
+; diffie-hellman : integer integer -> integer integer
+;; does the diffie-hellman arithmetic and returns the
+;; private, public key pair
+(define (diffie-hellman p g)
+  (define a (modulo
+             (integer-bytes->integer
+              (crypto-random-bytes 8)
+              #false)
+             p))
+  (define A (modular-expt g a p))
+  (values a A))
+
+; make-session-key integer integer integer -> bytes
+;; generates a DH session key using the given numbers
+(define (make-session-key pub priv p)
+  (define s (modular-expt pub priv p))
+  (sha-1 (string->bytes/utf-8 (number->string s))))
+
 (module+ test
-  (require rackunit)
-  (define-values (p g) (values 37 5))
+  (require rackunit
+           "../util/test.rkt")
   ;; The first version from the walkthrough
-  (define-values (a A) (diffie-hellman p g))
-  (define-values (b B) (diffie-hellman p g))
-  (check-equal? (make-session-key B a p)
-                (make-session-key A b p))
+  (define test-1
+    (test-suite
+     "Test 1"
+     (let-values ([(a A) (diffie-hellman 37 5)]
+                  [(b B) (diffie-hellman 37 5)])
+       (check-equal? (make-session-key B a 37)
+                     (make-session-key A b 37)))))
 
   ;; Now with big numbers
   ;; I've always loved how Racket shines when it comes to big
   ;; numbers.
-  (set! p
+  (define p
         (string->number
          (string-append
           "#xffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024"
@@ -98,8 +98,14 @@
           "c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552"
           "bb9ed529077096966d670c354e4abc9804f1746c08ca237327fff"
           "fffffffffffff")))
-  (set! g 2)
-  (set!-values (a A) (diffie-hellman p g))
-  (set!-values (b B) (diffie-hellman p g))
-  (check-equal? (make-session-key B a p)
-                (make-session-key A b p)))
+  (define g 2)
+
+  (define test-2
+    (test-suite
+     "Test 2"
+     (let-values ([(a A) (diffie-hellman p g)]
+                  [(b B) (diffie-hellman p g)])
+       (check-equal? (make-session-key B a p)
+                     (make-session-key A b p)))))
+
+  (time-test (test-suite "Challenge 33" test-1 test-2)))

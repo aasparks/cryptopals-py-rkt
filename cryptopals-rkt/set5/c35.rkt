@@ -5,10 +5,10 @@
 ;; Break With Malicious "g" Parameters
 (require racket/random
          racket/async-channel
-         "c33.rkt"
-         "../set1/c1.rkt"
-         "../aes/aes.rkt"
-         "../set2/c9.rkt")
+         "../util/diffie-hellman.rkt"
+         "../util/conversions.rkt"
+         "../util/aes.rkt"
+         "../util/pkcs7.rkt")
 
 (define DEBUG #false)
 
@@ -25,6 +25,14 @@
      Send AES-CBC(SHA1(s)[0:16],iv=random(16),msg)+iv
    B->A
      Send AES-CBC(SHA1(s)[0:16],iv=random(16), A's msg)+iv
+
+   Do the MITM attack again, but play with "g".
+   What happens with:
+     g = 1
+     g = p
+     g = p - 1
+
+   Write atacks for each.
 |#
 ; alice : async-channel async-channel (listof bytes) integer integer
 ;; simulates communication with bob via async channels, using
@@ -52,22 +60,16 @@
      (map (λ (msg)
             ; A->B Send AES-CBC(key,iv,msg) + iv
             (define iv (crypto-random-bytes 16))
-            (define enc-msg (aes-128-cbc-encrypt
+            (define enc-msg (aes-128-encrypt
                              (pkcs7-pad msg)
-                             key
-                             iv))
+                             key iv #:mode 'cbc))
             (when DEBUG
               (printf "ALICE: msg: ~v\n" msg))
             (async-channel-put to-bob (bytes-append iv enc-msg))
             ; B->A Send AES-CBC(key,iv,msg) + iv
             (define echo (async-channel-get from-bob))
             (when (not echo) (error 'alice "no echo from bob"))
-            (define dec-echo
-              (pkcs7-unpad
-               (aes-128-cbc-decrypt
-                (subbytes echo 16)
-                key
-                (subbytes echo 0 16))))
+            (define dec-echo (decryption-oracle echo key))
             (when DEBUG
               (printf "ALICE: echo: ~v\n" dec-echo))
             (when (not (equal? dec-echo msg)) (error 'alice "wrong echo from bob"))
@@ -100,30 +102,15 @@
        ; A->B Send AES-CBC(txt,key,iv) + iv
        (define enc-msg (sync/timeout 0.5 from-alice))
        (when enc-msg
-         (define msg
-           (pkcs7-unpad
-            (aes-128-cbc-decrypt
-             (subbytes enc-msg 16)
-             key
-             (subbytes enc-msg 0 16))))
+         (define msg (decryption-oracle enc-msg key))
          (define iv (crypto-random-bytes 16))
          (define echo
-           (aes-128-cbc-encrypt
+           (aes-128-encrypt
             (pkcs7-pad msg)
-            key
-            iv))
+            key iv #:mode 'cbc))
          (async-channel-put to-alice (bytes-append iv echo))
          (loop))))))
 
-#|
-   Do the MITM attack again, but play with "g".
-   What happens with:
-     g = 1
-     g = p
-     g = p - 1
-
-   Write atacks for each.
-|#
 ; mallory : async-channel async-channel async-channel async-channel
 (define (mallory to-alice to-bob from-alice from-bob)
   ; A->M Send p,g
@@ -155,19 +142,18 @@
           (async-channel-put to-alice (async-channel-get from-bob))
           (cons
            (with-handlers ([exn:fail?
-                            (λ (e) (pkcs7-unpad
-                                    (aes-128-cbc-decrypt
-                                     (subbytes enc-msg 16)
-                                     alt-key
-                                     (subbytes enc-msg 0 16))))])
-             (pkcs7-unpad
-              (aes-128-cbc-decrypt
-               (subbytes enc-msg 16)
-               key
-               (subbytes enc-msg 0 16))))
+                            (λ (e) (decryption-oracle enc-msg alt-key))])
+             (decryption-oracle enc-msg key))
            (loop)))
-        empty))
-  )
+        empty)))
+
+;; just to keep the code clean
+(define (decryption-oracle txt key)
+  (pkcs7-unpad
+   (aes-128-decrypt
+    (subbytes txt 16)
+    key #:mode 'cbc
+    (subbytes txt 0 16))))
 
 (module+ test
   (require rackunit)

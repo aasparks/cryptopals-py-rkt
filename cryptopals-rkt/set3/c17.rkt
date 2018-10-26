@@ -1,13 +1,13 @@
-#lang racket
+#lang racket/base
 
 ; Challenge 17
 ;; The CBC padding oracle
 
 (require racket/random
-         "../aes/aes.rkt"
-         "../set2/c9.rkt"
-         "../set1/c1.rkt"
-         "../set1/c2.rkt")
+         racket/list
+         "../util/aes.rkt"
+         "../util/pkcs7.rkt"
+         "../util/conversions.rkt")
 
 #|
    This is the best-known attack on modern block-cipher cryptography.
@@ -19,59 +19,11 @@
    of the following strings, generate a random AES
    key (and save it), pad the string, and CBC
    encrypt it under that key.
-|#
 
-(define KEY (crypto-random-bytes 16))
-(define IV (crypto-random-bytes 16))
-(define STRS (vector-immutable
-              #"MDAwMDAwTm93IHRoYXQgdGhlIHBhcnR5IGlzIGp1bXBpbmc="
-              #"MDAwMDAxV2l0aCB0aGUgYmFzcyBraWNrZWQgaW4gYW5kIHRoZSBWZWdhJ3MgYXJlIHB1bXBpbic="
-              #"MDAwMDAyUXVpY2sgdG8gdGhlIHBvaW50LCB0byB0aGUgcG9pbnQsIG5vIGZha2luZw=="
-              #"MDAwMDAzQ29va2luZyBNQydzIGxpa2UgYSBwb3VuZCBvZiBiYWNvbg=="
-              #"MDAwMDA0QnVybmluZyAnZW0sIGlmIHlvdSBhaW4ndCBxdWljayBhbmQgbmltYmxl"
-              #"MDAwMDA1SSBnbyBjcmF6eSB3aGVuIEkgaGVhciBhIGN5bWJhbA=="
-              #"MDAwMDA2QW5kIGEgaGlnaCBoYXQgd2l0aCBhIHNvdXBlZCB1cCB0ZW1wbw=="
-              #"MDAwMDA3SSdtIG9uIGEgcm9sbCwgaXQncyB0aW1lIHRvIGdvIHNvbG8="
-              #"MDAwMDA4b2xsaW4nIGluIG15IGZpdmUgcG9pbnQgb2g="
-              #"MDAwMDA5aXRoIG15IHJhZy10b3AgZG93biBzbyBteSBoYWlyIGNhbiBibG93"))
+   The second function should consume the ciphertext produced by
+   the first function, decrypt it, check its padding, and return
+   true or false depending on whether the padding is valid.
 
-; encryption-oracle : void -> bytes
-;; encrypts a random string under CBC
-(define (encryption-oracle)
-  (bytes-append
-   IV
-   (aes-128-cbc-encrypt
-    (pkcs7-pad
-     (base64->ascii (random-ref STRS)))
-    KEY
-    IV)))
-
-#|
-  The second function should consume the ciphertext produced by
-  the first function, decrypt it, check its padding, and return
-  true or false depending on whether the padding is valid.
-|#
-; decryption-oracle : bytes -> boolean
-;; determines if the padding is valid for the given ciphertext
-(define (decryption-oracle ct)
-  (with-handlers ([exn:fail? (λ (v) #false)])
-      (begin
-        (pkcs7-unpad
-         (aes-128-cbc-decrypt ct KEY IV))
-        #true)))
-
-; debug-printf : any [string] #:to-hex -> any
-;; printf and return a value
-(define (debug-printf value [preface ""] #:to-hex [to-hex #f])
-  (begin
-    (printf "~v ~v\n"
-            preface
-            (if to-hex
-                (ascii->hex value)
-                value))
-    value))
-
-#|
    It turns out it's possible to decrypt the ciphertexts provided
    by the first function.
 
@@ -100,6 +52,38 @@
    on any CBC block, whether it's padded or not.
 |#
 
+(define KEY (crypto-random-bytes 16))
+(define IV (crypto-random-bytes 16))
+(define STRS (vector-immutable
+              #"MDAwMDAwTm93IHRoYXQgdGhlIHBhcnR5IGlzIGp1bXBpbmc="
+              #"MDAwMDAxV2l0aCB0aGUgYmFzcyBraWNrZWQgaW4gYW5kIHRoZSBWZWdhJ3MgYXJlIHB1bXBpbic="
+              #"MDAwMDAyUXVpY2sgdG8gdGhlIHBvaW50LCB0byB0aGUgcG9pbnQsIG5vIGZha2luZw=="
+              #"MDAwMDAzQ29va2luZyBNQydzIGxpa2UgYSBwb3VuZCBvZiBiYWNvbg=="
+              #"MDAwMDA0QnVybmluZyAnZW0sIGlmIHlvdSBhaW4ndCBxdWljayBhbmQgbmltYmxl"
+              #"MDAwMDA1SSBnbyBjcmF6eSB3aGVuIEkgaGVhciBhIGN5bWJhbA=="
+              #"MDAwMDA2QW5kIGEgaGlnaCBoYXQgd2l0aCBhIHNvdXBlZCB1cCB0ZW1wbw=="
+              #"MDAwMDA3SSdtIG9uIGEgcm9sbCwgaXQncyB0aW1lIHRvIGdvIHNvbG8="
+              #"MDAwMDA4b2xsaW4nIGluIG15IGZpdmUgcG9pbnQgb2g="
+              #"MDAwMDA5aXRoIG15IHJhZy10b3AgZG93biBzbyBteSBoYWlyIGNhbiBibG93"))
+
+; encryption-oracle : void -> bytes
+;; encrypts a random string under CBC
+(define (encryption-oracle)
+  (bytes-append
+   IV
+   (aes-128-encrypt
+    (pkcs7-pad (base64->ascii (random-ref STRS)))
+    KEY IV #:mode 'cbc)))
+
+; decryption-oracle : bytes -> boolean
+;; determines if the padding is valid for the given ciphertext
+(define (decryption-oracle ct)
+  (with-handlers ([exn:fail? (λ (v) #false)])
+      (begin
+        (pkcs7-unpad
+         (aes-128-decrypt ct KEY IV #:mode 'cbc))
+        #true)))
+
 ; cbc-padding-attack : bytes -> bytes
 ;; does the padding oracle attack
 ;; fold turns out to be the most useful function here
@@ -107,17 +91,17 @@
 ;; appending the result
 (define (cbc-padding-attack txt)
   (pkcs7-unpad
-   (foldl
+   (foldr
     (λ (i plaintext)
       (bytes-append (attack-block txt i)
                     plaintext))
     #""
-    (reverse (range 1 (/ (bytes-length txt) 16))))))
+    (range 1 (/ (bytes-length txt) 16)))))
 
 ; attack-block : bytes integer -> bytes
 ;; uses the padding attack for one block of the ciphertext
 (define (attack-block txt block-num)
-  (foldl
+  (foldr
    (λ (byte-num plaintext)
      (bytes-append
       (attack-byte
@@ -127,7 +111,7 @@
        plaintext)
       plaintext))
    #"" 
-   (reverse (range 16))))
+   (range 16)))
 
 ; attack-byte : bytes bytes integer bytes -> bytes
 ;; recursively try each byte until we find what we want
@@ -177,8 +161,13 @@
                 block))
 
 (module+ test
-  (require rackunit)
+  (require rackunit
+           "../util/test.rkt")
   (random-seed 0)
   (define expected #"000003Cooking MC's like a pound of bacon")
-  (define actual (cbc-padding-attack (encryption-oracle)))
-  (check-equal? actual expected))
+  
+  (time-test
+   (test-suite
+    "Challenge 17"
+    (check-equal? (cbc-padding-attack (encryption-oracle))
+                  expected))))

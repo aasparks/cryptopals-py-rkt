@@ -1,12 +1,12 @@
-#lang racket
+#lang racket/base
 
 ; Challenge 11
 ;; An ECB/CBC Detection Oracle
 (require racket/random
-         "c9.rkt"
-         "c10.rkt"
-         "../aes/aes.rkt"
-         "../set1/c1.rkt"
+         racket/list
+         "../util/conversions.rkt"
+         "../util/aes.rkt"
+         "../util/pkcs7.rkt"
          "../set1/c8.rkt")
 
 #|
@@ -44,39 +44,38 @@
 (define (encryption-oracle txt)
   (define key (crypto-random-bytes 16))
   (define ecb (random-ref (list #t #f)))
+  ; log for testing
   (set-box! expected (flatten (list (unbox expected) ecb)))
   (define pre (crypto-random-bytes (random 5 11)))
   (define post (crypto-random-bytes (random 5 11)))
-  (if ecb
-      (aes-128-ecb-encrypt
-       (pkcs7-pad
-        (bytes-append pre txt post))
-       key)
-      (aes-128-cbc-encrypt
-       (pkcs7-pad
-        (bytes-append pre txt post))
-       key
-       (crypto-random-bytes 16))))
+  (define pt (pkcs7-pad (bytes-append pre txt post)))
+  (aes-128-encrypt pt key #:mode (if ecb 'ecb 'cbc)))
 
 ; ecb-or-cbc : bytes -> boolean
 ;; returns true if the ciphertext was encrypted using
 ;; ECB mode and false if CBC 
-(define (ecb-or-cbc txt)
-  (is-ecb? (encryption-oracle txt)))
+(define ecb-or-cbc is-ecb?)
 
 (module+ test
-  (require rackunit)
+  (require rackunit
+           racket/file
+           "../util/test.rkt")
 
   ;; we'll use this plaintext so it is sufficiently long
   (define test-key #"YELLOW SUBMARINE")
   (define test-iv (make-bytes 16 0))
   (define pt
-    (aes-128-cbc-decrypt
+    (aes-128-decrypt
      (base64->ascii (file->bytes "../../testdata/10.txt"))
      test-key
-     test-iv))
-  ; run it 50 times
-  (define actual
-    (for/list ([i (in-range 50)])
-      (ecb-or-cbc pt)))
-  (check-equal? actual (unbox expected)))
+     test-iv
+     #:mode 'cbc))
+
+  (define challenge-11
+    (test-suite
+     "Challenge 11"
+    (check-equal?
+     (for/list ([i (in-range 50)]) ; run 50 times
+       (ecb-or-cbc (encryption-oracle pt)))
+     (unbox expected))))
+  (time-test challenge-11))

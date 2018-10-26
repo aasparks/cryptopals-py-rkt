@@ -4,10 +4,10 @@
 ;; Implement a MITM Key-Fixing Attack
 ;; on Diffie-Hellman with Parameter Injection
 (require racket/random
-         "c33.rkt"
-         "../set1/c1.rkt"
-         "../aes/aes.rkt"
-         "../set2/c9.rkt")
+         "../util/diffie-hellman.rkt"
+         "../util/conversions.rkt"
+         "../util/aes.rkt"
+         "../util/pkcs7.rkt")
 
 (define DEBUG #false)
 
@@ -27,95 +27,7 @@
    (In other words, derive an AES key from DH with SHA1, use it
    in both directions, and do CBC with random IVs appended or
    prepended to the message.
-|#
-; alice -> channel channel (listof bytes) -> void
-;; simulates alice by sending the list of messages
-;; to the receiver and getting the values echo'd back
-;; by the sender.
-(define (alice sender receiver messages)
-  (thread
-   (λ ()
-     (define p (string->number
-                (string-append
-                 "#xffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024"
-                 "e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd"
-                 "3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec"
-                 "6f44c42e9a637ed6b0bff5cb6f406b7edee386bfb5a899fa5ae9f"
-                 "24117c4b1fe649286651ece45b3dc2007cb8a163bf0598da48361"
-                 "c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552"
-                 "bb9ed529077096966d670c354e4abc9804f1746c08ca237327fff"
-                 "fffffffffffff")))
-     (define g 2)
-     (define-values (a A) (diffie-hellman p g))
-     #;(when DEBUG
-       (printf "ALICE: a: ~v A: ~v\n" a A))
-     (channel-put receiver (list p g A))
-     (define B (channel-get sender))
-     #;(when DEBUG
-       (printf "ALICE: B: ~v\n" B))
-     (define session-key (make-session-key B a p))
-     (define key (subbytes session-key 0 16))
-     #;(when DEBUG
-       (printf "ALICE: key: ~v\n" (ascii->hex key)))
-     (map (λ (msg)
-            (when DEBUG
-              (printf "ALICE: msg: ~v\n" msg))
-            ; encrypt the message and send it
-            (define iv (crypto-random-bytes 16))
-            (define e-msg (bytes-append
-                           iv
-                           (aes-128-cbc-encrypt (pkcs7-pad msg) key iv)))
-            (channel-put receiver e-msg)
-            ; receive the echo and decrypt it
-            (define echo (channel-get sender))
-            (define d-echo (pkcs7-unpad
-                            (aes-128-cbc-decrypt
-                             (subbytes echo 16) ; msg
-                             key
-                             (subbytes echo 0 16)))) ; iv
-            ; verify equality just because
-            (when (not (equal? msg d-echo))
-              (error 'alice
-                     "The echo ~v did not match the msg ~v\n"
-                     d-echo msg))
-            (when DEBUG
-              (printf "ALICE: echo: ~v\n" d-echo)))
-          messages)
-     (void))))
 
-; bob : channel channel -> void
-;; simulates bob by echoing messages from alice
-(define (bob sender receiver)
-  (thread
-   (λ ()
-     (define-values (p g A) (apply values (channel-get sender)))
-     #;(when DEBUG
-       (printf "BOB: p: ~v\ng: ~v\nA: ~v\n" p g A))
-     (define-values (b B) (diffie-hellman p g))
-     (channel-put receiver B)
-     #;(when DEBUG
-       (printf "BOB: B: ~v\n" B))
-     (define session-key (make-session-key A b p))
-     (define key (subbytes session-key 0 16))
-     #;(when DEBUG
-       (printf "BOB: key: ~v\n" (ascii->hex key)))
-     (let loop ()
-       (define iv (crypto-random-bytes 16))
-       (define e-msg (sync/timeout 3 sender))
-       (when e-msg
-         (define msg (pkcs7-unpad
-                      (aes-128-cbc-decrypt
-                       (subbytes e-msg 16) ; msg
-                       key
-                       (subbytes e-msg 0 16))))
-         (define echo (bytes-append
-                       iv
-                       (aes-128-cbc-encrypt (pkcs7-pad msg) key iv)))
-         (channel-put receiver echo)
-         (loop)) ; loop until messages stop
-       (void)))))
-
-#|
    Now implement the following MITM attack:
      A->M
        Send "p", "g", "A"
@@ -150,6 +62,84 @@
    up again.
 |#
 
+; alice -> channel channel (listof bytes) -> void
+;; simulates alice by sending the list of messages
+;; to the receiver and getting the values echo'd back
+;; by the sender.
+(define (alice sender receiver messages)
+  (thread
+   (λ ()
+     (define p (string->number
+                (string-append
+                 "#xffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024"
+                 "e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd"
+                 "3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec"
+                 "6f44c42e9a637ed6b0bff5cb6f406b7edee386bfb5a899fa5ae9f"
+                 "24117c4b1fe649286651ece45b3dc2007cb8a163bf0598da48361"
+                 "c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552"
+                 "bb9ed529077096966d670c354e4abc9804f1746c08ca237327fff"
+                 "fffffffffffff")))
+     (define g 2)
+     (define-values (a A) (diffie-hellman p g))
+     (channel-put receiver (list p g A))
+     (define B (channel-get sender))
+     (define session-key (make-session-key B a p))
+     (define key (subbytes session-key 0 16))
+     (map (λ (msg)
+            (when DEBUG
+              (printf "ALICE: msg: ~v\n" msg))
+            ; encrypt the message and send it
+            (define iv (crypto-random-bytes 16))
+            (define e-msg (bytes-append
+                           iv
+                           (aes-128-encrypt
+                            (pkcs7-pad msg) key iv #:mode 'cbc)))
+            (channel-put receiver e-msg)
+            ; receive the echo and decrypt it
+            (define echo (channel-get sender))
+            (define d-echo (pkcs7-unpad
+                            (aes-128-decrypt
+                             (subbytes echo 16) ; msg
+                             key
+                             (subbytes echo 0 16) ; iv
+                             #:mode 'cbc))) 
+            ; verify equality just because
+            (when (not (equal? msg d-echo))
+              (error 'alice
+                     "The echo ~v did not match the msg ~v\n"
+                     d-echo msg))
+            (when DEBUG
+              (printf "ALICE: echo: ~v\n" d-echo)))
+          messages)
+     (void))))
+
+; bob : channel channel -> void
+;; simulates bob by echoing messages from alice
+(define (bob sender receiver)
+  (thread
+   (λ ()
+     (define-values (p g A) (apply values (channel-get sender)))
+     (define-values (b B) (diffie-hellman p g))
+     (channel-put receiver B)
+     (define session-key (make-session-key A b p))
+     (define key (subbytes session-key 0 16))
+     (let loop ()
+       (define iv (crypto-random-bytes 16))
+       (define e-msg (sync/timeout 3 sender))
+       (when e-msg
+         (define msg (pkcs7-unpad
+                      (aes-128-decrypt
+                       (subbytes e-msg 16) ; msg
+                       key #:mode 'cbc
+                       (subbytes e-msg 0 16))))
+         (define echo (bytes-append
+                       iv
+                       (aes-128-encrypt
+                        (pkcs7-pad msg) key iv #:mode 'cbc)))
+         (channel-put receiver echo)
+         (loop)) ; loop until messages stop
+       (void)))))
+
 ; mallory : channel channel -> (listof bytes)
 ;; simulates mallory by executing the MITM attack
 ;; and returning all the messages alice sent
@@ -179,9 +169,9 @@
         (begin
           (channel-put bob a-msg)
           (let ([msg (pkcs7-unpad
-                      (aes-128-cbc-decrypt
+                      (aes-128-decrypt
                        (subbytes a-msg 16) ; msg
-                       key
+                       key #:mode 'cbc
                        (subbytes a-msg 0 16)))]
                 [b-msg (sync/timeout 0.1 from-bob)])
             (channel-put alice b-msg)

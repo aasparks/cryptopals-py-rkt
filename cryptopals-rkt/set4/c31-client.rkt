@@ -2,8 +2,7 @@
 
 ; Challenge 31
 ;; Implement and Break HMAC-SHA1 with an Artificial Timing Leak
-(require "c28.rkt"
-         "../set1/c1.rkt"
+(require "../util/conversions.rkt"
          net/http-client)
 
 ; This file is the client side to be paired with c31-server.
@@ -13,12 +12,12 @@
 ; because.
 
 (define DEBUG #true)
-(define DELAY 0.05)
+(define DELAY (/ 50 1000))
 ; open-connection : void -> http-conn
 ;; opens a connection to localhost at port 4321
 (define (open-connection)
   (http-conn-open "localhost"
-                  #:port 4321
+                  #:port 4444
                   #:auto-reconnect? #t))
 
 ; close-connection : http-conn -> void
@@ -41,9 +40,9 @@
 (define (timeit f lst)
   ; so it turns out time-apply is vastly more accurate than
   ; using current-inexact-milliseconds
-  (define-values (res t-time r-time g-time)
+  (define-values (res cpu real garbage)
     (time-apply f lst))
-  r-time)
+  (exact->inexact (/ cpu 1000)))
 
 ; timing-attack : void -> bytes
 ;; executes the timing attack on the fake server
@@ -81,7 +80,7 @@
                 (list mac)))
       (when DEBUG
         (printf "MAC: ~v---~v//~v\n"
-                (ascii->hex (bytes i)) t expected-lag))
+                (ascii->hex (bytes-append known-bytes (bytes i))) t expected-lag))
       #:final (>= t expected-lag)
       i))
   (when DEBUG

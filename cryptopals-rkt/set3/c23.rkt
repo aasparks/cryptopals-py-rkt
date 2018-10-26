@@ -1,19 +1,38 @@
-#lang racket
+#lang racket/base
 
 ; Challenge 23
 ;; Clone an MT19937 RNG from its output
+(require racket/class
+         "../util/mt19937.rkt")
+(provide clone-mt19937)
 
 #|
    The internal state of MT19937 consists of 624 32 bit integers.
+
    For each batch of 624 outputs, MT permutes that internal state.
    By permuting state regularly, MT19937 achievs a period of
    2^19937, which is Big.
+
    Each time MT19937 is tapped, an element of its internal state
    is subjected to a tempering function that diffuses bits through
    the result.
+
    The tempering function is invertible; you can write an untemper
    function that takes an MT19937 output and transforms it back into
    the corresponding element of the MT19937 state array.
+
+   To invert the temper transform, apply the inverse of each of the
+   operations in the temper transform in reverse order. There are two kinds
+   of operations in the temper transform each applied twice; one is an XOR
+   against a right-shifted value, and the other is an XOR against a left-shifted
+   value AND'd with a magic number. So you'll need code to invert the "right"
+   and the "left" operation.
+
+   Once you have untemper working, create a new MT19937 generator, tap it for
+   624 outputs, untemper each of them to recreate the state of the generator,
+   and splice that state into a new instance of the MT19937 generator.
+
+   The new spliced generator should predict the values of the original.
 |#
 
 ; useful constants
@@ -35,14 +54,6 @@
     S B)
    U))
 
-#|
-   To invert the temper transform, apply the inverse of each of the
-   operations in the temper transform in reverse order. There are two kinds
-   of operations in the temper transform each applied twice; one is an XOR
-   against a right-shifted value, and the other is an XOR against a left-shifted
-   value AND'd with a magic number. So you'll need code to invert the "right"
-   and the "left" operation.
-|#
 ; Unbitshift functions taken from
 ; https://jazzy.id.au/2010/09/22/cracking_random_number_generators_part_3.html
 ; and ported to Racket
@@ -88,31 +99,29 @@
 (define (rlshift value n)
   (arithmetic-shift (modulo value #x100000000) (- n)))
 
-#|
-   Once you have untemper working, create a new MT19937 generator, tap it for
-   624 outputs, untemper each of them to recreate the state of the generator,
-   and splice that state into a new instance of the MT19937 generator.
-   The new spliced generator should predict the values of the original.
-|#
-
-(module+ test
-  (require rackunit)
-  (require "c21.rkt")
-  ; create number generator
-  (define mt (new MT19937% [seed 1131464071]))
-  ; extract the state by untempering 624 numbers
+; clone-mt19937 : MT19937% -> MT19937%
+;; Clones an MT19937 from 624 outputs
+(define (clone-mt19937 mt)
   (define extracted-state
     (apply vector
-           (map untemper
-                (for/list ([i (in-range 624)])
-                  (send mt generate-number)))))
-  ; insert the new state into a new generator
-  (define new-mt (new MT19937% [seed 0]))
-  (send new-mt set-state extracted-state)
+           (for/list ([i (in-range 624)])
+             (untemper (send mt generate-number)))))
+  (new MT19937% [state extracted-state]))
+
+(module+ test
+  (require rackunit
+           "../util/test.rkt")
+  ; create number generator
+  (define mt (new MT19937% [seed 1131464071]))
+  (define new-mt (clone-mt19937 mt))
   ; check that the generators make the same numbers for the next
   ; 50 runs
-  (for ([i (in-range 50)])
-    (check-equal? (send mt generate-number) (send new-mt generate-number))))
+  (time-test
+   (test-suite
+    "Challenge 23"
+    (for ([i (in-range 50)])
+      (check-equal? (send mt generate-number)
+                    (send new-mt generate-number))))))
 
 
 

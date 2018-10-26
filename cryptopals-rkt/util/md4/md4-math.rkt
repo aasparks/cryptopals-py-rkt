@@ -1,8 +1,8 @@
-#lang racket
+#lang racket/base
 
 #| This file contains the math functions
    needed by MD4|#
-
+(require racket/vector)
 (provide (all-defined-out))
 
 ;;; We first define three auxiliary functions

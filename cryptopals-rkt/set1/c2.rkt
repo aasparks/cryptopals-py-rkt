@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 ; Challenge 2
 ;; Fixed XOR

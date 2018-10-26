@@ -37,11 +37,7 @@ so far.
 ### TODO:
 * Compile most-used functions into 'util' files and use that way.
 * Try to optimize the challenges that are slow in Racket
-  * Challenge 12
-  * Challenge 14
   * Challenge 31 & 32
-* Rewrite Racket solutions to be less imperative
-  * Challenge 21
 
 ### Completed Tasks
 * Convert Python solutions to Python3.
@@ -58,6 +54,14 @@ so far.
     * Challenges 3-6
         * Saw MASSIVE speed improvement with this one. My original solutions were doing
         all sorts of bad things. The new solutions are much cleaner and faster.
+    * Challenge 12 & 14
+        * <span style="color:red">I still can't figure this one out. The speed difference is insane. 0.3s in Python to
+          about 90s in Racket. The only differences I see are that Racket uses recursion instead
+          of for loops (which shouldn't be a problem) and my own AES implementation is slower
+          (but not THAT much slower), so I'm at a loss.</span>
+* Rewrite Racket solutions to be less imperative
+  * Challenge 21
+    * Not sure about speed, but it does look nicer. No more unnecessary uses of ```set!```.
 
 ## Challenges
 

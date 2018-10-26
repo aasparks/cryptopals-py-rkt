@@ -3,13 +3,14 @@
 ; Challenge 26
 ;; CTR Bitflipping
 (require racket/random
-         "../aes/aes.rkt"
-         "../set1/c2.rkt"
-         "../set2/c9.rkt")
+         "../util/aes.rkt"
+         "../util/pkcs7.rkt"
+         "../util/conversions.rkt")
 
 #|
    There are people in the world that believe that CTR resists bit
    flipping attacks of the kind to which CBC mode is susceptible.
+
    Re-implement the CBC bitflipping exercise from earlier to use CTR
    mode instead of CBC mode. Inject an "admin=true" token.
 |#
@@ -28,7 +29,7 @@
      (remove #\;
              (remove #\= (bytes->list txt)))))
   (define input (bytes-append PRE sanitized POST))
-  (aes-128-ctr input KEY 0)) ;this is CTR now
+  (aes-128-encrypt input KEY 0 #:mode 'ctr)) ;this is CTR now
 
 ; is-admin? : bytes -> boolean
 ;; Decryption function
@@ -36,8 +37,7 @@
 (define (is-admin? ct)
   (string-contains?
    (bytes->string/latin-1 ; because the block gets scrambled, it isn't a well-formed utf-8
-     (aes-128-ctr
-      ct KEY 0))
+    (aes-128-encrypt ct KEY 0 #:mode 'ctr))
    ";admin=true;"))
 
 
@@ -77,5 +77,8 @@
 
 
 (module+ test
-  (require rackunit)
-  (check-true (ctr-bitflip)))
+  (require rackunit
+           "../util/test.rkt")
+  (time-test
+   (test-suite "Challenge 26"
+               (check-true (ctr-bitflip)))))

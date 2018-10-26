@@ -1,12 +1,14 @@
-#lang racket
-
-(require "../util/conversions.rkt"
-         "c3.rkt")
-(provide hamming-distance
-         break-repeating-key)
+#lang racket/base
 
 ; Challenge 6
 ;; Break Repeating-key XOR
+
+(require "../util/conversions.rkt"
+         "c3.rkt"
+         racket/list
+         racket/file)
+(provide hamming-distance
+         break-repeating-key)
 
 #|
    There's a file here. It's been base64'd after being

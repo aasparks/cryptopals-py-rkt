@@ -2,9 +2,8 @@
 
 ; Challenge 31
 ;; Implement and Break HMAC-SHA1 with an Artificial Timing Leak
-(require "../sha1/sha1.rkt"
-         "../set1/c1.rkt"
-         "../set1/c2.rkt"
+(require "../util/sha1.rkt"
+         "../util/conversions.rkt"
          racket/random)
 
 (define DEBUG #true)

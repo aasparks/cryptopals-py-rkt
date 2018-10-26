@@ -1,13 +1,12 @@
 #lang racket
 
-(require racket/random
-         "../aes/aes.rkt"
-         "c9.rkt"
-         "../set1/c1.rkt")
-
 ; Challenge 14
 ;; Byte-at-a-time ECB decryption (Harder)
-
+(require racket/random
+         racket/list
+         "../util/aes.rkt"
+         "../util/pkcs7.rkt"
+         "../util/conversions.rkt")
 #|
   Take your oracle from challenge 12. Now generate
   a random count of random bytes and prepend this string
@@ -29,7 +28,7 @@
 ;; encrypts the given text under a secret key with
 ;; a secret random prefix and a suffix
 (define (encryption-oracle txt)
-  (aes-128-ecb-encrypt
+  (aes-128-encrypt
    (pkcs7-pad
     (bytes-append PREFIX
                   txt
@@ -173,8 +172,13 @@
 
 
 (module+ test
-  (require rackunit)
+  (require rackunit
+           "../util/test.rkt")
   (check-equal? (get-prefix-size)
                 (bytes-length PREFIX))
-  (check-equal? (pkcs7-unpad (decode-secret))
-                (base64->ascii SUFFIX)))
+  (define challenge-14
+    (test-suite
+     "Challenge 14"
+     (check-equal? (pkcs7-unpad (decode-secret))
+                   (base64->ascii SUFFIX))))
+  (time-test challenge-14))

@@ -1,11 +1,16 @@
-#lang racket
+#lang racket/base
 
 ; Challenge 24
 ;; Create the MT19937 stream cipher and break it
-(require
-  racket/random
-  "../set1/c2.rkt"
-  "c21.rkt")
+
+(require racket/random
+         racket/class
+         "../util/conversions.rkt"
+         "../util/mt19937.rkt")
+(provide encryption-oracle
+         get-seed
+         reset-token
+         check-token)
 
 #|
     You can create a trivial stream cipher out of any PRNG; use it to
@@ -15,9 +20,20 @@
     Write the function that does this for MT19937 using a 16-bit seed.
     Verify that you can encrypt and decrypt properly. This code should  look
     similar to your CTR code.
+
+   Use your function to encrypt a known plaintext prefixed by a random
+   number of random characters.
+
+   From the ciphertext, recover the 'key' (seed)
+
+   Use the same idea to generate a random 'password reset token' using
+   MT19937 seeded from the current time.
+
+   Write a function to check if any given password token is actually
+   the product of an MT19937 PRNG seeded with the current time.
 |#
 
-; encrypt: bytes bytes -> bytes
+; encrypt: bytes integer -> bytes
 ;; encrypts the pt under the key using MT19937 as a stream cipher
 (define (encrypt pt key)
   (define mt (new MT19937% [seed key]))
@@ -34,32 +50,25 @@
 (define (decrypt ct key)
   (encrypt ct key))
 
-#|
-   Use your function to encrypt a known plaintext prefixed by a random
-   number of random characters.
-   From the ciphertext, recover the 'key' (seed).
-|#
+; encryption-oracle: bytes -> bytes
+;; encrypts a plaintext with a prefixed with
+;; random bytes
+(define KEY 234)
+(define (encryption-oracle pt)
+  (encrypt
+   (bytes-append (crypto-random-bytes (random 20)) pt)
+   KEY))
 
 ; get-seed: void -> integer
 ;; get the key from a known plaintext 
 (define (get-seed)
   (define orig #"AAAAAAAAAAAAAA")
-  (define txt
-    (encrypt
-     (bytes-append
-      (crypto-random-bytes (random 20))
-      orig)
-     243))
-   (for/last ([i (in-range (expt 2 16))]
-              #:final (let ([ct (decrypt txt i)])
-                        (bytes=? orig
-                                 (subbytes ct (- (bytes-length ct) 14) (bytes-length ct)))))
+  (define ctxt (encryption-oracle orig))
+  (for/last ([i (in-range (expt 2 16))])
+    (define txt (decrypt ctxt i))
+    (define txt-len (bytes-length txt))
+    #:final (bytes=? orig (subbytes txt (- txt-len 14) txt-len))
     i))
-
-#|
-   Use the same idea to generate a random 'password reset token' using
-   MT19937 seeded from the current time.
-|#
 
 ; reset-token: void -> bytes
 ;; generate a reset token using MT19937 seeded with the current time
@@ -68,11 +77,6 @@
   (list->bytes
    (for/list ([i (in-range 6)])
      (bitwise-and (send mt generate-number) #xFF))))
-
-#|
-   Write a function to check if any given password token is actually
-   the product of an MT19937 PRNG seeded with the current time.
-|#
 
 ; check-token: bytes -> boolean
 ;; determines if a token was created by seeding MT19937
@@ -88,12 +92,19 @@
     (bytes=? tok token)))
 
 (module+ test
-  (require rackunit)
+  (require rackunit
+           "../util/test.rkt")
   (define secret #"Attack at dawn")
   (define key 123)
-  (check-equal? (decrypt (encrypt secret key) key) secret)
-  (check-equal? (get-seed) 243)
+  (time-test
+   (test-suite
+    "Part 1"
+    (check-equal? (decrypt (encrypt secret key) key) secret)
+    (check-equal? (get-seed) 234)))
   (define tok (reset-token))
   (sleep 0.25)
-  (check-true (check-token tok))
-  (check-false (check-token #"123456")))
+  (time-test
+   (test-suite
+    "Part 2"
+    (check-true (check-token tok))
+    (check-false (check-token #"123456")))))

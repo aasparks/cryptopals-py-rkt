@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 ; Challenge 7
 ;; AES in ECB Mode
@@ -12,9 +12,10 @@
 ;; It is probably much slower and less secure
 ;; but it was a fun challenge.
 (require "../util/aes.rkt"
-         "c1.rkt")
+         "c1.rkt"
+         racket/file)
 
-(define DEBUG #false)
+(define DEBUG #true)
 
 #|
     The base64-encoded content in this file has been encrypted via
@@ -25,9 +26,22 @@
 |#
 
 (module+ test
+  (require rackunit
+           "../util/test.rkt")
+  
   (define result
    (aes-128-decrypt
     (base64->ascii (file->bytes "../../testdata/7.txt" #:mode 'text))
     #"YELLOW SUBMARINE"))
-  (when DEBUG
-    (printf "~v\n" result)))
+
+  ; I want to time the execution but the result is so long. So I'm going to
+  ; decrypt again and check the result. Obviously a bogus test but it
+  ; will give me an idea of the execution time of AES
+  (define challenge-7
+    (test-suite
+     "Challenge 7"
+     (check-equal? (aes-128-decrypt
+                    (base64->ascii (file->bytes "../../testdata/7.txt" #:mode 'text))
+                    #"YELLOW SUBMARINE")
+                   result)))
+  (time-test challenge-7))

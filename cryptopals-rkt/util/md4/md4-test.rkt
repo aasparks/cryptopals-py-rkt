@@ -1,10 +1,10 @@
-#lang racket
+#lang racket/base
 
 #| This file contains the tests for MD4 |#
 
 (module+ test
   (require rackunit
-           "../../set1/c1.rkt"
+           "../conversions.rkt"
            "../test.rkt"
            "../md4.rkt")
 

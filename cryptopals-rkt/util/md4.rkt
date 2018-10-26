@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 #|
    MD4
@@ -8,7 +8,8 @@
    http://practicalcryptography.com/hashes/md4-hash/
 |#
 
-(require "../set1/c1.rkt"
+(require racket/list
+         "../set1/c1.rkt"
          "md4/md4-math.rkt"
          "md4/md4-rounds.rkt")
 
