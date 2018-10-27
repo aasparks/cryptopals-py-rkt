@@ -215,7 +215,7 @@ The improved solutions are also very different.
 Python made it all the way to 1ms (to my amazement), but the Racket solution
 works for 20ms. I need to spend a lot more time on this one. Shelving for now...
 
-### Set 5 - Diffie-Hellman and Friends :x:
+### Set 5 - Diffie-Hellman and Friends :heavy_check_mark:
 
 #### 33. Implement Diffie-Hellman :ballot_box_with_check:
 
@@ -242,7 +242,7 @@ was the best replacement for Racket's ```channel```.
 This one was a little harder just because of g=p-1 has two possible
 key values, but still pretty easy.
 
-#### 36. Implement Secure Remote Password (SRP) :black_square_button:
+#### 36. Implement Secure Remote Password (SRP) :ballot_box_with_check:
 
 This biggest question here was how to implement this. I think client/server
 classes is was the best way to go.
@@ -252,13 +252,22 @@ For this challenge I needed to write my own ```integer-bytes->integer``` and
 strings longer than 8 bytes. That turned out to be a really elegant solution
 using ```foldl``` and ```foldr```.
 
-#### 37. Break SRP with a Zero Key :black_square_button:
+#### 37. Break SRP with a Zero Key :ballot_box_with_check:
 
-#### 38. Offline Dictionary Attack on Simplified SRP :black_square_button:
+Any value of A such that ```A % N == 0``` makes the key 0, so no
+password is needed.
 
-#### 39. Implement RSA :black_square_button:
+#### 38. Offline Dictionary Attack on Simplified SRP :ballot_box_with_check:
 
-#### 40. Implement an E=3 RSA Broadcast Attack :black_square_button:
+Instead of doing an actual dictionary attack, I just used a small
+list of words to simulate it.
+
+#### 39. Implement RSA :ballot_box_with_check:
+
+This was really fun. I had no idea RSA was so simple and weird. Thankfully
+```primegen``` and ```invmod``` were both really easy in these languages.
+
+#### 40. Implement an E=3 RSA Broadcast Attack :ballot_box_with_check:
 
 ### Set 6 - RSA and DSA :x:
 

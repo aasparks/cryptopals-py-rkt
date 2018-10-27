@@ -64,6 +64,22 @@ def invmod(num, mod):
     """
     return number.inverse(num, mod)
 
+def rsa_primegen(e):
+    """
+    Generates a large prime number for RSA. There is a restriction here such
+    that (p-1) % e != 0, so this function checks for that.
+
+    Args:
+        e: RSA exponent
+
+    Returns:
+        A large prime number for RSA.
+    """
+    p = primegen()
+    while (p-1) % e == 0:
+        p = primegen()
+    return p
+
 def rsa_keygen():
     """
     Performs the RSA math and gives back the public and private keys.
@@ -71,10 +87,10 @@ def rsa_keygen():
     Returns:
         The pair (pub-key, priv-key).
     """
-    p, q = primegen(), primegen()
+    e    = 3
+    p, q = rsa_primegen(e), rsa_primegen(e)
     n    = p * q
     et   = (p-1) * (q-1)
-    e    = 3
     d    = invmod(e, et)
     pub  = [e, n]
     priv = [d, n]
@@ -91,9 +107,9 @@ def rsa_encrypt(message, key):
     Returns:
         The encrypted message
     """
-    m = int.from_bytes(message, 'big')
+    m = number.bytes_to_long(message)
     c = pow(m, key[0], key[1])
-    return c36.int_to_bytes(c)
+    return number.long_to_bytes(c)
 
 def rsa_decrypt(ctxt, key):
     """
@@ -115,7 +131,7 @@ class TestRSA(unittest.TestCase):
         pub, priv = rsa_keygen()
         message   = b'Attack at dawn!'
         e_msg     = rsa_encrypt(message, pub)
-        d_msg     = rsa_decrypt(message, priv)
+        d_msg     = rsa_decrypt(e_msg, priv)
         self.assertEqual(d_msg, message)
 
     def test_keygen(self):
