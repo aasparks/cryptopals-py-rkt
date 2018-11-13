@@ -100,13 +100,13 @@ def dsa_sign_with_k(message, params, key, k=0):
     if k == 0:
         k = random.randrange(1, q)
     r = pow(g, k, p) % q
-    if r == 0:
-        dsa_sign(message, params, key)
+    #if r == 0:
+    #    dsa_sign(message, params, key)
     h  = number.bytes_to_long(sha1(message).digest()[:n])
     xr = x * r
     s  = (c39.invmod(k,q) * (h + xr)) % q
-    if s == 0:
-        dsa_sign(message, params, key)
+    #if s == 0:
+    #    dsa_sign(message, params, key)
     return r,s,k
 
 def dsa_sign(message, params, key):
