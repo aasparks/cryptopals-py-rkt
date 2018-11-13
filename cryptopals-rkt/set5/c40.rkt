@@ -6,7 +6,8 @@
          racket/class
          "../util/rsa.rkt"
          "../util/conversions.rkt")
-(provide DumbRSAServer%)
+(provide DumbRSAServer%
+         nth-root)
 #|
    Assume you're a javascript programmer. That is, you're
    using a naive handrolled RSA to encrypt without padding.

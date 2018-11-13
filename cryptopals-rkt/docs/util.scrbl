@@ -91,40 +91,6 @@ every exercise.
  }
 }
 
-@subsection{Public Key}
-
-@defmodule["util/diffie-hellman.rkt"]
- @defproc[(diffie-hellman [p integer?] [g integer?]) (values integer? integer?)]{
-  Computes the Diffie-Hellman private, public (in that order) key pair from
-  the provided values for @racket[p] and @racket[g].
- }
-
- @defproc[(make-session-key [pub integer?] [priv integer?] [p integer?]) bytes?]{
-  Creates a session key from the public, private key pair from Diffie-Hellman.
-  (Note: the key pairs are B,a and A,b).
- }
-
-@defmodule["util/rsa.rkt"]
- @defproc[(primegen [size integer? 64]) integer?]{
-  Generates a random prime number of @racket[size] bytes, using probabilistic
-  primality testing. @racket[prime?] is already provided, and I believe it uses
-  Miller-Rabin or at least something similar. Candidates are generated using
-  @racket[crypto-random-bytes], with the MSB and LSB set to 1.
- }
-
- @defproc[(rsa-keygen [e integer? 3]) (values (cons integer? integer?) (cons integer? integer?))]{
-  Generates the public, private key pair for RSA using the provided value for @racket[e]. Each
-  key is a pair, where the second value is @racket[n]. (ie, the output is [e,n], [d,n])
- }
-
- @defproc[(rsa-encrypt [txt bytes?] [pub (cons integer? integer?)]) bytes?]{
-  Encrypts the @racket[txt] using RSA under the public key.
- }
- 
- @defproc[(rsa-decrypt [ctxt bytes?] [priv (cons integer? integer?)]) bytes?]{
-  Decrypts the @racket[ctxt] using RSA under the private key.
- }
-
 @section{Randomness}
 
 @subsection{Mersenne Twister}
@@ -162,6 +128,59 @@ every exercise.
   performs validation.
  }
 }
+
+@section{Public Key}
+
+@subsection{Diffie-Hellman}
+
+@defmodule["util/diffie-hellman.rkt"]
+ @defproc[(diffie-hellman [p integer?] [g integer?]) (values integer? integer?)]{
+  Computes the Diffie-Hellman private, public (in that order) key pair from
+  the provided values for @racket[p] and @racket[g].
+ }
+
+ @defproc[(make-session-key [pub integer?] [priv integer?] [p integer?]) bytes?]{
+  Creates a session key from the public, private key pair from Diffie-Hellman.
+  (Note: the key pairs are B,a and A,b).
+ }
+
+@subsection{RSA}
+
+@defmodule["util/rsa.rkt"]
+ @defproc[(primegen [size integer? 64]) integer?]{
+  Generates a random prime number of @racket[size] bytes, using probabilistic
+  primality testing. @racket[prime?] is already provided, and I believe it uses
+  Miller-Rabin or at least something similar. Candidates are generated using
+  @racket[crypto-random-bytes], with the MSB and LSB set to 1.
+ }
+
+ @defproc[(rsa-keygen [e integer? 3]) (values (cons integer? integer?) (cons integer? integer?))]{
+  Generates the public, private key pair for RSA using the provided value for @racket[e]. Each
+  key is a pair, where the second value is @racket[n]. (ie, the output is [e,n], [d,n])
+ }
+
+ @defproc[(rsa-encrypt [txt bytes?] [pub (cons integer? integer?)]) bytes?]{
+  Encrypts the @racket[txt] using RSA under the public key.
+ }
+ 
+ @defproc[(rsa-decrypt [ctxt bytes?] [priv (cons integer? integer?)]) bytes?]{
+  Decrypts the @racket[ctxt] using RSA under the private key.
+ }
+
+@subsection{RSASSA-PKCS1-v1_5}
+
+@defmodule["util/pkcs1.5.rkt"]
+ @defproc[(pkcs15-sign [msg bytes?] [priv (cons/c integer? integer?)]) bytes?]{
+ Generates the PKCS1.5 signature for the message using the given private RSA key.
+ Uses SHA1 as the hashing function.
+}
+
+ @defproc[(pkcs15-verify [msg bytes?] [sig bytes?] [pub (cons/c integer? integer?)]) boolean?]{
+ Verifies the given @racket[sig] for the @racket[msg] using the provided RSA public key.
+ This verification function, like the signing function, uses the official FIPS algorithm
+ and is secure. 
+}
+
 
 
 

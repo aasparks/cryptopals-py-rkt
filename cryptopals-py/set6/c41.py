@@ -38,57 +38,97 @@ This turns out to be trivially breakable:
   P', which appears totally different from P
 * Now::
 
-    P = modinv(P', S) mod N
+    P = P' * modinv(S, N) mod N
 
 Oops!
 
 Implement that attack.
 """
 import os, sys, random, unittest
+from hashlib import sha256
+from Crypto.Util import number
 sys.path.insert(0, '../set5')
 import c36, c39
 
 class UnpaddedRSAServer():
     """
-    Represents a server that does not pad its messages. I'm leaving out all the
-    hashing and timestamp logic because it's a waste of time. Just doing
-    the attack on a simple server.
+    Represents a server that does not pad its messages. But it does save a hash
+    of the ciphertexts so no plaintexts can be sent twice. They don't expire
+    though, because the server is obviously not running all the time.
     """
     def __init__(self):
         self.pub, self.priv = c39.rsa_keygen()
-        print(self.pub)
-        print(self.priv)
+        self.msgs = []
 
     def encrypt_msg(self, message):
+        """
+        Encrypts the given message under the server's public key.
+
+        Args:
+            message: The message to encrypt
+
+        Returns:
+            The encrypted message
+        """
         ctxt = c39.rsa_encrypt(message, self.pub)
         return ctxt, self.pub
 
     def decrypt_msg(self, message):
+        """
+        Decrypts the given ciphertext but only if it has not been decrypted
+        once already.
+
+        Args:
+            message: The message to decrypt
+
+        Returns:
+            The decrypted ciphertext.
+
+        Raises:
+            ValueError if the message has been decrypted already
+        """
+        hash_msg = sha256(message).digest()
+        if hash_msg in self.msgs:
+            raise ValueError("Message already seen")
+        self.msgs.append(hash_msg)
         ptxt = c39.rsa_decrypt(message, self.priv)
         return ptxt
 
 def attack_server(server, msg):
-    ctxt, pub = server.encrypt_msg(msg)
-    N, E      = pub
-    S         = random.randint(1, N**2) % N
-    c_prime   = pow(S, E, N) * int.from_bytes(ctxt, 'big') % N
-    p_prime, pub   = server.encrypt_msg(c36.int_to_bytes(c_prime))
-    p         = c39.invmod(int.from_bytes(p_prime, 'big'), S) % N
-    return c36.int_to_bytes(p)
+    """
+    Attacks the RSA server using the attack described in the problem.
+
+    Args:
+        server: The server to attack
+        msg: The message to use to attack the server
+
+    Returns:
+        The decrypted plaintext (even though it aleady has it)
+    """
+    ctxt, (E, N) = server.encrypt_msg(msg)
+    ptxt         = server.decrypt_msg(ctxt)
+    assert(ptxt == msg)
+    S         = random.randint(2, N-1)
+    c_prime   = (pow(S, E, N) * number.bytes_to_long(ctxt)) % N
+    p_prime   = server.decrypt_msg(number.long_to_bytes(c_prime))
+    p         = (number.bytes_to_long(p_prime) * c39.invmod(S, N)) % N
+    return number.long_to_bytes(p)
 
 class TestPaddingAttack(unittest.TestCase):
     def test_server(self):
-        server = UnpaddedRSAServer()
-        msg    = b'Attack at dawn!'
-        ctxt, pub   = server.encrypt_msg(msg)
-        ptxt   = server.decrypt_msg(ctxt)
+        server    = UnpaddedRSAServer()
+        msg       = b'Attack at dawn!'
+        ctxt, pub = server.encrypt_msg(msg)
+        ptxt      = server.decrypt_msg(ctxt)
         self.assertEqual(ptxt, msg)
         self.assertNotEqual(ctxt, msg)
+        with self.assertRaises(ValueError):
+            server.decrypt_msg(ctxt)
 
     def test_challenge_41(self):
-        msg  = b'Attack at dawn!'
+        msg    = b'Attack at dawn!'
         server = UnpaddedRSAServer()
-        p = attack_server(server, msg)
+        p      = attack_server(server, msg)
         self.assertEqual(p, msg)
 
 

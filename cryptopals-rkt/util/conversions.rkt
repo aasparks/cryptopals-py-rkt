@@ -25,27 +25,38 @@
 
 ; integer->bytes : integer? boolean? -> bytes?
 ;; converts an integer into a bytestring
-(define (integer->bytes num [big-endian? #true])
-  (integer->bytes/helper num #"" big-endian?))
+(define (integer->bytes num [num-bytes 0] [big-endian? #true])
+  (integer->bytes/helper num num-bytes #"" big-endian?))
 
 ; integer->bytes/helper : integer? bytes? boolean? -> bytes?
 ;; recursively converts the number to a bytestring
-(define (integer->bytes/helper num bstr big-endian?)
+(define (integer->bytes/helper num num-bytes bstr big-endian?)
   (cond
-    [(zero? num) bstr]
+    [(zero? num)
+     (cond
+       [(>= (bytes-length bstr) num-bytes) bstr]
+       [big-endian? (bytes-append
+                     (make-bytes
+                      (- num-bytes (bytes-length bstr))
+                      0)
+                     bstr)]
+       [else (bytes-append
+              bstr
+              (make-bytes
+               (- num-bytes (bytes-length bstr)) 0))])]
     [big-endian?
-     (bytes-append
-      (integer->bytes/helper
-       (arithmetic-shift num -8)
-       (bytes (bitwise-and num #xFF))
-       big-endian?)
-      bstr)]
-    [else (bytes-append
-           bstr
-           (integer->bytes/helper
-            (arithmetic-shift num -8)
-            (bytes (bitwise-and num #xFF))
-            big-endian?))]))
+     (integer->bytes/helper
+      (arithmetic-shift num -8)
+      num-bytes
+      (bytes-append (bytes (bitwise-and num #xff))
+                    bstr)
+      big-endian?)]
+    [else (integer->bytes/helper
+           (arithmetic-shift num -8)
+           num-bytes
+           (bytes-append
+            bstr (bytes (bitwise-and num #xff)))
+           big-endian?)]))
 
 (module+ test
   (require rackunit
@@ -64,13 +75,20 @@
    #"1234")
 
   (check-equal?
-   (integer->bytes (bytes->integer #"1234" #f) #f)
+   (integer->bytes (bytes->integer #"1234" #f) 4 #f)
    #"1234")
+
+  (check-equal?
+   (integer->bytes (bytes->integer #"1234") 6)
+   #"\0\0001234")
+
+  (check-equal?
+   (integer->bytes (bytes->integer #"1234") 6 #f)
+   #"4321\0\0")
 
   ; got these using python's int.from_bytes
   (check-equal? (bytes->integer (sha256 #""))
                 102987336249554097029535212322581322789799900648198034993379397001115665086549)
 
   (check-equal? (bytes->integer (sha256 #"") #f)
-                38772261170797515502142737251560910253885555854579348417967781179871348437219)
-  )
+                38772261170797515502142737251560910253885555854579348417967781179871348437219))

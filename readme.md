@@ -271,9 +271,16 @@ This was really fun. I had no idea RSA was so simple and weird. Thankfully
 
 ### Set 6 - RSA and DSA :x:
 
-#### 41. Implement Unpadded Message Recovery Oracle :black_square_button:
+#### 41. Implement Unpadded Message Recovery Oracle :ballot_box_with_check:
 
-#### 42. Bleichenbacher's e=3 RSA Attack :black_square_button:
+#### 42. Bleichenbacher's e=3 RSA Attack :ballot_box_with_check:
+
+This challenge was simple enough but took me some time. I couldn't get
+it to work when using SHA256 as the hash, but I could with SHA1. This
+is (I think) because SHA256 has a long digest and I couldn't get enough
+0's at the end for garbage and the second half of the hash was being
+garbled. I feel like this should work for SHA256 but this challenge has
+taken up enough of my time.
 
 #### 43. DSA Key Recovery from Nonce :black_square_button:
 

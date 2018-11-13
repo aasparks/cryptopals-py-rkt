@@ -57,7 +57,7 @@
 ; generate-prime-candidate : void -> integer?
 ;; generates a random number of 1024 bytes, sets
 ;; the lsb and msb
-(define (generate-prime-candidate [size 64])
+(define (generate-prime-candidate [size 128])
   (bytes->integer
    (xorstrs (crypto-random-bytes size)
             (bytes-append #"\x80"

@@ -18,3 +18,4 @@ written, like the Python documents do. This is only the functions that are
 @include-section["set3.scrbl"]
 @include-section["set4.scrbl"]
 @include-section["set5.scrbl"]
+@include-section["set6.scrbl"]
