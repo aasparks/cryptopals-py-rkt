@@ -64,7 +64,7 @@ def invmod(num, mod):
     """
     return number.inverse(num, mod)
 
-def rsa_primegen(e):
+def rsa_primegen(e=3, bit_len=2048):
     """
     Generates a large prime number for RSA. There is a restriction here such
     that (p-1) % e != 0, so this function checks for that.
@@ -75,12 +75,12 @@ def rsa_primegen(e):
     Returns:
         A large prime number for RSA.
     """
-    p = primegen()
+    p = primegen(bit_len)
     while (p-1) % e == 0:
-        p = primegen()
+        p = primegen(bit_len)
     return p
 
-def rsa_keygen():
+def rsa_keygen(e=3, bit_len=2048):
     """
     Performs the RSA math and gives back the public and private keys.
 
@@ -88,7 +88,7 @@ def rsa_keygen():
         The pair (pub-key, priv-key).
     """
     e    = 3
-    p, q = rsa_primegen(e), rsa_primegen(e)
+    p, q = rsa_primegen(e, bit_len), rsa_primegen(e, bit_len)
     n    = p * q
     et   = (p-1) * (q-1)
     d    = invmod(e, et)
