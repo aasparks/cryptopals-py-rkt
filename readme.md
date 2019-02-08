@@ -269,7 +269,7 @@ This was really fun. I had no idea RSA was so simple and weird. Thankfully
 
 #### 40. Implement an E=3 RSA Broadcast Attack :ballot_box_with_check:
 
-### Set 6 - RSA and DSA :x:
+### Set 6 - RSA and DSA :heavy_check_mark:
 
 #### 41. Implement Unpadded Message Recovery Oracle :ballot_box_with_check:
 
@@ -282,17 +282,24 @@ is (I think) because SHA256 has a long digest and I couldn't get enough
 garbled. I feel like this should work for SHA256 but this challenge has
 taken up enough of my time.
 
-#### 43. DSA Key Recovery from Nonce :black_square_button:
+#### 43. DSA Key Recovery from Nonce :ballot_box_with_check:
 
-#### 44. DSA Nonce Recovery from Repeated Nonce :black_square_button:
+#### 44. DSA Nonce Recovery from Repeated Nonce :ballot_box_with_check:
 
-#### 45. DSA Parameter Tampering :black_square_button:
+#### 45. DSA Parameter Tampering :ballot_box_with_check:
 
-#### 46. RSA Parity Oracle
+#### 46. RSA Parity Oracle :ballot_box_with_check:
 
-#### 47. Bleichenbacher's PKCS 1.5 Padding Oracle (Simple Case) :black_square_button:
+#### 47. Bleichenbacher's PKCS 1.5 Padding Oracle (Simple Case) :ballot_box_with_check:
 
-#### 48. Bleichenbacher's PKCS 1.5 Padding Oracle (Complete Case) :black_square_button:
+Holy crap this challenge was hard. I'd like to make a shout out to GitHub user
+[ricpacca](https://github.com/ricpacca/cryptopals) for providing a wonderful,
+and well-documented implementation that I could refer to when I got stuck. Like
+him/her, I found it easier to just do the complete case from the start. This
+problem was difficult to translate to code, difficult to understand, and really
+difficult to debug. It was fun though.
+
+#### 48. Bleichenbacher's PKCS 1.5 Padding Oracle (Complete Case) :ballot_box_with_check:
 
 ### Set 7 - Hashes :x:
 

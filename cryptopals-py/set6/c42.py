@@ -73,7 +73,7 @@ def pkcs15_sign(message, priv):
         The signature for the given message
     """
     d, n = priv
-    k    = len(number.long_to_bytes(n))
+    k    = (n.bit_length() + 7) // 8
     em   = emsa_pkcs15_encode(message, k)
     m    = number.bytes_to_long(em)
     s    = RSASP1(m, priv)
@@ -118,6 +118,8 @@ def emsa_pkcs15_encode(message, emLen):
     der  = b'\x30\x21\x30\x09\x06\x05\x2b\x0e\x03\x02\x1a\x05\x00\x04\x14'
     T    = der + H
     tLen = len(T)
+    print(emLen)
+    print(tLen + 11)
     if emLen < tLen + 11:
         raise ValueError('message length too short')
     ps = b'\xff' * (emLen - tLen - 3)
