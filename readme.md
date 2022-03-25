@@ -22,20 +22,8 @@ has quite the learning curve but is a very powerful tool.
 [Python](https://aasparks.github.io/cryptopals-py-rkt/py/html/index.html)
 [Racket](https://aasparks.github.io/cryptopals-py-rkt/rkt/manual.html)
 
-
-## Midterm Retrospective
-
-At the half-way point, I have decided to go back through the challenges and
-rewrite A LOT. When I started, I barely knew any Python at all. Through these
-challenges I have learned a lot. I've learned better, more efficient ways
-to solve certain problems, especially in the beginning. The code (and comments)
-I have written can be greatly improved. I'd also like to take this time to go
-back and work on official documentation for both languages. I've compiled a
-to-do list below of issues I found by skimming the code for all the challenges
-so far.
-
 ### TODO:
-* Compile most-used functions into 'util' files and use that way.
+* Compile most-used functions into 'util' files.
 * Try to optimize the challenges that are slow in Racket
   * Challenge 31 & 32
 
